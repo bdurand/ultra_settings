@@ -1,4 +1,4 @@
-# Support Table Data :construction:
+# SuperConfig :construction:
 
 [![Continuous Integration](https://github.com/bdurand/super_config/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/bdurand/super_config/actions/workflows/continuous_integration.yml)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
