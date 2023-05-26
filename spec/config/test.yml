@@ -1,0 +1,6 @@
+shared:
+  foo: "foo value"
+  bar: "bar value"
+
+test:
+  bar: "test value"

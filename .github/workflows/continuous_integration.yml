@@ -1,0 +1,62 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - master
+      - actions-*
+    tags:
+      - v*
+  pull_request:
+    branches-ignore:
+      - actions-*
+
+env:
+  BUNDLE_CLEAN: "true"
+  BUNDLE_PATH: vendor/bundle
+  BUNDLE_JOBS: 3
+  BUNDLE_RETRY: 3
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ruby: "ruby"
+            standardrb: true
+          - ruby: "3.1"
+            appraisal: "rails_7"
+          - ruby: "2.7"
+            appraisal: "rails_6"
+          - ruby: "2.5"
+            appraisal: "rails_5"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby ${{ matrix.ruby }}
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "${{ matrix.ruby }}"
+    - name: Install packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install libsqlite3-dev
+    - name: Setup bundler
+      if: matrix.bundler != ''
+      run: |
+        gem uninstall bundler --all
+        gem install bundler --no-document --version ${{ matrix.bundler }}
+    - name: Set Appraisal bundle
+      if: matrix.appraisal != ''
+      run: |
+        echo "using gemfile gemfiles/${{ matrix.appraisal }}.gemfile"
+        bundle config set gemfile "gemfiles/${{ matrix.appraisal }}.gemfile"
+    - name: Install gems
+      run: |
+        bundle update
+    - name: Run Tests
+      run: bundle exec rake
+    - name: standardrb
+      if:   matrix.standardrb == true
+      run:  bundle exec rake standard
