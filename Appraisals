@@ -7,7 +7,3 @@ end
 appraise "rails_6" do
   gem "rails", "~> 6.0"
 end
-
-appraise "rails_5" do
-  gem "rails", "~> 5.0"
-end
