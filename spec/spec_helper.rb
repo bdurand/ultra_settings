@@ -28,6 +28,7 @@ SuperConfig.add(:test2, "OtherConfiguration")
 
 require_relative "test_configs/test_configuration"
 require_relative "test_configs/other_configuration"
+require_relative "test_configs/subclass_configuration"
 
 RSpec.configure do |config|
   config.order = :random

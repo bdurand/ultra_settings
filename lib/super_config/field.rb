@@ -4,6 +4,12 @@ module SuperConfig
   class Field
     attr_reader :name
     attr_reader :type
+    attr_reader :default
+    attr_reader :env_var
+    attr_reader :setting_name
+    attr_reader :yaml_key
+    attr_reader :env_var_prefix
+    attr_reader :setting_prefix
 
     def initialize(
       name:,

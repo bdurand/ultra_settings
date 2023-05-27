@@ -2,6 +2,8 @@
 
 module SuperConfig
   class Configuration
+    extend Components
+
     ALLOWED_NAME_PATTERN = /\A[a-z_][a-zA-Z0-9_]*\z/
     ALLOWED_TYPES = [:string, :integer, :float, :boolean, :datetime, :array].freeze
 
@@ -71,6 +73,7 @@ module SuperConfig
 
       def configuration_file=(value)
         value = Pathname.new(value) if value.is_a?(String)
+        value = Rails.root + value if value && !value.absolute?
         @configuration_file = value
       end
 
@@ -81,46 +84,32 @@ module SuperConfig
         @configuration_file
       end
 
-      def environment_variables_disabled=(value)
-        @environment_variables_disabled = !!value
-      end
-
-      def environment_variables_disabled?
-        !!(defined?(@environment_variables_disabled) && @environment_variables_disabled)
-      end
-
-      def runtime_settings_disabled=(value)
-        @runtime_settings_disabled = !!value
-      end
-
-      def runtime_settings_disabled?
-        !!(defined?(@runtime_settings_disabled) && @runtime_settings_disabled)
-      end
-
-      def yaml_config_disabled=(value)
-        @yaml_config_disabled = !!value
-      end
-
-      def yaml_config_disabled?
-        !!(defined?(@yaml_config_disabled) && @yaml_config_disabled)
-      end
-
       def load_yaml_config
-        return nil if configuration_file == false
+        return nil unless configuration_file
+        return nil unless configuration_file.exist?
 
-        path = (configuration_file || default_configuration_file)
-        path = Rails.root + path unless path.absolute?
-
-        return nil unless path.exist?
-
-        Rails.application.config_for(path)
+        Rails.application.config_for(configuration_file)
       end
 
       private
 
       def defined_fields
         unless defined?(@defined_fields)
-          @defined_fields = (superclass.is_a?(Configuration) ? superclass.send(:defined_fields).dup : {})
+          @defined_fields = {}
+          if superclass < Configuration
+            superclass.send(:defined_fields).each do |name, field|
+              @defined_fields[name] = Field.new(
+                name: field.name,
+                type: field.type,
+                default: field.default,
+                env_var: field.env_var,
+                setting_name: field.setting_name,
+                yaml_key: field.yaml_key,
+                env_var_prefix: env_var_prefix,
+                setting_prefix: setting_prefix
+              )
+            end
+          end
         end
         @defined_fields
       end
@@ -138,7 +127,7 @@ module SuperConfig
       end
 
       def default_setting_prefix
-        root_name.underscore.tr("/", ".")
+        root_name.underscore.tr("/", ".") + "."
       end
     end
 
@@ -163,6 +152,7 @@ module SuperConfig
       end
 
       field = self.class.send(:defined_fields)[name]
+      return nil unless field
 
       if !Rails.application.initialized? && !static
         raise SuperConfig::NonStaticValueError.new("Cannot access non-static field #{name} during initialization")

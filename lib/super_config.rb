@@ -2,12 +2,15 @@
 
 require "super_settings"
 
+require_relative "super_config/components"
 require_relative "super_config/configuration"
 require_relative "super_config/field"
 
 module SuperConfig
   @configurations = {}
   @mutex = Mutex.new
+
+  extend Components
 
   class NonStaticValueError < StandardError
   end
@@ -31,30 +34,6 @@ module SuperConfig
           end
         RUBY
       end
-    end
-
-    def disable_environment_variables!
-      @environment_variables_disabled = true
-    end
-
-    def environment_variables_disabled?
-      !!(defined?(@environment_variables_disabled) && @environment_variables_disabled)
-    end
-
-    def disable_runtime_settings!
-      @runtime_settings_disabled = true
-    end
-
-    def runtime_settings_disabled?
-      !!(defined?(@runtime_settings_disabled) && @runtime_settings_disabled)
-    end
-
-    def disable_yaml_config!
-      @yaml_config_disabled = true
-    end
-
-    def yaml_config_disabled?
-      !!(defined?(@yaml_config_disabled) && @yaml_config_disabled)
     end
 
     private

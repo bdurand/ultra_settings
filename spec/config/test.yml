@@ -6,6 +6,7 @@ shared:
   bool: "true"
   time: "2023-05-25-19:06Z"
   array: [1, 2, 3]
+  specific_key: "specific value"
 
 test:
   bar: "test value"
