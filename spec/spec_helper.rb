@@ -3,12 +3,12 @@
 require "bundler/setup"
 
 require "rails"
+require "climate_control"
 
 require_relative "../lib/super_config"
 
-RSpec.configure do |config|
-  config.order = :random
-end
+require "super_settings/storage/test_storage"
+SuperSettings::Setting.storage = SuperSettings::Storage::TestStorage
 
 class TestApplication < Rails::Application
 end
@@ -16,35 +16,51 @@ end
 Rails.application = TestApplication.new
 Rails.application.config.eager_load = false
 Rails.env = "test"
+Rails.logger = Logger.new(File::NULL)
 Rails.application.initialize!
 
 def Rails.root
   Pathname.new(__dir__)
 end
 
-class TestConfiguration < SuperConfig::Configuration
-  define :static_value, static: true
+SuperConfig.add(:test)
+SuperConfig.add(:test2, "OtherConfiguration")
 
-  define :foo
-  define :bar
-  define :baz
+require_relative "test_configs/test_configuration"
+require_relative "test_configs/other_configuration"
 
-  define :int, type: :integer
-  define :float, type: :float
-  define :bool, type: :boolean
-  define :time, type: :datetime
-  define :array, type: :array
-  define :string, type: :string
+RSpec.configure do |config|
+  config.order = :random
 
-  define :default_int, type: :integer, default: "1"
-  define :default_bool, type: :boolean, default: "true"
-end
+  config.around do |example|
+    if example.metadata[:env].is_a?(Hash)
+      ClimateControl.modify(example.metadata[:env]) do
+        example.run
+      end
+    else
+      example.run
+    end
+  end
 
-class OtherConfiguration < SuperConfig::Configuration
-  self.env_prefix = "OTHER_CONFIG_"
-  self.setting_prefix = "other_config."
-  self.configuration_file = "config/other.yml"
+  config.around do |example|
+    SuperSettings::Storage::TestStorage.clear
+    SuperSettings.clear_cache
 
-  define :two, type: :integer
-  define :three, type: :float
+    if example.metadata[:settings].is_a?(Hash)
+      previous = {}
+      begin
+        example.metadata[:settings].each do |name, value|
+          previous[name] = value
+          SuperSettings.set(name, value)
+        end
+        example.run
+      ensure
+        previous.each do |name, value|
+          SuperSettings.set(name, value)
+        end
+      end
+    else
+      example.run
+    end
+  end
 end

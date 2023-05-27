@@ -1,6 +1,11 @@
 shared:
   foo: "foo value"
   bar: "bar value"
+  int: "1"
+  float: "1.1"
+  bool: "true"
+  time: "2023-05-25-19:06Z"
+  array: [1, 2, 3]
 
 test:
   bar: "test value"
