@@ -2,11 +2,11 @@
 
 require "super_settings"
 
-require_relative "super_config/components"
-require_relative "super_config/configuration"
-require_relative "super_config/field"
+require_relative "unified_config/components"
+require_relative "unified_config/configuration"
+require_relative "unified_config/field"
 
-module SuperConfig
+module UnifiedConfig
   @configurations = {}
   @mutex = Mutex.new
 
@@ -50,7 +50,7 @@ module SuperConfig
         @mutex.synchronize do
           config = klass.new
           unless config.is_a?(Configuration)
-            raise TypeError.new("Configuration class #{class_name} does not inherit from SuperConfig::Configuration")
+            raise TypeError.new("Configuration class #{class_name} does not inherit from UnifiedConfig::Configuration")
           end
           @configurations[name] = config
         end

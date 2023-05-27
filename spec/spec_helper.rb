@@ -5,7 +5,7 @@ require "bundler/setup"
 require "rails"
 require "climate_control"
 
-require_relative "../lib/super_config"
+require_relative "../lib/unified_config"
 
 require "super_settings/storage/test_storage"
 SuperSettings::Setting.storage = SuperSettings::Storage::TestStorage
@@ -23,8 +23,8 @@ def Rails.root
   Pathname.new(__dir__)
 end
 
-SuperConfig.add(:test)
-SuperConfig.add(:test2, "OtherConfiguration")
+UnifiedConfig.add(:test)
+UnifiedConfig.add(:test2, "OtherConfiguration")
 
 require_relative "test_configs/test_configuration"
 require_relative "test_configs/other_configuration"

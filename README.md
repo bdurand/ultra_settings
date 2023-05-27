@@ -1,6 +1,6 @@
-# SuperConfig :construction:
+# Unified Rails Configuration :construction:
 
-[![Continuous Integration](https://github.com/bdurand/super_config/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/bdurand/super_config/actions/workflows/continuous_integration.yml)
+[![Continuous Integration](https://github.com/bdurand/unified_config/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/bdurand/unified_config/actions/workflows/continuous_integration.yml)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
 TODO
@@ -14,7 +14,7 @@ TODO
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "super_config"
+gem "unified_config"
 ```
 
 Then execute:
@@ -24,12 +24,12 @@ $ bundle
 
 Or install it yourself as:
 ```bash
-$ gem install super_config
+$ gem install unified_config
 ```
 
 ## Contributing
 
-Open a pull request on [GitHub](https://github.com/bdurand/super_config).
+Open a pull request on [GitHub](https://github.com/bdurand/unified_config).
 
 Please use the [standardrb](https://github.com/testdouble/standard) syntax and lint your code with `standardrb --fix` before submitting.
 

@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe SuperConfig::Configuration do
+describe UnifiedConfig::Configuration do
   let(:configuration) { TestConfiguration.new }
   let(:other_configuration) { OtherConfiguration.new }
   let(:subclass_configuration) { SubclassConfiguration.new }
@@ -151,7 +151,7 @@ describe SuperConfig::Configuration do
     it "raises an error when referencing a non-static value during initialization" do
       allow(Rails.application).to receive(:initialized?).and_return(false)
       expect { configuration.static }.to_not raise_error
-      expect { configuration.foo }.to raise_error(SuperConfig::NonStaticValueError)
+      expect { configuration.foo }.to raise_error(UnifiedConfig::NonStaticValueError)
     end
   end
 end

@@ -1,12 +1,12 @@
 Gem::Specification.new do |spec|
-  spec.name = "super_config"
+  spec.name = "unified_config"
   spec.version = File.read(File.expand_path("../VERSION", __FILE__)).strip
   spec.authors = ["Brian Durand"]
   spec.email = ["bbdurand@gmail.com"]
 
   spec.summary = "Unified configuration for Rails applications that allows for configuration via environment variables, YAML files, and dynamic runtime setting."
 
-  spec.homepage = "https://github.com/bdurand/super_config"
+  spec.homepage = "https://github.com/bdurand/unified_config"
   spec.license = "MIT"
 
   # Specify which files should be added to the gem when it is released.

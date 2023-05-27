@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module SuperConfig
+module UnifiedConfig
   module Components
     def environment_variables_disabled=(value)
       @environment_variables_disabled = !!value
