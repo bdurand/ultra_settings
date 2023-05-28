@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
+require "singleton"
+
 module ConsolidatedSettings
   class Configuration
+    include Singleton
     extend Components
 
     ALLOWED_NAME_PATTERN = /\A[a-z_][a-zA-Z0-9_]*\z/

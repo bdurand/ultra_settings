@@ -39,23 +39,23 @@ module ConsolidatedSettings
     private
 
     def __load_config__(name, class_name)
-      config = @configurations[name]
+      klass = @configurations[name]
 
-      if config && !Rails.configuration.cache_classes
-        config = nil if config.class != class_name.constantize
+      if klass && !Rails.configuration.cache_classes
+        klass = nil if klass != class_name.constantize
       end
 
-      unless config
+      unless klass
         klass = class_name.constantize
         @mutex.synchronize do
-          config = klass.new
-          unless config.is_a?(Configuration)
+          unless klass < Configuration
             raise TypeError.new("Configuration class #{class_name} does not inherit from ConsolidatedSettings::Configuration")
           end
-          @configurations[name] = config
+          @configurations[name] = klass
         end
       end
-      config
+
+      klass.instance
     end
   end
 end

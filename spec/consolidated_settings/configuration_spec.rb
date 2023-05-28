@@ -3,9 +3,9 @@
 require_relative "../spec_helper"
 
 describe ConsolidatedSettings::Configuration do
-  let(:configuration) { TestConfiguration.new }
-  let(:other_configuration) { OtherConfiguration.new }
-  let(:subclass_configuration) { SubclassConfiguration.new }
+  let(:configuration) { TestConfiguration.instance }
+  let(:other_configuration) { OtherConfiguration.instance }
+  let(:subclass_configuration) { SubclassConfiguration.instance }
 
   describe "define" do
     it "defines a string field by default" do
