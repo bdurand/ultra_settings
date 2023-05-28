@@ -8,25 +8,9 @@ TODO
 ## Usage
 
 ```ruby
-UnifiedSettings
-
-CombinedSettings
-
-CompositeConfig
-
-CompositeSettings
-
 ConsolidatedSettings.my_service.host
 
-UnifiedRailsConfig.my_service.host
-
-Config.my_service.host
-
-$config.my_service.host
-
-Rails.consolidated_settings.my_service.host
-
-Rails.app_config.my_service.host
+Rails.application.settings.my_service.host
 ```
 
 ## Installation
