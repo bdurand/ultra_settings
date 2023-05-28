@@ -8,7 +8,7 @@ module UltraSettings
     extend Components
 
     ALLOWED_NAME_PATTERN = /\A[a-z_][a-zA-Z0-9_]*\z/
-    ALLOWED_TYPES = [:string, :integer, :float, :boolean, :datetime, :array].freeze
+    ALLOWED_TYPES = [:string, :symbol, :integer, :float, :boolean, :datetime, :array].freeze
 
     class_attribute :environment_variables_disabled, instance_accessor: false, default: false
 
@@ -17,7 +17,7 @@ module UltraSettings
     class_attribute :yaml_config_disabled, instance_accessor: false, default: false
 
     class << self
-      def define(name, type: :string, default: nil, static: false, setting: nil, env_var: nil, yaml_key: nil)
+      def define(name, type: :string, default: nil, default_if: nil, static: false, setting: nil, env_var: nil, yaml_key: nil)
         name = name.to_s
         type = type.to_sym
         static = !!static
@@ -30,10 +30,15 @@ module UltraSettings
           raise ArgumentError.new("Invalid type: #{type.inspect}")
         end
 
+        unless default_if.nil? || default_if.is_a?(Proc)
+          raise ArgumentError.new("default_if must be a Proc")
+        end
+
         defined_fields[name] = Field.new(
           name: name,
           type: type,
           default: default,
+          default_if: default_if,
           env_var: env_var,
           setting_name: setting,
           yaml_key: yaml_key,

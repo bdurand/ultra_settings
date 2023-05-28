@@ -91,6 +91,23 @@ describe UltraSettings::Field do
     end
   end
 
+  describe "default_if" do
+    it "uses the default only if the default_if block returns true", env: {FOO: "-1"} do
+      field = UltraSettings::Field.new(name: "foo", type: :integer, default: "1", default_if: ->(val) { val < 0 })
+      expect(field.value).to eq 1
+    end
+
+    it "does not use the default if the default_if block returns false", env: {FOO: "2"} do
+      field = UltraSettings::Field.new(name: "foo", type: :integer, default: "1", default_if: ->(val) { val < 0 })
+      expect(field.value).to eq 2
+    end
+
+    it "always uses the default if the default_if block is not present", env: {FOO: ""} do
+      field = UltraSettings::Field.new(name: "foo", type: :integer, default: "1", default_if: ->(val) { val < 0 })
+      expect(field.value).to eq 1
+    end
+  end
+
   describe "type" do
     describe "string" do
       it "coerces the value to a string" do
@@ -108,6 +125,18 @@ describe UltraSettings::Field do
         value = field.value
         expect(value).to be_a String
         expect(value).to be_frozen
+      end
+    end
+
+    describe "symbol" do
+      it "coerces the value to a symbol" do
+        field = UltraSettings::Field.new(name: "foo", type: :symbol)
+        expect(field.value(yaml_config: {"foo" => "bar"})).to eq(:bar)
+      end
+
+      it "returns nil if the value is blank", env: {FOO: ""} do
+        field = UltraSettings::Field.new(name: "foo", type: :symbol)
+        expect(field.value).to be_nil
       end
     end
 

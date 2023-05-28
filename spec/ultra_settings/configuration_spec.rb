@@ -17,6 +17,7 @@ describe UltraSettings::Configuration do
     end
 
     it "defines a field with a type" do
+      expect(configuration.symbol).to eq :symbol_value
       expect(configuration.int).to eq 1
       expect(configuration.float).to eq 1.1
       expect(configuration.bool).to eq true

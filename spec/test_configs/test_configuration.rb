@@ -7,6 +7,7 @@ class TestConfiguration < UltraSettings::Configuration
   define :bar
   define :baz
 
+  define :symbol, type: :symbol
   define :int, type: :integer
   define :float, type: :float
   define :bool, type: :boolean

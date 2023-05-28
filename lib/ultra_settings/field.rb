@@ -15,6 +15,7 @@ module UltraSettings
       name:,
       type: :string,
       default: nil,
+      default_if: nil,
       env_var: nil,
       setting_name: nil,
       yaml_key: nil,
@@ -23,7 +24,8 @@ module UltraSettings
     )
       @name = frozen_string(name)
       @type = type.to_sym
-      @default = default&.dup.freeze
+      @default = coerce_value(default).freeze
+      @default_if = default_if
       @env_var = frozen_string(env_var)
       @setting_name = frozen_string(setting_name)
       @yaml_key = frozen_string(yaml_key)
@@ -33,20 +35,27 @@ module UltraSettings
 
     def value(env: ENV, settings: SuperSettings, yaml_config: nil)
       val = fetch_value(env: env, settings: settings, yaml_config: yaml_config)
-      val = @default if val.blank?
-      coerce_value(val).freeze
+      val = coerce_value(val).freeze
+      val = @default if use_default?(val)
+      val
     end
 
     private
 
     def fetch_value(env:, settings:, yaml_config:)
       value = env_value(name, @env_var) if env
-      if value.blank?
-        value = runtime_value(name, @setting_name) if settings
-        if value.blank?
-          value = yaml_value(name, @yaml_key, yaml_config) if yaml_config
-        end
+      value = nil if value == ""
+
+      if value.nil? && settings
+        value = runtime_value(name, @setting_name)
+        value = nil if value == ""
       end
+
+      if value.nil? && yaml_config
+        value = yaml_value(name, @yaml_key, yaml_config)
+        value = nil if value == ""
+      end
+
       value
     end
 
@@ -64,6 +73,8 @@ module UltraSettings
         SuperSettings::Coerce.time(value)
       when :array
         Array(value).map(&:to_s)
+      when :symbol
+        value.to_s.to_sym
       else
         value.to_s
       end
@@ -82,6 +93,14 @@ module UltraSettings
     def yaml_value(name, yaml_key, yaml_config)
       yaml_key ||= name
       yaml_config[yaml_key.to_s]
+    end
+
+    def use_default?(value)
+      if value && @default_if
+        @default_if.call(value)
+      else
+        value.nil?
+      end
     end
 
     def frozen_string(value)
