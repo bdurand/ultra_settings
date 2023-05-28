@@ -1,12 +1,12 @@
 Gem::Specification.new do |spec|
-  spec.name = "consolidated_settings"
+  spec.name = "ultra_settings"
   spec.version = File.read(File.expand_path("../VERSION", __FILE__)).strip
   spec.authors = ["Brian Durand"]
   spec.email = ["bbdurand@gmail.com"]
 
   spec.summary = "Unified configuration for Rails applications that allows for configuration via environment variables, YAML files, and dynamic runtime setting."
 
-  spec.homepage = "https://github.com/bdurand/consolidated_settings"
+  spec.homepage = "https://github.com/bdurand/ultra_settings"
   spec.license = "MIT"
 
   # Specify which files should be added to the gem when it is released.

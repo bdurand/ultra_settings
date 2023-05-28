@@ -2,11 +2,11 @@
 
 require "super_settings"
 
-require_relative "consolidated_settings/components"
-require_relative "consolidated_settings/configuration"
-require_relative "consolidated_settings/field"
+require_relative "ultra_settings/components"
+require_relative "ultra_settings/configuration"
+require_relative "ultra_settings/field"
 
-module ConsolidatedSettings
+module UltraSettings
   @configurations = {}
   @mutex = Mutex.new
 
@@ -49,7 +49,7 @@ module ConsolidatedSettings
         klass = class_name.constantize
         @mutex.synchronize do
           unless klass < Configuration
-            raise TypeError.new("Configuration class #{class_name} does not inherit from ConsolidatedSettings::Configuration")
+            raise TypeError.new("Configuration class #{class_name} does not inherit from UltraSettings::Configuration")
           end
           @configurations[name] = klass
         end

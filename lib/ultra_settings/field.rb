@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module ConsolidatedSettings
+module UltraSettings
   class Field
     attr_reader :name
     attr_reader :type

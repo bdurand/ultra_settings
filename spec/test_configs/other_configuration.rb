@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class OtherConfiguration < ConsolidatedSettings::Configuration
+class OtherConfiguration < UltraSettings::Configuration
   self.env_var_prefix = "OTHER_CONFIG_"
   self.setting_prefix = "other_config_"
   self.configuration_file = "config/other_config.yml"

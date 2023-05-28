@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe ConsolidatedSettings::Configuration do
+describe UltraSettings::Configuration do
   let(:configuration) { TestConfiguration.instance }
   let(:other_configuration) { OtherConfiguration.instance }
   let(:subclass_configuration) { SubclassConfiguration.instance }
@@ -152,7 +152,7 @@ describe ConsolidatedSettings::Configuration do
     it "raises an error when referencing a non-static value during initialization" do
       allow(Rails.application).to receive(:initialized?).and_return(false)
       expect { configuration.static }.to_not raise_error
-      expect { configuration.foo }.to raise_error(ConsolidatedSettings::NonStaticValueError)
+      expect { configuration.foo }.to raise_error(UltraSettings::NonStaticValueError)
     end
   end
 end

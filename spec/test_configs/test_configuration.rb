@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class TestConfiguration < ConsolidatedSettings::Configuration
+class TestConfiguration < UltraSettings::Configuration
   define :static, static: true
 
   define :foo
