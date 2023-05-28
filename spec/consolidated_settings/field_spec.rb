@@ -2,16 +2,16 @@
 
 require_relative "../spec_helper"
 
-describe UnifiedConfig::Field do
+describe ConsolidatedSettings::Field do
   describe "value hierarchy" do
-    let(:field) { UnifiedConfig::Field.new(name: "foo") }
+    let(:field) { ConsolidatedSettings::Field.new(name: "foo") }
 
     it "pulls a value from the environemnt variables by default", env: {FOO: "env"}, settings: {foo: "setting"} do
       expect(field.value(yaml_config: {"foo" => "yaml"})).to eq("env")
     end
 
     it "does not use the environment if it is disabled", env: {FOO: "env"}, settings: {foo: "setting"} do
-      field = UnifiedConfig::Field.new(name: "foo")
+      field = ConsolidatedSettings::Field.new(name: "foo")
       expect(field.value(env: nil, yaml_config: {"foo" => "yaml"})).to eq("setting")
     end
 
@@ -20,7 +20,7 @@ describe UnifiedConfig::Field do
     end
 
     it "does use the settings if they are disabled", settings: {foo: "setting"} do
-      field = UnifiedConfig::Field.new(name: "foo")
+      field = ConsolidatedSettings::Field.new(name: "foo")
       expect(field.value(settings: nil, yaml_config: {"foo" => "yaml"})).to eq("yaml")
     end
 
@@ -29,64 +29,64 @@ describe UnifiedConfig::Field do
     end
 
     it "does not use the YAML config if it does not exist" do
-      field = UnifiedConfig::Field.new(name: "foo")
+      field = ConsolidatedSettings::Field.new(name: "foo")
       expect(field.value).to be_nil
     end
   end
 
   describe "env_var_prefix" do
     it "adds a prefix to the environment variable name", env: {PRE_FOO: "bar"} do
-      field = UnifiedConfig::Field.new(name: "foo", env_var_prefix: "PRE_")
+      field = ConsolidatedSettings::Field.new(name: "foo", env_var_prefix: "PRE_")
       expect(field.value).to eq("bar")
     end
   end
 
   describe "setting_prefix" do
     it "adds a prefix to the setting name", settings: {pre_foo: "bar"} do
-      field = UnifiedConfig::Field.new(name: "foo", setting_prefix: "pre_")
+      field = ConsolidatedSettings::Field.new(name: "foo", setting_prefix: "pre_")
       expect(field.value).to eq("bar")
     end
   end
 
   describe "env_var" do
     it "gets a value from the environment variable", env: {VALUE: "bar"} do
-      field = UnifiedConfig::Field.new(name: "foo", env_var: :VALUE, env_var_prefix: "X_")
+      field = ConsolidatedSettings::Field.new(name: "foo", env_var: :VALUE, env_var_prefix: "X_")
       expect(field.value).to eq("bar")
     end
   end
 
   describe "setting_name" do
     it "gets a value from the setting name", settings: {value: "bar"} do
-      field = UnifiedConfig::Field.new(name: "foo", setting_name: :value, setting_prefix: "x_")
+      field = ConsolidatedSettings::Field.new(name: "foo", setting_name: :value, setting_prefix: "x_")
       expect(field.value).to eq("bar")
     end
   end
 
   describe "yaml_key" do
     it "gets a value from YAML key" do
-      field = UnifiedConfig::Field.new(name: "foo", yaml_key: :value)
+      field = ConsolidatedSettings::Field.new(name: "foo", yaml_key: :value)
       expect(field.value(yaml_config: {"value" => "bar"})).to eq("bar")
     end
   end
 
   describe "default" do
     it "uses the default value if no other value is present" do
-      field = UnifiedConfig::Field.new(name: "foo", default: "bar")
+      field = ConsolidatedSettings::Field.new(name: "foo", default: "bar")
       expect(field.value).to eq("bar")
     end
 
     it "does not use the default value if the value is false", settings: {foo: false} do
-      field = UnifiedConfig::Field.new(name: "foo", type: :boolean, default: true)
+      field = ConsolidatedSettings::Field.new(name: "foo", type: :boolean, default: true)
       expect(field.value).to be false
     end
 
     it "uses the default value if the value is an empty string", env: {FOO: ""} do
-      field = UnifiedConfig::Field.new(name: "foo", default: "bar")
+      field = ConsolidatedSettings::Field.new(name: "foo", default: "bar")
       expect(field.value).to eq("bar")
     end
 
     it "coerces the default value to the specified type" do
-      field = UnifiedConfig::Field.new(name: "foo", type: :integer, default: "1")
+      field = ConsolidatedSettings::Field.new(name: "foo", type: :integer, default: "1")
       expect(field.value).to eq 1
     end
   end
@@ -94,17 +94,17 @@ describe UnifiedConfig::Field do
   describe "type" do
     describe "string" do
       it "coerces the value to a string" do
-        field = UnifiedConfig::Field.new(name: "foo", type: :string)
+        field = ConsolidatedSettings::Field.new(name: "foo", type: :string)
         expect(field.value(yaml_config: {"foo" => 1})).to eq("1")
       end
 
       it "returns nil if the value is blank", env: {FOO: ""} do
-        field = UnifiedConfig::Field.new(name: "foo", type: :string)
+        field = ConsolidatedSettings::Field.new(name: "foo", type: :string)
         expect(field.value).to be_nil
       end
 
       it "returns a frozen string", env: {FOO: +"bar"} do
-        field = UnifiedConfig::Field.new(name: "foo", type: :string)
+        field = ConsolidatedSettings::Field.new(name: "foo", type: :string)
         value = field.value
         expect(value).to be_a String
         expect(value).to be_frozen
@@ -113,63 +113,63 @@ describe UnifiedConfig::Field do
 
     describe "boolean" do
       it "coerces the value to a boolean", env: {FOO: "true", BAR: "0"} do
-        field = UnifiedConfig::Field.new(name: "foo", type: :boolean)
+        field = ConsolidatedSettings::Field.new(name: "foo", type: :boolean)
         expect(field.value).to be true
 
-        field = UnifiedConfig::Field.new(name: "bar", type: :boolean)
+        field = ConsolidatedSettings::Field.new(name: "bar", type: :boolean)
         expect(field.value).to be false
       end
 
       it "returns nil if the value is blank", env: {FOO: ""} do
-        field = UnifiedConfig::Field.new(name: "foo", type: :boolean)
+        field = ConsolidatedSettings::Field.new(name: "foo", type: :boolean)
         expect(field.value).to be_nil
       end
     end
 
     describe "integer" do
       it "coerces the value to an integer", env: {FOO: "1"} do
-        field = UnifiedConfig::Field.new(name: "foo", type: :integer)
+        field = ConsolidatedSettings::Field.new(name: "foo", type: :integer)
         expect(field.value).to eq(1)
       end
 
       it "returns nil if the value is blank", env: {FOO: ""} do
-        field = UnifiedConfig::Field.new(name: "foo", type: :integer)
+        field = ConsolidatedSettings::Field.new(name: "foo", type: :integer)
         expect(field.value).to be_nil
       end
     end
 
     describe "float" do
       it "coerces the value to a float", env: {FOO: "1.1"} do
-        field = UnifiedConfig::Field.new(name: "foo", type: :float)
+        field = ConsolidatedSettings::Field.new(name: "foo", type: :float)
         expect(field.value).to eq(1.1)
       end
 
       it "returns nil if the value is blank", env: {FOO: ""} do
-        field = UnifiedConfig::Field.new(name: "foo", type: :float)
+        field = ConsolidatedSettings::Field.new(name: "foo", type: :float)
         expect(field.value).to be_nil
       end
     end
 
     describe "datetime" do
       it "coerces the value to a datetime", env: {FOO: "2015-01-01 12:01:50Z"} do
-        field = UnifiedConfig::Field.new(name: "foo", type: :datetime)
+        field = ConsolidatedSettings::Field.new(name: "foo", type: :datetime)
         expect(field.value).to eq(Time.utc(2015, 1, 1, 12, 1, 50))
       end
 
       it "returns nil if the value is blank", env: {FOO: ""} do
-        field = UnifiedConfig::Field.new(name: "foo", type: :datetime)
+        field = ConsolidatedSettings::Field.new(name: "foo", type: :datetime)
         expect(field.value).to be_nil
       end
     end
 
     describe "array" do
       it "coerces the value to an array of strings" do
-        field = UnifiedConfig::Field.new(name: "foo", type: :array)
+        field = ConsolidatedSettings::Field.new(name: "foo", type: :array)
         expect(field.value(yaml_config: {"foo" => [1, 2, 3]})).to eq(["1", "2", "3"])
       end
 
       it "returns nil if the value is blank", env: {FOO: ""} do
-        field = UnifiedConfig::Field.new(name: "foo", type: :array)
+        field = ConsolidatedSettings::Field.new(name: "foo", type: :array)
         expect(field.value).to be_nil
       end
     end

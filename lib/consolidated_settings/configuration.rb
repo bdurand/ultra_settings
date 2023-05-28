@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module UnifiedConfig
+module ConsolidatedSettings
   class Configuration
     extend Components
 
@@ -155,12 +155,12 @@ module UnifiedConfig
       return nil unless field
 
       if !Rails.application.initialized? && !static
-        raise UnifiedConfig::NonStaticValueError.new("Cannot access non-static field #{name} during initialization")
+        raise ConsolidatedSettings::NonStaticValueError.new("Cannot access non-static field #{name} during initialization")
       end
 
-      env = ENV unless self.class.environment_variables_disabled? || UnifiedConfig.environment_variables_disabled?
-      settings = SuperSettings unless static || self.class.runtime_settings_disabled? || UnifiedConfig.runtime_settings_disabled?
-      yaml_config = __yaml_config__ unless self.class.yaml_config_disabled? || UnifiedConfig.yaml_config_disabled?
+      env = ENV unless self.class.environment_variables_disabled? || ConsolidatedSettings.environment_variables_disabled?
+      settings = SuperSettings unless static || self.class.runtime_settings_disabled? || ConsolidatedSettings.runtime_settings_disabled?
+      yaml_config = __yaml_config__ unless self.class.yaml_config_disabled? || ConsolidatedSettings.yaml_config_disabled?
 
       value = field.value(yaml_config: yaml_config, env: env, settings: settings)
 

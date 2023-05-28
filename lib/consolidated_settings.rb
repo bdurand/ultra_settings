@@ -2,11 +2,11 @@
 
 require "super_settings"
 
-require_relative "unified_config/components"
-require_relative "unified_config/configuration"
-require_relative "unified_config/field"
+require_relative "consolidated_settings/components"
+require_relative "consolidated_settings/configuration"
+require_relative "consolidated_settings/field"
 
-module UnifiedConfig
+module ConsolidatedSettings
   @configurations = {}
   @mutex = Mutex.new
 
@@ -50,7 +50,7 @@ module UnifiedConfig
         @mutex.synchronize do
           config = klass.new
           unless config.is_a?(Configuration)
-            raise TypeError.new("Configuration class #{class_name} does not inherit from UnifiedConfig::Configuration")
+            raise TypeError.new("Configuration class #{class_name} does not inherit from ConsolidatedSettings::Configuration")
           end
           @configurations[name] = config
         end
