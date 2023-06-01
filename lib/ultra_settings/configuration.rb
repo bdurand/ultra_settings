@@ -5,7 +5,6 @@ require "singleton"
 module UltraSettings
   class Configuration
     include Singleton
-    extend Components
 
     ALLOWED_NAME_PATTERN = /\A[a-z_][a-zA-Z0-9_]*\z/
     ALLOWED_TYPES = [:string, :symbol, :integer, :float, :boolean, :datetime, :array].freeze
@@ -15,6 +14,16 @@ module UltraSettings
     class_attribute :runtime_settings_disabled, instance_accessor: false, default: false
 
     class_attribute :yaml_config_disabled, instance_accessor: false, default: false
+
+    class_attribute :env_var_delimiter, instance_accessor: false, default: "_"
+
+    class_attribute :setting_delimiter, instance_accessor: false, default: "."
+
+    class_attribute :env_var_upcase, instance_accessor: false, default: true
+
+    class_attribute :setting_upcase, instance_accessor: false, default: false
+
+    class_attribute :yaml_config_directory, instance_accessor: false, default: "config"
 
     class << self
       def define(name, type: :string, default: nil, default_if: nil, static: false, setting: nil, env_var: nil, yaml_key: nil)
@@ -43,7 +52,9 @@ module UltraSettings
           setting_name: setting,
           yaml_key: yaml_key,
           env_var_prefix: env_var_prefix,
-          setting_prefix: setting_prefix
+          env_var_upcase: env_var_upcase,
+          setting_prefix: setting_prefix,
+          setting_upcase: setting_upcase
         )
 
         class_eval <<-RUBY, __FILE__, __LINE__ + 1 # rubocop:disable Security/Eval
@@ -110,11 +121,14 @@ module UltraSettings
                 name: field.name,
                 type: field.type,
                 default: field.default,
+                default_if: field.default_if,
                 env_var: field.env_var,
                 setting_name: field.setting_name,
                 yaml_key: field.yaml_key,
                 env_var_prefix: env_var_prefix,
-                setting_prefix: setting_prefix
+                env_var_upcase: env_var_upcase,
+                setting_prefix: setting_prefix,
+                setting_upcase: setting_upcase
               )
             end
           end
@@ -127,15 +141,21 @@ module UltraSettings
       end
 
       def default_configuration_file
-        (Rails.root + "config").join(*"#{root_name.underscore}.yml".split("/"))
+        path = Pathname.new(yaml_config_directory)
+        path = Rails.root + path if defined?(Rails) && !path.absolute?
+        path.join(*"#{root_name.underscore}.yml".split("/"))
       end
 
       def default_env_var_prefix
-        root_name.underscore.tr("/", "_").upcase + "_"
+        prefix = root_name.underscore.gsub("/", env_var_delimiter) + env_var_delimiter
+        prefix = prefix.upcase if env_var_upcase
+        prefix
       end
 
       def default_setting_prefix
-        root_name.underscore.tr("/", ".") + "."
+        prefix = root_name.underscore.gsub("/", setting_delimiter) + setting_delimiter
+        prefix = prefix.upcase if setting_upcase
+        prefix
       end
     end
 
@@ -166,9 +186,9 @@ module UltraSettings
         raise UltraSettings::NonStaticValueError.new("Cannot access non-static field #{name} during initialization")
       end
 
-      env = ENV unless self.class.environment_variables_disabled? || UltraSettings.environment_variables_disabled?
-      settings = SuperSettings unless static || self.class.runtime_settings_disabled? || UltraSettings.runtime_settings_disabled?
-      yaml_config = __yaml_config__ unless self.class.yaml_config_disabled? || UltraSettings.yaml_config_disabled?
+      env = ENV unless self.class.environment_variables_disabled?
+      settings = __runtime_settings__ unless static || self.class.runtime_settings_disabled?
+      yaml_config = __yaml_config__ unless self.class.yaml_config_disabled?
 
       value = field.value(yaml_config: yaml_config, env: env, settings: settings)
 
@@ -183,6 +203,10 @@ module UltraSettings
       end
 
       value
+    end
+
+    def __runtime_settings__
+      SuperSettings
     end
 
     def __yaml_config__

@@ -6,6 +6,7 @@ describe UltraSettings::Configuration do
   let(:configuration) { TestConfiguration.instance }
   let(:other_configuration) { OtherConfiguration.instance }
   let(:subclass_configuration) { SubclassConfiguration.instance }
+  let(:namespace_configuration) { Test::NamespaceConfiguration.instance }
 
   describe "define" do
     it "defines a string field by default" do
@@ -61,6 +62,10 @@ describe UltraSettings::Configuration do
       expect(configuration.env_var).to eq "env test"
     end
 
+    it "can override the environment variable delimiter and upcase", env: {test__namespace__foo: "val"} do
+      expect(namespace_configuration.foo).to eq "val"
+    end
+
     it "can disable the environment variables", env: {TEST_FOO: "env value", OTHER_CONFIG_FOO: "other value"} do
       expect(configuration.foo).to eq "env value"
       expect(other_configuration.foo).to eq "other value"
@@ -87,6 +92,10 @@ describe UltraSettings::Configuration do
       expect(configuration.setting).to eq "setting test"
     end
 
+    it "can override the setting delimiter and upcase", settings: {"TEST->NAMESPACE->FOO" => "val"} do
+      expect(namespace_configuration.foo).to eq "val"
+    end
+
     it "can disable the settings", settings: {"test.foo" => "settings value", "other_config_foo" => "other value"} do
       expect(configuration.foo).to eq "settings value"
       expect(other_configuration.foo).to eq "other value"
@@ -107,6 +116,11 @@ describe UltraSettings::Configuration do
 
     it "can override the default YAML key" do
       expect(configuration.yaml_key).to eq "specific value"
+    end
+
+    it "can override the default YAML directory" do
+      path = Rails.root.join("my_settings", "test", "namespace.yml")
+      expect(Test::NamespaceConfiguration.configuration_file).to eq path
     end
 
     it "can disable the YAML configuration" do
