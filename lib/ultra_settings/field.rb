@@ -105,6 +105,8 @@ module UltraSettings
     end
 
     def env_value(env)
+      return nil if env_var == false
+
       var_name = env_var
       if var_name.nil?
         var_name = "#{env_var_prefix}#{name}"
@@ -114,6 +116,8 @@ module UltraSettings
     end
 
     def runtime_value(settings)
+      return nil if setting_name == false
+
       var_name = setting_name
       if var_name.nil?
         var_name = "#{setting_prefix}#{name}"
@@ -123,6 +127,8 @@ module UltraSettings
     end
 
     def yaml_value(yaml_config)
+      return nil if yaml_key == false
+
       key = (yaml_key || name)
       yaml_config[key.to_s]
     end
@@ -136,7 +142,9 @@ module UltraSettings
     end
 
     def frozen_string(value)
-      value&.to_s&.dup&.freeze
+      return value unless value
+
+      value.to_s.dup.freeze
     end
   end
 end

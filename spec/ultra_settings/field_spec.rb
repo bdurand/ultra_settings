@@ -68,6 +68,11 @@ describe UltraSettings::Field do
       field = UltraSettings::Field.new(name: "foo", env_var: :VALUE, env_var_prefix: "X_")
       expect(field.value(env: {"VALUE" => "bar"})).to eq("bar")
     end
+
+    it "does not use the environment variable if the value is false" do
+      field = UltraSettings::Field.new(name: "foo", env_var: false)
+      expect(field.value(env: {"FALSE" => "bar"})).to be_nil
+    end
   end
 
   describe "setting_name" do
@@ -75,12 +80,22 @@ describe UltraSettings::Field do
       field = UltraSettings::Field.new(name: "foo", setting_name: :value, setting_prefix: "x_")
       expect(field.value(settings: {"value" => "bar"})).to eq("bar")
     end
+
+    it "does not use the setting if it is false" do
+      field = UltraSettings::Field.new(name: "foo", setting_name: false)
+      expect(field.value(settings: {"false" => "bar"})).to be_nil
+    end
   end
 
   describe "yaml_key" do
     it "gets a value from YAML key" do
       field = UltraSettings::Field.new(name: "foo", yaml_key: :value)
       expect(field.value(yaml_config: {"value" => "bar"})).to eq("bar")
+    end
+
+    it "does not use the YAML key if it is false" do
+      field = UltraSettings::Field.new(name: "foo", yaml_key: false)
+      expect(field.value(yaml_config: {"foo" => "bar"})).to be_nil
     end
   end
 
