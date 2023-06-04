@@ -66,6 +66,14 @@ describe UltraSettings::Configuration do
       expect(namespace_configuration.foo).to eq "val"
     end
 
+    it "uses the environment if env_var is true", env: {TEST_ALL_ENABLED: "env test"} do
+      expect(configuration.all_enabled).to eq "env test"
+    end
+
+    it "does not use the environment if env_var is false", env: {TEST_ALL_DISABLED: "env test"} do
+      expect(configuration.all_disabled).to be_nil
+    end
+
     it "can disable the environment variables", env: {TEST_FOO: "env value", OTHER_CONFIG_FOO: "other value"} do
       expect(configuration.foo).to eq "env value"
       expect(other_configuration.foo).to eq "other value"
@@ -96,6 +104,14 @@ describe UltraSettings::Configuration do
       expect(namespace_configuration.foo).to eq "val"
     end
 
+    it "uses the settings if setting_name is true", settings: {"test.all_enabled" => "test"} do
+      expect(configuration.all_enabled).to eq "test"
+    end
+
+    it "does not use the settings if setting_name is false", settings: {"test.all_disabled" => "test"} do
+      expect(configuration.all_disabled).to be_nil
+    end
+
     it "can disable the settings", settings: {"test.foo" => "settings value", "other_config_foo" => "other value"} do
       expect(configuration.foo).to eq "settings value"
       expect(other_configuration.foo).to eq "other value"
@@ -121,6 +137,14 @@ describe UltraSettings::Configuration do
     it "can override the default YAML directory" do
       path = Rails.root.join("my_settings", "test", "namespace.yml")
       expect(Test::NamespaceConfiguration.configuration_file).to eq path
+    end
+
+    it "uses the YAML config if yaml_key is true" do
+      expect(configuration.all_enabled).to eq "yaml value"
+    end
+
+    it "does not use YAML config if yaml_key is false" do
+      expect(configuration.all_disabled).to be_nil
     end
 
     it "can disable the YAML configuration" do

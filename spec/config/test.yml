@@ -8,6 +8,8 @@ shared:
   time: "2023-05-25-19:06Z"
   array: [1, 2, 3]
   specific_key: "specific value"
+  all_enabled: "yaml value"
+  all_disabled: "not yaml value"
 
 test:
   bar: "test value"

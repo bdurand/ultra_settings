@@ -21,4 +21,7 @@ class TestConfiguration < UltraSettings::Configuration
   define :env_var, env_var: "SPECIFIC_ENV_VAR"
   define :setting, setting: "specific_setting"
   define :yaml_key, yaml_key: "specific_key"
+
+  define :all_enabled, env_var: true, setting: true, yaml_key: true
+  define :all_disabled, env_var: false, setting: false, yaml_key: false
 end
