@@ -28,7 +28,8 @@ module UltraSettings
       default_if: nil,
       env_var: nil,
       setting_name: nil,
-      yaml_key: nil
+      yaml_key: nil,
+      static: false
     )
       @name = name.to_s.freeze
       @type = type.to_sym
@@ -38,6 +39,7 @@ module UltraSettings
       @env_var = env_var&.to_s&.freeze
       @setting_name = setting_name&.to_s&.freeze
       @yaml_key = yaml_key&.to_s&.freeze
+      @static = !!static
     end
 
     # Get the value for the field from the passed in state.
@@ -51,6 +53,10 @@ module UltraSettings
 
     def source(env: nil, settings: nil, yaml_config: nil)
       fetch_value_and_source(env: env, settings: settings, yaml_config: yaml_config).last
+    end
+
+    def static?
+      @static
     end
 
     private
