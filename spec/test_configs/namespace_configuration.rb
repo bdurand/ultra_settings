@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Test
-  class NamespaceConfiguration < TestConfiguration
+  class NamespaceConfiguration < UltraSettings::Configuration
     self.env_var_delimiter = "__"
     self.env_var_upcase = false
 

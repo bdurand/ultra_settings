@@ -17,10 +17,14 @@
       <h1>Application Settings</h1>
     </header>
     <main>
-      <nav class="tabs">
-        <% UltraSettings.__configuration_names__.sort.each do |name| %>
-          <a href="#" data-config-id="config-<%= name %>"><%= name %></a>
-        <% end %>
+      <nav>
+        <form onsubmit="return false">
+          <select size="1" id="config-selector">
+            <% UltraSettings.__configuration_names__.sort.each do |name| %>
+              <option value="config-<%= name %>"><%= name %></option>
+            <% end %>
+          </select>
+        </form>
       </nav>
 
       <% UltraSettings.__configuration_names__.sort.each do |name| %>
@@ -49,7 +53,7 @@
               </tr>
             </thead>
             <tbody>
-              <% configuration.class.fields.each do |field| %>
+              <% configuration.class.fields.sort_by(&:name).each do |field| %>
                 <tr>
                   <td>
                     <%= field.name %>
@@ -88,7 +92,7 @@
                       <% if field.default.is_a?(Time) %>
                         <%= field.default.iso8601 %>
                       <% elsif field.default.nil? %>
-                        nil
+                        <em>nil</em>
                       <% else %>
                         <%= field.default %>
                       <% end %>
