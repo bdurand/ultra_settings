@@ -26,7 +26,7 @@ module UltraSettings
     class_attribute :yaml_config_directory, instance_accessor: false, default: "config"
 
     class << self
-      def define(name, type: :string, default: nil, default_if: nil, static: false, setting: nil, env_var: nil, yaml_key: nil)
+      def define(name, type: :string, description: nil, default: nil, default_if: nil, static: false, setting: nil, env_var: nil, yaml_key: nil)
         name = name.to_s
         type = type.to_sym
         static = !!static
@@ -46,15 +46,12 @@ module UltraSettings
         defined_fields[name] = Field.new(
           name: name,
           type: type,
+          description: description,
           default: default,
           default_if: default_if,
-          env_var: env_var,
-          setting_name: setting,
-          yaml_key: yaml_key,
-          env_var_prefix: env_var_prefix,
-          env_var_upcase: env_var_upcase,
-          setting_prefix: setting_prefix,
-          setting_upcase: setting_upcase
+          env_var: construct_env_var(name, env_var),
+          setting_name: construct_setting_name(name, setting),
+          yaml_key: construct_yaml_key(name, yaml_key)
         )
 
         class_eval <<-RUBY, __FILE__, __LINE__ + 1 # rubocop:disable Security/Eval
@@ -65,6 +62,21 @@ module UltraSettings
 
         if type == :boolean
           alias_method "#{name}?", name
+        end
+      end
+
+      def fields
+        defined_fields.values
+      end
+
+      def include?(name)
+        name = name.to_s
+        return true if defined_fields.include?(name)
+
+        if superclass <= Configuration
+          superclass.include?(name)
+        else
+          false
         end
       end
 
@@ -114,24 +126,11 @@ module UltraSettings
 
       def defined_fields
         unless defined?(@defined_fields)
-          @defined_fields = {}
-          if superclass < Configuration
-            superclass.send(:defined_fields).each do |name, field|
-              @defined_fields[name] = Field.new(
-                name: field.name,
-                type: field.type,
-                default: field.default,
-                default_if: field.default_if,
-                env_var: field.env_var,
-                setting_name: field.setting_name,
-                yaml_key: field.yaml_key,
-                env_var_prefix: env_var_prefix,
-                env_var_upcase: env_var_upcase,
-                setting_prefix: setting_prefix,
-                setting_upcase: setting_upcase
-              )
-            end
+          fields = {}
+          if superclass <= Configuration
+            fields = superclass.send(:defined_fields).dup
           end
+          @defined_fields = fields
         end
         @defined_fields
       end
@@ -157,6 +156,39 @@ module UltraSettings
         prefix = prefix.upcase if setting_upcase
         prefix
       end
+
+      def construct_env_var(name, env_var)
+        return nil if env_var == false
+
+        env_var = nil if env_var == true
+        if env_var.nil?
+          env_var = "#{env_var_prefix}#{name}"
+          env_var = env_var.upcase if env_var_upcase
+        end
+
+        env_var
+      end
+
+      def construct_setting_name(name, setting_name)
+        return nil if setting_name == false
+
+        setting_name = nil if setting_name == true
+        if setting_name.nil?
+          setting_name = "#{setting_prefix}#{name}"
+          setting_name = setting_name.upcase if setting_upcase
+        end
+
+        setting_name
+      end
+
+      def construct_yaml_key(name, yaml_key)
+        return nil if yaml_key == false
+
+        yaml_key = nil if yaml_key == true
+        yaml_key = name if yaml_key.nil?
+
+        yaml_key
+      end
     end
 
     def initialize
@@ -169,7 +201,7 @@ module UltraSettings
     end
 
     def include?(name)
-      self.class.send(:defined_fields).include?(name.to_s)
+      self.class.include?(name.to_s)
     end
 
     private

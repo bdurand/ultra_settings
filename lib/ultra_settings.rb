@@ -118,29 +118,37 @@ module UltraSettings
       def yaml_config_directory=(value)
         Configuration.yaml_config_directory = value.to_s
       end
-    end
 
-    private
-
-    # Load a configuration class.
-    def __load_config__(name, class_name)
-      klass = @configurations[name]
-
-      if klass && !Rails.configuration.cache_classes
-        klass = nil if klass != class_name.constantize
+      # Get the names of all of the configurations that have been added.
+      #
+      # @return [Array<String>] The names of the configurations.
+      # @api private
+      def __names__
+        @configurations.keys
       end
 
-      unless klass
-        klass = class_name.constantize
-        @mutex.synchronize do
-          unless klass < Configuration
-            raise TypeError.new("Configuration class #{class_name} does not inherit from UltraSettings::Configuration")
-          end
-          @configurations[name] = klass
+      private
+
+      # Load a configuration class.
+      def __load_config__(name, class_name)
+        klass = @configurations[name]
+
+        if klass && !Rails.configuration.cache_classes
+          klass = nil if klass != class_name.constantize
         end
-      end
 
-      klass.instance
+        unless klass
+          klass = class_name.constantize
+          @mutex.synchronize do
+            unless klass < Configuration
+              raise TypeError.new("Configuration class #{class_name} does not inherit from UltraSettings::Configuration")
+            end
+            @configurations[name] = klass
+          end
+        end
+
+        klass.instance
+      end
     end
   end
 end

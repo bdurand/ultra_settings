@@ -5,51 +5,39 @@ module UltraSettings
   class Field
     attr_reader :name
     attr_reader :type
+    attr_reader :description
     attr_reader :default
     attr_reader :default_if
     attr_reader :env_var
     attr_reader :setting_name
     attr_reader :yaml_key
-    attr_reader :env_var_prefix
-    attr_reader :env_var_upcase
-    attr_reader :setting_prefix
-    attr_reader :setting_upcase
 
     # @param name [String, Symbol] The name of the field.
     # @param type [Symbol] The type of the field.
+    # @param description [String] The description of the field.
     # @param default [Object] The default value of the field.
     # @param default_if [Proc] A proc that returns true if the default value should be used.
     # @param env_var [String, Symbol] The name of the environment variable to use for the field.
     # @param setting_name [String, Symbol] The name of the setting to use for the field.
     # @param yaml_key [String, Symbol] The name of the YAML key to use for the field.
-    # @param env_var_prefix [String, Symbol] The prefix to use for the environment variable name.
-    # @param env_var_upcase [Boolean] Whether or not to upcase the environment variable name.
-    # @param setting_prefix [String, Symbol] The prefix to use for the setting name.
-    # @param setting_upcase [Boolean] Whether or not to upcase the setting name.
     def initialize(
       name:,
       type: :string,
+      description: nil,
       default: nil,
       default_if: nil,
       env_var: nil,
       setting_name: nil,
-      yaml_key: nil,
-      env_var_prefix: nil,
-      env_var_upcase: true,
-      setting_prefix: nil,
-      setting_upcase: false
+      yaml_key: nil
     )
-      @name = frozen_string(name)
+      @name = name.to_s.freeze
       @type = type.to_sym
+      @description = description&.to_s&.freeze
       @default = coerce_value(default).freeze
       @default_if = default_if
-      @env_var = frozen_string(env_var)
-      @setting_name = frozen_string(setting_name)
-      @yaml_key = frozen_string(yaml_key)
-      @env_var_prefix = frozen_string(env_var_prefix)
-      @env_var_upcase = !!env_var_upcase
-      @setting_prefix = frozen_string(setting_prefix)
-      @setting_upcase = !!setting_upcase
+      @env_var = env_var&.to_s&.freeze
+      @setting_name = setting_name&.to_s&.freeze
+      @yaml_key = yaml_key&.to_s&.freeze
     end
 
     # Get the value for the field from the passed in state.
@@ -58,29 +46,48 @@ module UltraSettings
     # @param settings [#[]] The runtime settings.
     # @param yaml_config [#[]] The YAML configuration.
     def value(env: nil, settings: nil, yaml_config: nil)
-      val = fetch_value(env: env, settings: settings, yaml_config: yaml_config)
-      val = coerce_value(val).freeze
-      val = @default if use_default?(val)
-      val
+      fetch_value_and_source(env: env, settings: settings, yaml_config: yaml_config).first
+    end
+
+    def source(env: nil, settings: nil, yaml_config: nil)
+      fetch_value_and_source(env: env, settings: settings, yaml_config: yaml_config).last
     end
 
     private
 
-    def fetch_value(env:, settings:, yaml_config:)
-      value = env_value(env) if env
+    def fetch_value_and_source(env:, settings:, yaml_config:)
+      source = nil
+
+      value = env[env_var] if env && env_var
       value = nil if value == ""
-
-      if value.nil? && settings
-        value = runtime_value(settings)
+      if value.nil?
+        value = settings[setting_name] if settings && setting_name
         value = nil if value == ""
+        if value.nil?
+          value = yaml_value(yaml_config)
+          value = nil if value == ""
+          source = :yaml unless value.nil?
+        else
+          source = :settings
+        end
+      else
+        source = :env
       end
 
-      if value.nil? && yaml_config
-        value = yaml_value(yaml_config)
-        value = nil if value == ""
+      value = coerce_value(value).freeze
+      if use_default?(value)
+        value = @default
+        source = :default
       end
 
-      value
+      [value, source]
+    end
+
+    def yaml_value(yaml_config)
+      return nil unless yaml_config && yaml_key
+
+      # TODO implement dot syntax
+      yaml_config[yaml_key]
     end
 
     def coerce_value(value)
@@ -104,47 +111,12 @@ module UltraSettings
       end
     end
 
-    def env_value(env)
-      return nil if env_var == false
-
-      var_name = env_var
-      if var_name.nil?
-        var_name = "#{env_var_prefix}#{name}"
-        var_name = var_name.upcase if env_var_upcase
-      end
-      env[var_name.to_s]
-    end
-
-    def runtime_value(settings)
-      return nil if setting_name == false
-
-      var_name = setting_name
-      if var_name.nil?
-        var_name = "#{setting_prefix}#{name}"
-        var_name = var_name.upcase if setting_upcase
-      end
-      settings[var_name.to_s]
-    end
-
-    def yaml_value(yaml_config)
-      return nil if yaml_key == false
-
-      key = (yaml_key || name)
-      yaml_config[key.to_s]
-    end
-
     def use_default?(value)
       if value && @default_if
         @default_if.call(value)
       else
         value.nil?
       end
-    end
-
-    def frozen_string(value)
-      return value unless value
-
-      value.to_s.dup.freeze
     end
   end
 end

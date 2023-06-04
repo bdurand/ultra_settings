@@ -147,9 +147,10 @@ describe UltraSettings::Configuration do
   end
 
   describe "subclasses" do
-    it "inherits definitions from the parent class", env: {TEST_FOO: "one", SUBCLASS_FOO: "two"} do
+    it "inherits values from the parent class", env: {TEST_FOO: "one", SUBCLASS_FOO: "two"} do
       expect(configuration.foo).to eq "one"
-      expect(subclass_configuration.foo).to eq "two"
+      expect(subclass_configuration.include?(:foo)).to eq true
+      expect(subclass_configuration.foo).to eq "one"
     end
 
     it "can override field definitions", env: {TEST_BAR: "1", SUBCLASS_BAR: "2"} do
