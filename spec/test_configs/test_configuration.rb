@@ -3,7 +3,7 @@
 class TestConfiguration < UltraSettings::Configuration
   define :static, static: true
 
-  define :foo
+  define :foo, description: "An all purpose foo setting"
   define :bar
   define :baz
 

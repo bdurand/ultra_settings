@@ -50,13 +50,14 @@ module UltraSettings
           default: default,
           default_if: default_if,
           env_var: construct_env_var(name, env_var),
-          setting_name: construct_setting_name(name, setting),
-          yaml_key: construct_yaml_key(name, yaml_key)
+          setting_name: (static ? nil : construct_setting_name(name, setting)),
+          yaml_key: construct_yaml_key(name, yaml_key),
+          static: static
         )
 
         class_eval <<-RUBY, __FILE__, __LINE__ + 1 # rubocop:disable Security/Eval
           def #{name}
-            __get_value__(#{name.inspect}, #{static.inspect})
+            __get_value__(#{name.inspect})
           end
         RUBY
 
@@ -104,7 +105,7 @@ module UltraSettings
 
       def configuration_file=(value)
         value = Pathname.new(value) if value.is_a?(String)
-        value = Rails.root + value if value && !value.absolute?
+        value = Rails.root + value if value && !value.absolute? && Rails.root
         @configuration_file = value
       end
 
@@ -204,27 +205,32 @@ module UltraSettings
       self.class.include?(name.to_s)
     end
 
+    def __source__(name)
+      field = self.class.send(:defined_fields)[name]
+      field.source(env: ENV, settings: __runtime_settings__, yaml_config: __yaml_config__)
+    end
+
     private
 
-    def __get_value__(name, static)
-      if static && @memoized_values.include?(name)
-        return @memoized_values[name]
-      end
-
+    def __get_value__(name)
       field = self.class.send(:defined_fields)[name]
       return nil unless field
 
-      if !Rails.application.initialized? && !static
+      if field.static? && @memoized_values.include?(name)
+        return @memoized_values[name]
+      end
+
+      if !Rails.application.initialized? && !field.static?
         raise UltraSettings::NonStaticValueError.new("Cannot access non-static field #{name} during initialization")
       end
 
       env = ENV unless self.class.environment_variables_disabled?
-      settings = __runtime_settings__ unless static || self.class.runtime_settings_disabled?
+      settings = __runtime_settings__ unless field.static? || self.class.runtime_settings_disabled?
       yaml_config = __yaml_config__ unless self.class.yaml_config_disabled?
 
       value = field.value(yaml_config: yaml_config, env: env, settings: settings)
 
-      if static
+      if field.static?
         @mutex.synchronize do
           if @memoized_values.include?(name)
             value = @memoized_values[name]

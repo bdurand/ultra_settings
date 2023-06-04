@@ -1,0 +1,107 @@
+* {box-sizing:border-box;}
+
+body {
+  font-family: sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: left;
+  color: #212529;
+  background-color: #ffffff;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #666;
+  color: white;
+  padding: 1rem;
+}
+
+h1 {
+  margin: 0;
+}
+
+.table {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 1rem;
+  border-collapse: collapse;
+}
+
+.table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table td, .table th {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, .03);
+}
+
+.tabs {
+  margin-top: 1rem;
+  padding-left: 1rem;
+}
+
+.tabs a {
+  display: inline-block;
+  background: none;
+  padding: 1rem;
+  text-decoration: none;
+  color: gray
+}
+
+.tabs a:active, .tabs a:hover, .tabs a:visited {
+  text-decoration: none;
+  color: gray
+}
+
+.tabs a:hover {
+  color: darkgray;
+}
+
+.tabs a.active {
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.tabs a.active, .tabs a.active:active, .tabs a.active:visited {
+  color: black;
+}
+
+.code {
+  font-family: monospace;
+  font-size: 0.9rem;
+  display: inline;
+}
+
+.checked {
+  color: green;
+}
+
+.current-source {
+  font-weight: 600;
+  color: blue;
+}
+
+.description {
+  font-size: 0.9rem;
+  color: gray;
+}
+
+.info {
+  margin: 1rem;
+}
+
+.error {
+  color: darkred;
+}
+
+.not-applicable {
+  color: #999;
+}
