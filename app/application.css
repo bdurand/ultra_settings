@@ -53,8 +53,10 @@ nav {
   display: inline;
 }
 
-.checked {
-  color: green;
+.static {
+  color: gray;
+  font-style: italic;
+  font-size: 0.9rem;
 }
 
 .current-source {

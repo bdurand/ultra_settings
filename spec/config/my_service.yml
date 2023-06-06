@@ -1,0 +1,6 @@
+shared:
+  timout: 5.0
+
+development:
+  host: localhost
+  port: 3000

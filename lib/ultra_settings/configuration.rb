@@ -17,16 +17,16 @@ module UltraSettings
 
     class_attribute :env_var_delimiter, instance_accessor: false, default: "_"
 
-    class_attribute :setting_delimiter, instance_accessor: false, default: "."
+    class_attribute :runtime_setting_delimiter, instance_accessor: false, default: "."
 
     class_attribute :env_var_upcase, instance_accessor: false, default: true
 
-    class_attribute :setting_upcase, instance_accessor: false, default: false
+    class_attribute :runtime_setting_upcase, instance_accessor: false, default: false
 
     class_attribute :yaml_config_directory, instance_accessor: false, default: "config"
 
     class << self
-      def define(name, type: :string, description: nil, default: nil, default_if: nil, static: false, setting: nil, env_var: nil, yaml_key: nil)
+      def field(name, type: :string, description: nil, default: nil, default_if: nil, static: false, runtime_setting: nil, env_var: nil, yaml_key: nil)
         name = name.to_s
         type = type.to_sym
         static = !!static
@@ -50,7 +50,7 @@ module UltraSettings
           default: default,
           default_if: default_if,
           env_var: construct_env_var(name, env_var),
-          setting_name: (static ? nil : construct_setting_name(name, setting)),
+          runtime_setting: (static ? nil : construct_runtime_setting(name, runtime_setting)),
           yaml_key: construct_yaml_key(name, yaml_key),
           static: static
         )
@@ -92,15 +92,15 @@ module UltraSettings
         @env_var_prefix
       end
 
-      def setting_prefix=(value)
-        @setting_prefix = value&.to_s
+      def runtime_setting_prefix=(value)
+        @runtime_setting_prefix = value&.to_s
       end
 
-      def setting_prefix
-        unless defined?(@setting_prefix)
-          @setting_prefix = default_setting_prefix
+      def runtime_setting_prefix
+        unless defined?(@runtime_setting_prefix)
+          @runtime_setting_prefix = default_runtime_setting_prefix
         end
-        @setting_prefix
+        @runtime_setting_prefix
       end
 
       def configuration_file=(value)
@@ -152,14 +152,15 @@ module UltraSettings
         prefix
       end
 
-      def default_setting_prefix
-        prefix = root_name.underscore.gsub("/", setting_delimiter) + setting_delimiter
-        prefix = prefix.upcase if setting_upcase
+      def default_runtime_setting_prefix
+        prefix = root_name.underscore.gsub("/", runtime_setting_delimiter) + runtime_setting_delimiter
+        prefix = prefix.upcase if runtime_setting_upcase
         prefix
       end
 
       def construct_env_var(name, env_var)
         return nil if env_var == false
+        return nil if environment_variables_disabled? && env_var.nil?
 
         env_var = nil if env_var == true
         if env_var.nil?
@@ -170,20 +171,22 @@ module UltraSettings
         env_var
       end
 
-      def construct_setting_name(name, setting_name)
-        return nil if setting_name == false
+      def construct_runtime_setting(name, runtime_setting)
+        return nil if runtime_setting == false
+        return nil if runtime_settings_disabled? && runtime_setting.nil?
 
-        setting_name = nil if setting_name == true
-        if setting_name.nil?
-          setting_name = "#{setting_prefix}#{name}"
-          setting_name = setting_name.upcase if setting_upcase
+        runtime_setting = nil if runtime_setting == true
+        if runtime_setting.nil?
+          runtime_setting = "#{runtime_setting_prefix}#{name}"
+          runtime_setting = runtime_setting.upcase if runtime_setting_upcase
         end
 
-        setting_name
+        runtime_setting
       end
 
       def construct_yaml_key(name, yaml_key)
         return nil if yaml_key == false
+        return nil if yaml_config_disabled? && yaml_key.nil?
 
         yaml_key = nil if yaml_key == true
         yaml_key = name if yaml_key.nil?
@@ -224,9 +227,9 @@ module UltraSettings
         raise UltraSettings::NonStaticValueError.new("Cannot access non-static field #{name} during initialization")
       end
 
-      env = ENV unless self.class.environment_variables_disabled?
-      settings = __runtime_settings__ unless field.static? || self.class.runtime_settings_disabled?
-      yaml_config = __yaml_config__ unless self.class.yaml_config_disabled?
+      env = ENV if field.env_var
+      settings = __runtime_settings__ if field.runtime_setting
+      yaml_config = __yaml_config__ if field.yaml_key
 
       value = field.value(yaml_config: yaml_config, env: env, settings: settings)
 

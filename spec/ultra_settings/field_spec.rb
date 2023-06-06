@@ -4,7 +4,7 @@ require_relative "../spec_helper"
 
 describe UltraSettings::Field do
   describe "value hierarchy" do
-    let(:field) { UltraSettings::Field.new(name: "test", env_var: "foo", setting_name: "foo", yaml_key: "foo") }
+    let(:field) { UltraSettings::Field.new(name: "test", env_var: "foo", runtime_setting: "foo", yaml_key: "foo") }
 
     it "pulls a value from the environemnt variables by default" do
       expect(field.value(env: {"foo" => "env"}, settings: {"foo" => "setting"}, yaml_config: {"foo" => "yaml"})).to eq("env")
@@ -34,7 +34,7 @@ describe UltraSettings::Field do
     end
 
     it "does not use the default value if the value is false" do
-      field = UltraSettings::Field.new(name: "foo", setting_name: "foo", type: :boolean, default: true)
+      field = UltraSettings::Field.new(name: "foo", runtime_setting: "foo", type: :boolean, default: true)
       expect(field.value(settings: {"foo" => false})).to be false
     end
 

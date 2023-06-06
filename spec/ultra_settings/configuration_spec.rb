@@ -7,8 +7,9 @@ describe UltraSettings::Configuration do
   let(:other_configuration) { OtherConfiguration.instance }
   let(:subclass_configuration) { SubclassConfiguration.instance }
   let(:namespace_configuration) { Test::NamespaceConfiguration.instance }
+  let(:disabled_configuration) { DisabledSourcesConfiguration.instance }
 
-  describe "define" do
+  describe "field" do
     it "defines a string field by default" do
       expect(configuration.foo).to eq "foo value"
     end
@@ -74,20 +75,13 @@ describe UltraSettings::Configuration do
       expect(configuration.all_disabled).to be_nil
     end
 
-    it "can disable the environment variables", env: {TEST_FOO: "env value", OTHER_CONFIG_FOO: "other value"} do
-      expect(configuration.foo).to eq "env value"
-      expect(other_configuration.foo).to eq "other value"
-      begin
-        TestConfiguration.environment_variables_disabled = true
-        expect(configuration.foo).to eq "foo value"
-        expect(other_configuration.foo).to eq "other value"
-      ensure
-        TestConfiguration.environment_variables_disabled = false
-      end
+    it "can disable the environment variables by default", env: {FOO: "foo", BAR: "bar"} do
+      expect(disabled_configuration.foo).to be_nil
+      expect(disabled_configuration.bar).to eq "bar"
     end
   end
 
-  describe "setting names" do
+  describe "runtim settings" do
     it "uses the class name as a setting prefix", settings: {"test.foo" => "setting test"} do
       expect(configuration.foo).to eq "setting test"
     end
@@ -104,24 +98,17 @@ describe UltraSettings::Configuration do
       expect(namespace_configuration.foo).to eq "val"
     end
 
-    it "uses the settings if setting_name is true", settings: {"test.all_enabled" => "test"} do
+    it "uses the settings if runtime_setting is true", settings: {"test.all_enabled" => "test"} do
       expect(configuration.all_enabled).to eq "test"
     end
 
-    it "does not use the settings if setting_name is false", settings: {"test.all_disabled" => "test"} do
+    it "does not use the settings if runtime_setting is false", settings: {"test.all_disabled" => "test"} do
       expect(configuration.all_disabled).to be_nil
     end
 
-    it "can disable the settings", settings: {"test.foo" => "settings value", "other_config_foo" => "other value"} do
-      expect(configuration.foo).to eq "settings value"
-      expect(other_configuration.foo).to eq "other value"
-      begin
-        TestConfiguration.runtime_settings_disabled = true
-        expect(configuration.foo).to eq "foo value"
-        expect(other_configuration.foo).to eq "other value"
-      ensure
-        TestConfiguration.runtime_settings_disabled = false
-      end
+    it "can disable the runtime settings by default", settings: {foo: "foo", bar: "bar"} do
+      expect(disabled_configuration.foo).to be_nil
+      expect(disabled_configuration.bar).to eq "bar"
     end
   end
 
@@ -147,16 +134,9 @@ describe UltraSettings::Configuration do
       expect(configuration.all_disabled).to be_nil
     end
 
-    it "can disable the YAML configuration" do
-      expect(configuration.foo).to eq "foo value"
-      expect(other_configuration.foo).to eq "2"
-      begin
-        TestConfiguration.yaml_config_disabled = true
-        expect(configuration.foo).to eq nil
-        expect(other_configuration.foo).to eq "2"
-      ensure
-        TestConfiguration.yaml_config_disabled = false
-      end
+    it "can disable the YAML config by default" do
+      expect(disabled_configuration.foo).to be_nil
+      expect(disabled_configuration.bar).to eq "bar"
     end
   end
 

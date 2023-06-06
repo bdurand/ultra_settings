@@ -9,7 +9,7 @@ module UltraSettings
     attr_reader :default
     attr_reader :default_if
     attr_reader :env_var
-    attr_reader :setting_name
+    attr_reader :runtime_setting
     attr_reader :yaml_key
 
     # @param name [String, Symbol] The name of the field.
@@ -18,7 +18,7 @@ module UltraSettings
     # @param default [Object] The default value of the field.
     # @param default_if [Proc] A proc that returns true if the default value should be used.
     # @param env_var [String, Symbol] The name of the environment variable to use for the field.
-    # @param setting_name [String, Symbol] The name of the setting to use for the field.
+    # @param runtime_setting [String, Symbol] The name of the setting to use for the field.
     # @param yaml_key [String, Symbol] The name of the YAML key to use for the field.
     def initialize(
       name:,
@@ -27,7 +27,7 @@ module UltraSettings
       default: nil,
       default_if: nil,
       env_var: nil,
-      setting_name: nil,
+      runtime_setting: nil,
       yaml_key: nil,
       static: false
     )
@@ -37,7 +37,7 @@ module UltraSettings
       @default = coerce_value(default).freeze
       @default_if = default_if
       @env_var = env_var&.to_s&.freeze
-      @setting_name = setting_name&.to_s&.freeze
+      @runtime_setting = runtime_setting&.to_s&.freeze
       @yaml_key = yaml_key&.to_s&.freeze
       @static = !!static
     end
@@ -67,7 +67,7 @@ module UltraSettings
       value = env[env_var] if env && env_var
       value = nil if value == ""
       if value.nil?
-        value = settings[setting_name] if settings && setting_name
+        value = settings[runtime_setting] if settings && runtime_setting
         value = nil if value == ""
         if value.nil?
           value = yaml_value(yaml_config)

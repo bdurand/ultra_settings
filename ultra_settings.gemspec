@@ -17,6 +17,8 @@ Gem::Specification.new do |spec|
     Gemfile
     Gemfile.lock
     Rakefile
+    config.ru
+    assets/
     bin/
     gemfiles/
     spec/

@@ -49,7 +49,6 @@
                 <th>Runtime Setting</th>
                 <th>YAML Key</th>
                 <th>Default</th>
-                <th>Static</th>
               </tr>
             </thead>
             <tbody>
@@ -65,6 +64,11 @@
                   </td>
                   <td>
                     <%= field.type %>
+                    <% if field.static? %>
+                      <div class="static">
+                        static
+                      </div>
+                    <% end %>
                   </td>
                     <td>
                     <% if field.env_var && !configuration.class.environment_variables_disabled? %>
@@ -74,8 +78,8 @@
                     <% end %>
                   </td>
                   <td>
-                    <% if field.setting_name && !configuration.class.runtime_settings_disabled? %>
-                      <pre class="code <%= 'current-source' if configuration.__source__(field.name) == :settings %>"><%= field.setting_name %></pre>
+                    <% if field.runtime_setting && !configuration.class.runtime_settings_disabled? %>
+                      <pre class="code <%= 'current-source' if configuration.__source__(field.name) == :settings %>"><%= field.runtime_setting %></pre>
                     <% else %>
                       <span class="not-applicable">n/a</span>
                     <% end %>
@@ -89,19 +93,12 @@
                   </td>
                   <td>
                     <span class="<%= 'current-source' if configuration.__source__(field.name) == :default %>">
-                      <% if field.default.is_a?(Time) %>
-                        <%= field.default.iso8601 %>
-                      <% elsif field.default.nil? %>
+                      <% if field.default.nil? %>
                         <em>nil</em>
                       <% else %>
-                        <%= field.default %>
+                        &#x2714;
                       <% end %>
                     </span>
-                  </td>
-                  <td>
-                    <% if field.static? %>
-                      <span class="checked">&#x2714;</span>
-                    <% end %>
                   </td>
                 </tr>
               <% end %>

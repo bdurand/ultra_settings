@@ -29,6 +29,29 @@ Settings are accessed through singleton classes that you define.
 
 ## Usage
 
+```ruby
+class MyServiceConfiguration < UltraSettings::Configuration
+  field :host, type: :string
+
+  field :port, type: :integer, default: 80
+
+  field :protocol, type: :string, default: "https"
+
+  field :timeout, type: :float, default: 1.0, default_if: ->(val) { val <= 0 }
+
+  field :auth_token,
+    type: :string,
+    env_var: "MY_SERVICE_TOKEN",
+    runtime_setting: false,
+    yaml_key: false,
+    description: "Bearer token for accessing the service"
+
+  def uri
+    URI("#{protocol}://#{host}:#{port}")
+  end
+end
+```
+
 ### Acessing settings
 ```ruby
 MyServiceConfiguration.instance.host
@@ -45,6 +68,10 @@ end
 
 Rails.application.settings.my_service.host
 ```
+
+### Web UI
+
+![Web UI](assets/web_ui.png)
 
 ## Installation
 
