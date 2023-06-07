@@ -30,6 +30,8 @@ require_relative "test_configs/test_configuration"
 require_relative "test_configs/other_configuration"
 require_relative "test_configs/namespace_configuration"
 require_relative "test_configs/subclass_configuration"
+require_relative "test_configs/disabled_sources_configuration"
+require_relative "test_configs/my_service_configuration"
 
 RSpec.configure do |config|
   config.order = :random

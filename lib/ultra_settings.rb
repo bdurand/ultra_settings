@@ -92,8 +92,8 @@ module UltraSettings
     # this is a period.
     #
     # @param value [String] The delimiter to use.
-    def setting_delimiter=(value)
-      Configuration.setting_delimiter = value.to_s
+    def runtime_setting_delimiter=(value)
+      Configuration.runtime_setting_delimiter = value.to_s
     end
 
     # Control if environment variable names should be upcased. By default
@@ -109,8 +109,8 @@ module UltraSettings
     #
     # @param value [Boolean] Whether or not to upcase setting names.
     # @return [void]
-    def setting_upcase=(value)
-      Configuration.setting_upcase = !!value
+    def runtime_setting_upcase=(value)
+      Configuration.runtime_setting_upcase = !!value
     end
 
     # Set the directory to use when loading YAML configuration files. By

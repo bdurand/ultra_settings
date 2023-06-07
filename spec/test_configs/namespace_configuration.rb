@@ -5,11 +5,11 @@ module Test
     self.env_var_delimiter = "__"
     self.env_var_upcase = false
 
-    self.setting_delimiter = "->"
-    self.setting_upcase = true
+    self.runtime_setting_delimiter = "->"
+    self.runtime_setting_upcase = true
 
     self.yaml_config_directory = "my_settings"
 
-    define :foo
+    field :foo
   end
 end

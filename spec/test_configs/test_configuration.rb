@@ -1,27 +1,27 @@
 # frozen_string_literal: true
 
 class TestConfiguration < UltraSettings::Configuration
-  define :static, static: true
+  field :static, static: true
 
-  define :foo, description: "An all purpose foo setting"
-  define :bar
-  define :baz
+  field :foo, description: "An all purpose foo setting"
+  field :bar
+  field :baz
 
-  define :symbol, type: :symbol
-  define :int, type: :integer
-  define :float, type: :float
-  define :bool, type: :boolean
-  define :time, type: :datetime
-  define :array, type: :array
-  define :string, type: :string
+  field :symbol, type: :symbol
+  field :int, type: :integer
+  field :float, type: :float
+  field :bool, type: :boolean
+  field :time, type: :datetime
+  field :array, type: :array
+  field :string, type: :string
 
-  define :default_int, type: :integer, default: "1"
-  define :default_bool, type: :boolean, default: "true"
+  field :default_int, type: :integer, default: "1"
+  field :default_bool, type: :boolean, default: "true"
 
-  define :env_var, env_var: "SPECIFIC_ENV_VAR"
-  define :setting, setting: "specific_setting"
-  define :yaml_key, yaml_key: "specific_key"
+  field :env_var, env_var: "SPECIFIC_ENV_VAR"
+  field :setting, runtime_setting: "specific_setting"
+  field :yaml_key, yaml_key: "specific_key"
 
-  define :all_enabled, env_var: true, setting: true, yaml_key: true
-  define :all_disabled, env_var: false, setting: false, yaml_key: false
+  field :all_enabled, env_var: true, runtime_setting: true, yaml_key: true
+  field :all_disabled, env_var: false, runtime_setting: false, yaml_key: false
 end
