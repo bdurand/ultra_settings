@@ -2,7 +2,6 @@
 
 require "bundler/setup"
 
-require "rails"
 require "climate_control"
 
 require_relative "../lib/ultra_settings"
@@ -10,18 +9,8 @@ require_relative "../lib/ultra_settings"
 require "super_settings/storage/test_storage"
 SuperSettings::Setting.storage = SuperSettings::Storage::TestStorage
 
-class TestApplication < Rails::Application
-end
-
-Rails.application = TestApplication.new
-Rails.application.config.eager_load = false
-Rails.env = "test"
-Rails.logger = Logger.new(File::NULL)
-Rails.application.initialize!
-
-def Rails.root
-  Pathname.new(__dir__)
-end
+UltraSettings.yaml_config_path = Pathname.new(__dir__) + "config"
+UltraSettings.yaml_config_env = "test"
 
 UltraSettings.add(:test)
 UltraSettings.add(:test2, "OtherConfiguration")

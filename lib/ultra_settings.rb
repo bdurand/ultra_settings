@@ -2,10 +2,22 @@
 
 require "super_settings"
 
+require "erb"
+require "yaml"
+require "time"
+require "pathname"
+require "singleton"
+
 require_relative "ultra_settings/configuration"
 require_relative "ultra_settings/field"
 require_relative "ultra_settings/rack_app"
 require_relative "ultra_settings/web_app"
+require_relative "ultra_settings/yaml_config"
+require_relative "ultra_settings/version"
+
+if defined?(Rails::Railtie)
+  require_relative "ultra_settings/railtie"
+end
 
 # This is the root namespace for UltraSettings. You can add configurations to
 # this namespace using the add method.
@@ -14,11 +26,10 @@ require_relative "ultra_settings/web_app"
 #   UltraSettings.add(:test)
 #   UltraSettings.test # => TestConfiguration.instance
 module UltraSettings
+  VALID_NAME__PATTERN = /\A[a-z_][a-zA-Z0-9_]*\z/
+
   @configurations = {}
   @mutex = Mutex.new
-
-  class NonStaticValueError < StandardError
-  end
 
   class << self
     # Adds a configuration to the root namespace. The configuration will be
@@ -31,12 +42,12 @@ module UltraSettings
     # @return [void]
     def add(name, klass = nil)
       name = name.to_s
-      unless name.match?(/\A[a-z_][a-zA-Z0-9_]*\z/)
+      unless name.match?(VALID_NAME__PATTERN)
         raise ArgementError.new("Invalid configuration name: #{name.inspect}")
       end
 
       class_name = klass&.to_s
-      class_name ||= "#{name.classify}Configuration"
+      class_name ||= "#{classify(name)}Configuration"
 
       @mutex.synchronize do
         @configurations[name] = class_name
@@ -79,6 +90,15 @@ module UltraSettings
       Configuration.yaml_config_disabled = !!value
     end
 
+    # Set the environment to use when loading YAML configuration files.
+    # In a Rails application this will be the current Rails environment.
+    # Defaults to "development".
+    #
+    # @param value [String] The environment name to use.
+    def yaml_config_env=(value)
+      Configuration.yaml_config_env = value
+    end
+
     # Set the delimiter to use when determining environment variable names.
     # By default this is an underscore.
     #
@@ -113,13 +133,14 @@ module UltraSettings
       Configuration.runtime_setting_upcase = !!value
     end
 
-    # Set the directory to use when loading YAML configuration files. By
-    # default this is the config directory in the Rails root.
+    # Set the directory to use when loading YAML configuration files.
+    # In a Rails application this will be the config directory.
+    # Otherwise it will be the current working directory.
     #
     # @param value [String, Pathname] The directory to use.
     # @return [void]
-    def yaml_config_directory=(value)
-      Configuration.yaml_config_directory = value.to_s
+    def yaml_config_path=(value)
+      Configuration.yaml_config_path = value.to_s
     end
 
     # Get the names of all of the configurations that have been added.
@@ -136,12 +157,13 @@ module UltraSettings
     def __load_config__(name, class_name)
       klass = @configurations[name]
 
-      if klass && !Rails.configuration.cache_classes
-        klass = nil if klass != class_name.constantize
+      # Hook for Rails development mode to reload the configuration class.
+      if klass && defined?(Rails.configuration.cache_classes) && !Rails.configuration.cache_classes
+        klass = nil if klass != constantize(class_name)
       end
 
-      unless klass
-        klass = class_name.constantize
+      if klass.is_a?(String)
+        klass = constantize(class_name)
         @mutex.synchronize do
           unless klass < Configuration
             raise TypeError.new("Configuration class #{class_name} does not inherit from UltraSettings::Configuration")
@@ -151,6 +173,16 @@ module UltraSettings
       end
 
       klass.instance
+    end
+
+    def classify(name)
+      name.split("_").map(&:capitalize).join.gsub("/", "::")
+    end
+
+    def constantize(class_name)
+      class_name.split("::").reduce(Object) do |mod, name|
+        mod.const_get(name)
+      end
     end
   end
 end

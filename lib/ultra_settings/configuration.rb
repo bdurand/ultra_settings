@@ -9,24 +9,8 @@ module UltraSettings
     ALLOWED_NAME_PATTERN = /\A[a-z_][a-zA-Z0-9_]*\z/
     ALLOWED_TYPES = [:string, :symbol, :integer, :float, :boolean, :datetime, :array].freeze
 
-    class_attribute :environment_variables_disabled, instance_accessor: false, default: false
-
-    class_attribute :runtime_settings_disabled, instance_accessor: false, default: false
-
-    class_attribute :yaml_config_disabled, instance_accessor: false, default: false
-
-    class_attribute :env_var_delimiter, instance_accessor: false, default: "_"
-
-    class_attribute :runtime_setting_delimiter, instance_accessor: false, default: "."
-
-    class_attribute :env_var_upcase, instance_accessor: false, default: true
-
-    class_attribute :runtime_setting_upcase, instance_accessor: false, default: false
-
-    class_attribute :yaml_config_directory, instance_accessor: false, default: "config"
-
     class << self
-      def field(name, type: :string, description: nil, default: nil, default_if: nil, static: false, runtime_setting: nil, env_var: nil, yaml_key: nil)
+      def field(name, type: :string, description: nil, default: nil, default_if: nil, static: nil, runtime_setting: nil, env_var: nil, yaml_key: nil)
         name = name.to_s
         type = type.to_sym
         static = !!static
@@ -105,7 +89,6 @@ module UltraSettings
 
       def configuration_file=(value)
         value = Pathname.new(value) if value.is_a?(String)
-        value = Rails.root + value if value && !value.absolute? && Rails.root
         @configuration_file = value
       end
 
@@ -113,14 +96,94 @@ module UltraSettings
         unless defined?(@configuration_file)
           @configuration_file = default_configuration_file
         end
-        @configuration_file
+        return nil? unless @configuration_file
+
+        path = @configuration_file
+        if path.relative? && yaml_config_path
+          path = yaml_config_path.join(path)
+        end
+        path.expand_path
+      end
+
+      def environment_variables_disabled=(value)
+        set_inheritable_class_attribute(:@environment_variables_disabled, !!value)
+      end
+
+      def environment_variables_disabled?
+        get_inheritable_class_attribute(:@environment_variables_disabled, false)
+      end
+
+      def runtime_settings_disabled=(value)
+        set_inheritable_class_attribute(:@runtime_settings_disabled, !!value)
+      end
+
+      def runtime_settings_disabled?
+        get_inheritable_class_attribute(:@runtime_settings_disabled, false)
+      end
+
+      def yaml_config_disabled=(value)
+        set_inheritable_class_attribute(:@yaml_config_disabled, !!value)
+      end
+
+      def yaml_config_disabled?
+        get_inheritable_class_attribute(:@yaml_config_disabled, false)
+      end
+
+      def env_var_delimiter=(value)
+        set_inheritable_class_attribute(:@env_var_delimiter, value.to_s)
+      end
+
+      def env_var_delimiter
+        get_inheritable_class_attribute(:@env_var_delimiter, "_")
+      end
+
+      def runtime_setting_delimiter=(value)
+        set_inheritable_class_attribute(:@runtime_setting_delimiter, value.to_s)
+      end
+
+      def runtime_setting_delimiter
+        get_inheritable_class_attribute(:@runtime_setting_delimiter, ".")
+      end
+
+      def env_var_upcase=(value)
+        set_inheritable_class_attribute(:@env_var_upcase, !!value)
+      end
+
+      def env_var_upcase?
+        get_inheritable_class_attribute(:@env_var_upcase, true)
+      end
+
+      def runtime_setting_upcase=(value)
+        set_inheritable_class_attribute(:@runtime_setting_upcase, !!value)
+      end
+
+      def runtime_setting_upcase?
+        get_inheritable_class_attribute(:@runtime_setting_upcase, false)
+      end
+
+      def yaml_config_path=(value)
+        value = Pathname.new(value) if value.is_a?(String)
+        value = value.expand_path if value&.relative?
+        set_inheritable_class_attribute(:@yaml_config_path, value)
+      end
+
+      def yaml_config_path
+        get_inheritable_class_attribute(:@yaml_config_path, nil)
+      end
+
+      def yaml_config_env=(value)
+        set_inheritable_class_attribute(:@yaml_config_env, value)
+      end
+
+      def yaml_config_env
+        get_inheritable_class_attribute(:@yaml_config_env, "development")
       end
 
       def load_yaml_config
         return nil unless configuration_file
-        return nil unless configuration_file.exist?
+        return nil unless configuration_file.exist? && configuration_file.file?
 
-        Rails.application.config_for(configuration_file)
+        YamlConfig.new(configuration_file, yaml_config_env).to_h
       end
 
       private
@@ -137,24 +200,39 @@ module UltraSettings
       end
 
       def root_name
-        name.sub(/Configuration\z/, "")
+        name.sub(/Configuration\z/, "").split("::").collect do |part|
+          part.gsub(/(.)([A-Z])/, '\1_\2').downcase
+        end.join("/")
+      end
+
+      def set_inheritable_class_attribute(name, value)
+        instance_variable_set(name, value)
+      end
+
+      def get_inheritable_class_attribute(name, default = nil)
+        if instance_variable_defined?(name)
+          instance_variable_get(name)
+        elsif self != Configuration
+          superclass.send(:get_inheritable_class_attribute, name, default)
+        else
+          default
+        end
       end
 
       def default_configuration_file
-        path = Pathname.new(yaml_config_directory)
-        path = Rails.root + path if defined?(Rails) && !path.absolute?
-        path.join(*"#{root_name.underscore}.yml".split("/"))
+        path = Pathname.new(yaml_config_path)
+        path.join(*"#{root_name}.yml".split("/"))
       end
 
       def default_env_var_prefix
-        prefix = root_name.underscore.gsub("/", env_var_delimiter) + env_var_delimiter
-        prefix = prefix.upcase if env_var_upcase
+        prefix = root_name.gsub("/", env_var_delimiter) + env_var_delimiter
+        prefix = prefix.upcase if env_var_upcase?
         prefix
       end
 
       def default_runtime_setting_prefix
-        prefix = root_name.underscore.gsub("/", runtime_setting_delimiter) + runtime_setting_delimiter
-        prefix = prefix.upcase if runtime_setting_upcase
+        prefix = root_name.gsub("/", runtime_setting_delimiter) + runtime_setting_delimiter
+        prefix = prefix.upcase if runtime_setting_upcase?
         prefix
       end
 
@@ -163,9 +241,10 @@ module UltraSettings
         return nil if environment_variables_disabled? && env_var.nil?
 
         env_var = nil if env_var == true
+
         if env_var.nil?
           env_var = "#{env_var_prefix}#{name}"
-          env_var = env_var.upcase if env_var_upcase
+          env_var = env_var.upcase if env_var_upcase?
         end
 
         env_var
@@ -176,9 +255,10 @@ module UltraSettings
         return nil if runtime_settings_disabled? && runtime_setting.nil?
 
         runtime_setting = nil if runtime_setting == true
+
         if runtime_setting.nil?
           runtime_setting = "#{runtime_setting_prefix}#{name}"
-          runtime_setting = runtime_setting.upcase if runtime_setting_upcase
+          runtime_setting = runtime_setting.upcase if runtime_setting_upcase?
         end
 
         runtime_setting
@@ -223,10 +303,6 @@ module UltraSettings
         return @memoized_values[name]
       end
 
-      if !Rails.application.initialized? && !field.static?
-        raise UltraSettings::NonStaticValueError.new("Cannot access non-static field #{name} during initialization")
-      end
-
       env = ENV if field.env_var
       settings = __runtime_settings__ if field.runtime_setting
       yaml_config = __yaml_config__ if field.yaml_key
@@ -246,12 +322,12 @@ module UltraSettings
       value
     end
 
-    def __runtime_settings__
-      SuperSettings
-    end
-
     def __yaml_config__
       @yaml_config ||= (self.class.load_yaml_config || {})
+    end
+
+    def __runtime_settings__
+      SuperSettings
     end
   end
 end
