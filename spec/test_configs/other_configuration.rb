@@ -3,7 +3,7 @@
 class OtherConfiguration < UltraSettings::Configuration
   self.env_var_prefix = "OTHER_CONFIG_"
   self.runtime_setting_prefix = "other_config_"
-  self.configuration_file = "config/other_config.yml"
+  self.configuration_file = "other_config.yml"
 
   field :foo
   field :bar

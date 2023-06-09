@@ -26,10 +26,7 @@ jobs:
         include:
           - ruby: "ruby"
             standardrb: true
-          - ruby: "3.1"
-            appraisal: "rails_7"
           - ruby: "2.5"
-            appraisal: "rails_6"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Ruby ${{ matrix.ruby }}

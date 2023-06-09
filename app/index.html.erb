@@ -35,7 +35,7 @@
             <div class="info">
               YAML File:
               <span class="code <%= 'error' unless configuration.class.configuration_file %>">
-                <%= configuration.class.configuration_file.to_s.sub(/\A#{Regexp.escape(Rails.root.to_s)}\//, "") %>
+                <%= configuration.class.configuration_file.to_s.sub(/\A#{Regexp.escape(UltraSettings::Configuration.yaml_config_path.to_s)}\//, "") %>
               </span>
             </div>
           <% end %>

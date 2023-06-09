@@ -4,7 +4,7 @@ Gem::Specification.new do |spec|
   spec.authors = ["Brian Durand"]
   spec.email = ["bbdurand@gmail.com"]
 
-  spec.summary = "Unified configuration for Rails applications that allows for configuration via environment variables, YAML files, and dynamic runtime setting."
+  spec.summary = "Unified application configuration that allows for configuration via environment variables, YAML files, and dynamic runtime setting."
 
   spec.homepage = "https://github.com/bdurand/ultra_settings"
   spec.license = "MIT"
@@ -31,7 +31,6 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 2.5"
 
-  spec.add_dependency "rails", ">= 6"
   spec.add_dependency "super_settings"
 
   spec.add_development_dependency "bundler"

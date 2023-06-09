@@ -8,6 +8,7 @@ describe UltraSettings::Configuration do
   let(:subclass_configuration) { SubclassConfiguration.instance }
   let(:namespace_configuration) { Test::NamespaceConfiguration.instance }
   let(:disabled_configuration) { DisabledSourcesConfiguration.instance }
+  let(:config_path) { UltraSettings::Configuration.yaml_config_path }
 
   describe "field" do
     it "defines a string field by default" do
@@ -81,7 +82,7 @@ describe UltraSettings::Configuration do
     end
   end
 
-  describe "runtim settings" do
+  describe "runtime settings" do
     it "uses the class name as a setting prefix", settings: {"test.foo" => "setting test"} do
       expect(configuration.foo).to eq "setting test"
     end
@@ -122,7 +123,7 @@ describe UltraSettings::Configuration do
     end
 
     it "can override the default YAML directory" do
-      path = Rails.root.join("my_settings", "test", "namespace.yml")
+      path = config_path.join("my_settings", "test", "namespace.yml")
       expect(Test::NamespaceConfiguration.configuration_file).to eq path
     end
 
@@ -142,11 +143,11 @@ describe UltraSettings::Configuration do
 
   describe "configuration file" do
     it "gets the file path from the class name" do
-      expect(TestConfiguration.configuration_file).to eq Rails.root.join("config", "test.yml")
+      expect(TestConfiguration.configuration_file).to eq config_path.join("test.yml")
     end
 
     it "can override the file path" do
-      expect(OtherConfiguration.configuration_file).to eq Rails.root.join("config", "other_config.yml")
+      expect(OtherConfiguration.configuration_file).to eq config_path.join("other_config.yml")
     end
   end
 
@@ -165,14 +166,6 @@ describe UltraSettings::Configuration do
     it "can define new fields" do
       expect(subclass_configuration).to respond_to(:sub)
       expect(configuration).to_not respond_to(:sub)
-    end
-  end
-
-  describe "during initialization" do
-    it "raises an error when referencing a non-static value during initialization" do
-      allow(Rails.application).to receive(:initialized?).and_return(false)
-      expect { configuration.static }.to_not raise_error
-      expect { configuration.foo }.to raise_error(UltraSettings::NonStaticValueError)
     end
   end
 end

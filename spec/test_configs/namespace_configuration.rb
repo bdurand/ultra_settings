@@ -8,7 +8,7 @@ module Test
     self.runtime_setting_delimiter = "->"
     self.runtime_setting_upcase = true
 
-    self.yaml_config_directory = "my_settings"
+    self.yaml_config_path = File.join(__dir__, "..", "config", "my_settings", "")
 
     field :foo
   end

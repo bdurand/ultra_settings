@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "erb"
-
 module UltraSettings
   class RackApp
     def initialize(app)

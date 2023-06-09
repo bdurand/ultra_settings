@@ -1,9 +1,9 @@
-# Unified Rails Configuration :construction:
+# Unified Application Configuration :construction:
 
 [![Continuous Integration](https://github.com/bdurand/ultra_settings/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/bdurand/ultra_settings/actions/workflows/continuous_integration.yml)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
-This gem provides a method for managing settings in a Rails application. By using it you can write safer and cleaner code in your application and have a better method for documenting your various settings.
+This gem provides a method for managing application settings. By using it you can write safer and cleaner code in your application and have a better method for documenting your various settings.
 
 It allows you to define a hierarchy with three layers of settings:
 
