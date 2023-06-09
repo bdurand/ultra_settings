@@ -139,6 +139,10 @@ describe UltraSettings::Configuration do
       expect(disabled_configuration.foo).to be_nil
       expect(disabled_configuration.bar).to eq "bar"
     end
+
+    it "flattens the YAML config so nested values can be referenced with a string key" do
+      expect(other_configuration.baz).to eq "nested value"
+    end
   end
 
   describe "configuration file" do
