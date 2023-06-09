@@ -105,9 +105,9 @@ module UltraSettings
       when :float
         value.is_a?(Float) ? value : value.to_s&.to_f
       when :boolean
-        SuperSettings::Coerce.boolean(value)
+        Coerce.boolean(value)
       when :datetime
-        SuperSettings::Coerce.time(value)
+        Coerce.time(value)
       when :array
         Array(value).map(&:to_s)
       when :symbol

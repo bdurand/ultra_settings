@@ -6,9 +6,6 @@ require "climate_control"
 
 require_relative "../lib/ultra_settings"
 
-require "super_settings/storage/test_storage"
-SuperSettings::Setting.storage = SuperSettings::Storage::TestStorage
-
 UltraSettings.yaml_config_path = Pathname.new(__dir__) + "config"
 UltraSettings.yaml_config_env = "test"
 
@@ -21,6 +18,19 @@ require_relative "test_configs/namespace_configuration"
 require_relative "test_configs/subclass_configuration"
 require_relative "test_configs/disabled_sources_configuration"
 require_relative "test_configs/my_service_configuration"
+
+class TestRuntimeSetings
+  def initialize(hash = {})
+    @settings = {}
+    hash.each do |key, value|
+      @settings[key.to_s] = value
+    end
+  end
+
+  def [](name)
+    @settings[name]
+  end
+end
 
 RSpec.configure do |config|
   config.order = :random
@@ -36,21 +46,13 @@ RSpec.configure do |config|
   end
 
   config.around do |example|
-    SuperSettings::Storage::TestStorage.clear
-    SuperSettings.clear_cache
-
     if example.metadata[:settings].is_a?(Hash)
-      previous = {}
+      settings = TestRuntimeSetings.new(example.metadata[:settings])
       begin
-        example.metadata[:settings].each do |name, value|
-          previous[name] = value
-          SuperSettings.set(name, value)
-        end
+        UltraSettings.runtime_settings = settings
         example.run
       ensure
-        previous.each do |name, value|
-          SuperSettings.set(name, value)
-        end
+        UltraSettings.runtime_settings = nil
       end
     else
       example.run

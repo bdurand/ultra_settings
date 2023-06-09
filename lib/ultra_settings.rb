@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "super_settings"
-
 require "erb"
 require "yaml"
 require "time"
@@ -9,6 +7,7 @@ require "pathname"
 require "singleton"
 
 require_relative "ultra_settings/configuration"
+require_relative "ultra_settings/coerce"
 require_relative "ultra_settings/field"
 require_relative "ultra_settings/rack_app"
 require_relative "ultra_settings/web_app"
@@ -141,6 +140,12 @@ module UltraSettings
     # @return [void]
     def yaml_config_path=(value)
       Configuration.yaml_config_path = value.to_s
+    end
+
+    attr_writer :runtime_settings
+
+    def __runtime_settings__
+      @runtime_settings ||= nil
     end
 
     # Get the names of all of the configurations that have been added.
