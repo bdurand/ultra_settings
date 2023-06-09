@@ -12,9 +12,6 @@ Bundler.setup(:default)
 
 require_relative "lib/ultra_settings"
 
-require "super_settings/storage/test_storage"
-SuperSettings::Setting.storage = SuperSettings::Storage::TestStorage
-
 require_relative "spec/test_configs/test_configuration"
 require_relative "spec/test_configs/other_configuration"
 require_relative "spec/test_configs/namespace_configuration"
@@ -22,6 +19,7 @@ require_relative "spec/test_configs/subclass_configuration"
 require_relative "spec/test_configs/my_service_configuration"
 
 UltraSettings.yaml_config_path = File.join(__dir__, "spec", "config")
+UltraSettings.runtime_settings = {}
 UltraSettings.add(:test)
 UltraSettings.add(:other)
 UltraSettings.add(:namespace, "Test::NamespaceConfiguration")

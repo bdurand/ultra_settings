@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "singleton"
-
 module UltraSettings
   class Configuration
     include Singleton
@@ -290,7 +288,7 @@ module UltraSettings
 
     def __source__(name)
       field = self.class.send(:defined_fields)[name]
-      field.source(env: ENV, settings: __runtime_settings__, yaml_config: __yaml_config__)
+      field.source(env: ENV, settings: UltraSettings.__runtime_settings__, yaml_config: __yaml_config__)
     end
 
     private
@@ -304,7 +302,7 @@ module UltraSettings
       end
 
       env = ENV if field.env_var
-      settings = __runtime_settings__ if field.runtime_setting
+      settings = UltraSettings.__runtime_settings__ if field.runtime_setting
       yaml_config = __yaml_config__ if field.yaml_key
 
       value = field.value(yaml_config: yaml_config, env: env, settings: settings)
@@ -324,10 +322,6 @@ module UltraSettings
 
     def __yaml_config__
       @yaml_config ||= (self.class.load_yaml_config || {})
-    end
-
-    def __runtime_settings__
-      SuperSettings
     end
   end
 end
