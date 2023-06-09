@@ -7,4 +7,5 @@ class OtherConfiguration < UltraSettings::Configuration
 
   field :foo
   field :bar
+  field :baz, yaml_key: "nested.baz"
 end

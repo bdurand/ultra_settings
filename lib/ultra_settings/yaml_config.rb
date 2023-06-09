@@ -20,13 +20,28 @@ module UltraSettings
         yaml = ERB.new(yaml).result
       end
 
-      YAML.safe_load(yaml, [Symbol, Date, Time], [], true)
+      hash = YAML.load(yaml) # rubocop:disable Security/YAMLLoad
+      hash = {} unless hash.is_a?(Hash)
+      hash
     end
 
     def environment_config(yaml, environment)
-      shared = yaml.fetch("shared", {})
-      env = yaml.fetch(environment, {})
+      shared = flatten_hash(yaml.fetch("shared", {}))
+      env = flatten_hash(yaml.fetch(environment, {}))
       shared.merge(env)
+    end
+
+    def flatten_hash(hash, prefix = nil)
+      hash.each_with_object({}) do |(key, value), result|
+        key = key.to_s
+        key = "#{prefix}.#{key}" if prefix
+
+        if value.is_a?(Hash)
+          result.merge!(flatten_hash(value, key))
+        else
+          result[key] = value
+        end
+      end
     end
   end
 end
