@@ -8,10 +8,12 @@ This gem provides a method for managing application settings. By using it you ca
 It allows you to define a hierarchy with three layers of settings:
 
 1. Environment variables
-2. Runtime settings (i.e. settings updatable from within the running application)
+2. Runtime settings (i.e. settings updatable from within the running application). There is a companion gem [super_settings](https://github.com/bdurand/super_settings) that can be used to provide runtime settings.
 3. YAML configuration files
 
 Settings at a higher level will override those set at a lower level. So, for instance, you can override values set in a YAML file with environment variables or runtime settings.
+
+There is a companion gem [ultra_settings](https://github.com/bdurand/ultra_settings) that can be used to integrate SuperSettings into a combined configuration system alongside YAML files and environment variables.
 
 It also provides type casting for setting values so you can always be assured that values are returned as a predetermined class. The supported types are:
 
