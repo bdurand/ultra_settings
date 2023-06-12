@@ -81,10 +81,6 @@ module UltraSettings
       end
 
       value = coerce_value(value).freeze
-      if use_default?(value)
-        value = @default
-        source = :default
-      end
 
       [value, source]
     end
@@ -114,14 +110,6 @@ module UltraSettings
         value.to_s.to_sym
       else
         value.to_s
-      end
-    end
-
-    def use_default?(value)
-      if value && @default_if
-        @default_if.call(value)
-      else
-        value.nil?
       end
     end
   end

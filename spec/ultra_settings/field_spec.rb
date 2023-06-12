@@ -23,46 +23,14 @@ describe UltraSettings::Field do
 
     it "does not use the YAML config if it does not exist" do
       expect(field.value).to be_nil
-      expect(field.source).to eq(:default)
+      expect(field.source).to eq(nil)
     end
   end
 
   describe "default" do
-    it "uses the default value if no other value is present" do
-      field = UltraSettings::Field.new(name: "foo", env_var: "foo", default: "bar")
-      expect(field.value).to eq("bar")
-    end
-
-    it "does not use the default value if the value is false" do
-      field = UltraSettings::Field.new(name: "foo", runtime_setting: "foo", type: :boolean, default: true)
-      expect(field.value(settings: {"foo" => false})).to be false
-    end
-
-    it "uses the default value if the value is an empty string" do
-      field = UltraSettings::Field.new(name: "foo", env_var: "foo", default: "bar")
-      expect(field.value(env: {"foo" => ""})).to eq("bar")
-    end
-
     it "coerces the default value to the specified type" do
-      field = UltraSettings::Field.new(name: "foo", env_var: "foo", type: :integer, default: "1")
-      expect(field.value).to eq 1
-    end
-  end
-
-  describe "default_if" do
-    it "uses the default only if the default_if block returns true" do
-      field = UltraSettings::Field.new(name: "foo", env_var: "foo", type: :integer, default: "1", default_if: ->(val) { val < 0 })
-      expect(field.value(env: {"foo" => "-1"})).to eq 1
-    end
-
-    it "does not use the default if the default_if block returns false" do
-      field = UltraSettings::Field.new(name: "foo", env_var: "foo", type: :integer, default: "1", default_if: ->(val) { val < 0 })
-      expect(field.value(env: {"foo" => "2"})).to eq 2
-    end
-
-    it "always uses the default if the default_if block is not present" do
-      field = UltraSettings::Field.new(name: "foo", env_var: "foo", type: :integer, default: "1", default_if: ->(val) { val < 0 })
-      expect(field.value(env: {"foo" => ""})).to eq 1
+      field = UltraSettings::Field.new(name: "foo", type: :integer, default: "1")
+      expect(field.default).to eq 1
     end
   end
 

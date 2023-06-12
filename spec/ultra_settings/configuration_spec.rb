@@ -34,6 +34,26 @@ describe UltraSettings::Configuration do
       expect(configuration.default_bool).to eq true
     end
 
+    it "defines a field with a Proc condition for using the default" do
+      expect(configuration.default_if_proc).to eq 1
+      ClimateControl.modify(TEST_DEFAULT_IF_PROC: "2") do
+        expect(configuration.default_if_proc).to eq 2
+      end
+      ClimateControl.modify(TEST_DEFAULT_IF_PROC: "-3") do
+        expect(configuration.default_if_proc).to eq 1
+      end
+    end
+
+    it "defines a field with a method condition for using the default" do
+      expect(configuration.default_if_method).to eq 1
+      ClimateControl.modify(TEST_DEFAULT_IF_METHOD: "2") do
+        expect(configuration.default_if_method).to eq 2
+      end
+      ClimateControl.modify(TEST_DEFAULT_IF_METHOD: "-3") do
+        expect(configuration.default_if_method).to eq 1
+      end
+    end
+
     it "defines a static field that cannot change", env: {TEST_STATIC: "original value"} do
       configuration.instance_variable_get(:@memoized_values).clear
       expect(configuration.static).to eq "original value"
