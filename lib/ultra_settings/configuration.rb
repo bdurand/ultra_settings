@@ -21,8 +21,8 @@ module UltraSettings
           raise ArgumentError.new("Invalid type: #{type.inspect}")
         end
 
-        unless default_if.nil? || default_if.is_a?(Proc)
-          raise ArgumentError.new("default_if must be a Proc")
+        unless default_if.nil? || default_if.is_a?(Proc) || default_if.is_a?(Symbol)
+          raise ArgumentError.new("default_if must be a Proc or Symbol")
         end
 
         defined_fields[name] = Field.new(
@@ -288,7 +288,8 @@ module UltraSettings
 
     def __source__(name)
       field = self.class.send(:defined_fields)[name]
-      field.source(env: ENV, settings: UltraSettings.__runtime_settings__, yaml_config: __yaml_config__)
+      source = field.source(env: ENV, settings: UltraSettings.__runtime_settings__, yaml_config: __yaml_config__)
+      source || :default
     end
 
     private
@@ -307,6 +308,10 @@ module UltraSettings
 
       value = field.value(yaml_config: yaml_config, env: env, settings: settings)
 
+      if __use_default?(value, field.default_if)
+        value = field.default
+      end
+
       if field.static?
         @mutex.synchronize do
           if @memoized_values.include?(name)
@@ -318,6 +323,22 @@ module UltraSettings
       end
 
       value
+    end
+
+    def __use_default?(value, default_if)
+      return true if value.nil?
+
+      if default_if.is_a?(Proc)
+        default_if.call(value)
+      elsif default_if.is_a?(Symbol)
+        begin
+          send(default_if, value)
+        rescue NoMethodError
+          raise NoMethodError, "default_if method `#{default_if}' not defined for #{self.class.name}"
+        end
+      else
+        false
+      end
     end
 
     def __yaml_config__
