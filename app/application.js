@@ -1,17 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
   const menu = document.getElementById("config-selector");
 
-  menu.addEventListener("change", (e) => {
+  showCurrentConfiguration = () => {
     const selectedId = menu.options[menu.selectedIndex].value;
 
-    document.querySelectorAll(".configuration").forEach((configuration) => {
+    document.querySelectorAll(".ultra-settings-configuration").forEach((configuration) => {
       if (configuration.id === selectedId) {
         configuration.style.display = "block";
       } else {
         configuration.style.display = "none";
       }
     });
-  });
+  }
 
-  document.querySelector(".configuration").style.display = "block";
+  menu.addEventListener("change", showCurrentConfiguration);
+
+  showCurrentConfiguration();
 });

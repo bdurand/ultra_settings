@@ -1,111 +1,93 @@
-<!DOCTYPE html>
-
-<html>
-  <head>
-    <title>Application Settings</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style type="text/css">
-      <%= @css %>
-    </style>
-    <script>
-      <%= @javascript %>
-    </script>
-  </head>
-  <body>
-    <header>
-      <h1>Application Settings</h1>
-    </header>
-    <main>
-      <nav>
-        <form onsubmit="return false">
-          <select size="1" id="config-selector">
-            <% UltraSettings.__configuration_names__.sort.each do |name| %>
-              <option value="config-<%= name %>"><%= name %></option>
-            <% end %>
-          </select>
-        </form>
-      </nav>
-
+<div class="ultra-settings-nav">
+  <form onsubmit="return false">
+    <select class="ultra-settings-select" size="1" id="config-selector">
       <% UltraSettings.__configuration_names__.sort.each do |name| %>
-        <% configuration = UltraSettings.send(name) %>
-
-        <div class="configuration" id="config-<%= name %>" style="display:none;">
-          <% unless configuration.class.yaml_config_disabled? %>
-            <div class="info">
-              YAML File:
-              <span class="code <%= 'error' unless configuration.class.configuration_file %>">
-                <%= configuration.class.configuration_file.to_s.sub(/\A#{Regexp.escape(UltraSettings::Configuration.yaml_config_path.to_s)}\//, "") %>
-              </span>
-            </div>
-          <% end %>
-
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Environment Variable</th>
-                <th>Runtime Setting</th>
-                <th>YAML Key</th>
-                <th>Default</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% configuration.class.fields.sort_by(&:name).each do |field| %>
-                <tr>
-                  <td>
-                    <%= field.name %>
-                    <% unless field.description.to_s.empty? %>
-                      <div class="description">
-                        <%= field.description %>
-                      </div>
-                    <% end %>
-                  </td>
-                  <td>
-                    <%= field.type %>
-                    <% if field.static? %>
-                      <div class="static">
-                        static
-                      </div>
-                    <% end %>
-                  </td>
-                    <td>
-                    <% if field.env_var && !configuration.class.environment_variables_disabled? %>
-                      <pre class="code <%= 'current-source' if configuration.__source__(field.name) == :env %>"><%= field.env_var %></pre>
-                    <% else %>
-                      <span class="not-applicable">n/a</span>
-                    <% end %>
-                  </td>
-                  <td>
-                    <% if field.runtime_setting && !configuration.class.runtime_settings_disabled? %>
-                      <pre class="code <%= 'current-source' if configuration.__source__(field.name) == :settings %>"><%= field.runtime_setting %></pre>
-                    <% else %>
-                      <span class="not-applicable">n/a</span>
-                    <% end %>
-                  </td>
-                  <td>
-                    <% if field.yaml_key && !configuration.class.yaml_config_disabled? %>
-                      <pre class="code <%= 'current-source' if configuration.__source__(field.name) == :yaml %>"><%= field.yaml_key %></pre>
-                    <% else %>
-                      <span class="not-applicable">n/a</span>
-                    <% end %>
-                  </td>
-                  <td>
-                    <span class="<%= 'current-source' if configuration.__source__(field.name) == :default %>">
-                      <% if field.default.nil? %>
-                        <em>nil</em>
-                      <% else %>
-                        &#x2714;
-                      <% end %>
-                    </span>
-                  </td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
+        <option value="config-<%= name %>"><%= name %></option>
       <% end %>
-    </main>
-  </body>
-</html>
+    </select>
+  </form>
+</div>
+
+<% UltraSettings.__configuration_names__.sort.each do |name| %>
+  <% configuration = UltraSettings.send(name) %>
+
+  <div class="ultra-settings-configuration" id="config-<%= name %>" style="display:none;">
+    <% unless configuration.class.yaml_config_disabled? %>
+      <div class="ultra-settings-info">
+        YAML File:
+        <span class="ultra-settings-code <%= 'ultra-settings-error' unless configuration.class.configuration_file %>">
+          <%= configuration.class.configuration_file.to_s.sub(/\A#{Regexp.escape(UltraSettings::Configuration.yaml_config_path.to_s)}\//, "") %>
+        </span>
+      </div>
+    <% end %>
+
+    <table class="ultra-settings-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Environment Variable</th>
+          <th>Runtime Setting</th>
+          <th>YAML Key</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% configuration.class.fields.sort_by(&:name).each do |field| %>
+          <tr>
+            <td>
+              <%= field.name %>
+              <% unless field.description.to_s.empty? %>
+                <div class="ultra-settings-description">
+                  <%= field.description %>
+                </div>
+              <% end %>
+            </td>
+            <td>
+              <%= field.type %>
+              <% if field.static? %>
+                <div class="ultra-settings-static">
+                  static
+                </div>
+              <% end %>
+            </td>
+              <td>
+              <% if field.env_var && !configuration.class.environment_variables_disabled? %>
+                <pre class="ultra-settings-code <%= 'ultra-settings-current-source' if configuration.__source__(field.name) == :env %>"><%= field.env_var %></pre>
+              <% else %>
+                <span class="ultra-settings-not-applicable">n/a</span>
+              <% end %>
+            </td>
+            <td>
+              <% if field.runtime_setting && !configuration.class.runtime_settings_disabled? %>
+                <pre class="ultra-settings-code <%= 'ultra-settings-current-source' if configuration.__source__(field.name) == :settings %>"><%= field.runtime_setting %></pre>
+              <% else %>
+                <span class="ultra-settings-not-applicable">n/a</span>
+              <% end %>
+            </td>
+            <td>
+              <% if field.yaml_key && !configuration.class.yaml_config_disabled? %>
+                <pre class="ultra-settings-code <%= 'ultra-settings-current-source' if configuration.__source__(field.name) == :yaml %>"><%= field.yaml_key %></pre>
+              <% else %>
+                <span class="ultra-settings-not-applicable">n/a</span>
+              <% end %>
+            </td>
+            <td>
+              <span class="<%= 'ultra-settings-current-source' if configuration.__source__(field.name) == :default %>">
+                <% if field.default.nil? %>
+                  <em>nil</em>
+                <% else %>
+                  &#x2714;
+                <% end %>
+              </span>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
+
+<script>
+  <%= @javascript %>
+</script>

@@ -10,7 +10,7 @@ require_relative "ultra_settings/configuration"
 require_relative "ultra_settings/coerce"
 require_relative "ultra_settings/field"
 require_relative "ultra_settings/rack_app"
-require_relative "ultra_settings/web_app"
+require_relative "ultra_settings/web_view"
 require_relative "ultra_settings/yaml_config"
 require_relative "ultra_settings/version"
 
@@ -184,7 +184,7 @@ module UltraSettings
       # Use the Rails classify method if it is available since it will
       # handle custom inflections.
       if name.respond_to?(:classify)
-        return name.classify
+        name.classify
       else
         name.split("_").map(&:capitalize).join.gsub("/", "::")
       end

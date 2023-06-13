@@ -1,88 +1,69 @@
-* {box-sizing:border-box;}
-
-body {
-  font-family: sans-serif;
-  font-size: 1rem;
-  line-height: 1.5;
-  text-align: left;
-  color: #212529;
-  background-color: #ffffff;
-  margin: 0;
-  padding: 0;
+.ultra-settings-nav {
+  margin-bottom: 1rem;
 }
 
-header {
-  background-color: #666;
-  color: white;
-  padding: 1rem;
-}
-
-h1 {
+.ultra-settings-nav form {
   margin: 0;
 }
 
-nav {
-  margin: 1rem;
-}
-
-.table {
+.ultra-settings-table {
   width: 100%;
   max-width: 100%;
   margin-bottom: 1rem;
   border-collapse: collapse;
 }
 
-.table thead th {
+.ultra-settings-table thead th {
   vertical-align: bottom;
   border-bottom: 2px solid #dee2e6;
 }
 
-.table td, .table th {
+.ultra-settings-table td, .ultra-settings-table th {
   padding: 0.75rem;
   vertical-align: top;
   border-top: 1px solid #dee2e6;
 }
 
-.table-striped tbody tr:nth-of-type(odd) {
+.ultra-settings-table tbody tr:nth-of-type(odd) {
   background-color: rgba(0, 0, 0, .03);
 }
 
-.code {
+.ultra-settings-code {
   font-family: monospace;
   font-size: 0.9rem;
   display: inline;
 }
 
-.static {
+.ultra-settings-static {
   color: gray;
   font-style: italic;
   font-size: 0.9rem;
 }
 
-.current-source {
+.ultra-settings-current-source {
   font-weight: 600;
   color: blue;
 }
 
-.description {
+.ultra-settings-description {
   font-size: 0.9rem;
   color: gray;
 }
 
-.info {
-  margin: 1rem;
+.ultra-settings-info {
+  margin-bottom: 1rem;
 }
 
-.error {
+.ultra-settings-error {
   color: darkred;
 }
 
-.not-applicable {
+.ultra-settings-not-applicable {
   color: #999;
   font-style: italic;
 }
 
-select {
+.ultra-settings-select {
   display: inline-block;
   padding: .375rem 2.25rem .375rem .75rem;
   -moz-padding-start: calc(0.75rem - 3px);

@@ -1,0 +1,27 @@
+* {box-sizing:border-box;}
+
+body {
+  font-family: sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: left;
+  color: #212529;
+  background-color: #ffffff;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #666;
+  color: white;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+header h1 {
+  margin: 0;
+}
+
+main {
+  margin: 1rem;
+}

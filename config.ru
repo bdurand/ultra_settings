@@ -25,8 +25,4 @@ UltraSettings.add(:other)
 UltraSettings.add(:namespace, "Test::NamespaceConfiguration")
 UltraSettings.add(:my_service, "MyServiceConfiguration")
 
-app = lambda do |env|
-  [404, {"Content-Type" => "text/plain"}, ["Not Found"]]
-end
-
-run UltraSettings::RackApp.new(app)
+run UltraSettings::RackApp.new
