@@ -144,6 +144,19 @@ module MyApp
 end
 
 Rails.application.settings.my_service.host
+
+# You can also keep things clean if your configuration is mostly accessed
+# from within another class.
+class MyService
+
+  # Reference the host settings.host
+
+  private
+
+  def settings
+    MyServiceConfiguration.instance
+  end
+end
 ```
 
 ### Web UI

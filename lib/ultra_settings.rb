@@ -164,7 +164,7 @@ module UltraSettings
 
       # Hook for Rails development mode to reload the configuration class.
       if klass && defined?(Rails.configuration.cache_classes) && !Rails.configuration.cache_classes
-        klass = nil if klass != constantize(class_name)
+        klass = class_name if klass != constantize(class_name)
       end
 
       if klass.is_a?(String)

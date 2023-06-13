@@ -2,16 +2,8 @@
 
 module UltraSettings
   class RackApp
-    def initialize(app)
-      @app = app
-    end
-
     def call(env)
-      if env["PATH_INFO"] == "/"
-        [200, {"Content-Type" => "text/html; charset=utf8"}, [webapp.render_settings]]
-      else
-        @app.call(env)
-      end
+      [200, {"Content-Type" => "text/html; charset=utf8"}, [webapp.render_settings]]
     end
 
     private
