@@ -181,7 +181,13 @@ module UltraSettings
     end
 
     def classify(name)
-      name.split("_").map(&:capitalize).join.gsub("/", "::")
+      # Use the Rails classify method if it is available since it will
+      # handle custom inflections.
+      if name.respond_to?(:classify)
+        return name.classify
+      else
+        name.split("_").map(&:capitalize).join.gsub("/", "::")
+      end
     end
 
     def constantize(class_name)
