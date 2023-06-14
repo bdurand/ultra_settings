@@ -19,6 +19,32 @@ module UltraSettings
     # rubocop:enable Lint/BooleanSymbol
 
     class << self
+      # Cast a value to a specific type.
+      #
+      # @param value [Object]
+      # @param type [Symbol]
+      # @return [Object]
+      def coerce_value(value, type)
+        return nil if value.nil? || value == ""
+
+        case type
+        when :integer
+          value.is_a?(Integer) ? value : value.to_s&.to_i
+        when :float
+          value.is_a?(Float) ? value : value.to_s&.to_f
+        when :boolean
+          Coerce.boolean(value)
+        when :datetime
+          Coerce.time(value)
+        when :array
+          Array(value).map(&:to_s)
+        when :symbol
+          value.to_s.to_sym
+        else
+          value.to_s
+        end
+      end
+
       # Cast variations of booleans (i.e. "true", "false", 1, 0, etc.) to actual boolean objects.
       #
       # @param value [Object]

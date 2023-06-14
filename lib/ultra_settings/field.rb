@@ -34,7 +34,7 @@ module UltraSettings
       @name = name.to_s.freeze
       @type = type.to_sym
       @description = description&.to_s&.freeze
-      @default = coerce_value(default).freeze
+      @default = Coerce.coerce_value(default, @type).freeze
       @default_if = default_if
       @env_var = env_var&.to_s&.freeze
       @runtime_setting = runtime_setting&.to_s&.freeze
@@ -53,6 +53,10 @@ module UltraSettings
 
     def source(env: nil, settings: nil, yaml_config: nil)
       fetch_value_and_source(env: env, settings: settings, yaml_config: yaml_config).last
+    end
+
+    def coerce(value)
+      Coerce.coerce_value(value, @type)
     end
 
     def static?
@@ -80,7 +84,7 @@ module UltraSettings
         source = :env
       end
 
-      value = coerce_value(value).freeze
+      value = coerce(value).freeze
 
       [value, source]
     end
@@ -90,27 +94,6 @@ module UltraSettings
 
       # TODO implement dot syntax
       yaml_config[yaml_key]
-    end
-
-    def coerce_value(value)
-      return nil if value.nil?
-
-      case type
-      when :integer
-        value.is_a?(Integer) ? value : value.to_s&.to_i
-      when :float
-        value.is_a?(Float) ? value : value.to_s&.to_f
-      when :boolean
-        Coerce.boolean(value)
-      when :datetime
-        Coerce.time(value)
-      when :array
-        Array(value).map(&:to_s)
-      when :symbol
-        value.to_s.to_sym
-      else
-        value.to_s
-      end
     end
   end
 end

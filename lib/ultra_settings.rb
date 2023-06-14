@@ -59,6 +59,14 @@ module UltraSettings
       end
     end
 
+    # Returns true if the provided class has been added as a configuration.
+    #
+    # @param class_name [Class, String] The name of the configuration class.
+    # @return [Boolean]
+    def include?(class_name)
+      @configurations.values.collect(&:to_s).include?(class_name.to_s)
+    end
+
     # Control if settings can be loaded from environment variables. By default
     # environment variables are enabled. This can also be disabled on
     # individual Configuration classes.
@@ -146,6 +154,26 @@ module UltraSettings
 
     def __runtime_settings__
       @runtime_settings ||= nil
+    end
+
+    def override!(settings, &block)
+      settings = settings.to_a
+      config_name, values = settings.first
+      config_name = config_name.to_s
+      other_settings = settings[1..-1]
+
+      unless @configurations.include?(config_name)
+        raise ArgumentError.new("Unknown configuration: #{config_name.inspect}")
+      end
+
+      config = send(config_name)
+      config.override!(values) do
+        if other_settings.empty?
+          yield
+        else
+          override!(other_settings, &block)
+        end
+      end
     end
 
     # Get the names of all of the configurations that have been added.

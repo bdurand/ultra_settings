@@ -118,7 +118,7 @@ TODO configuration_file, yaml_config_path, yaml_config_env
 
 TODO environment_variables_disabled, runtime_settings_disabled, yaml_config_disabled
 
-### Acessing settings
+### Accessing settings
 ```ruby
 # Configurations are singleton objects.
 MyServiceConfiguration.instance.host
@@ -177,6 +177,10 @@ mount Rack::Builder.new do
   run UltraSettings::RackApp
 end, at: "/ultra_settings"
 ```
+
+### Testing
+
+TODO describe override!
 
 ## Installation
 

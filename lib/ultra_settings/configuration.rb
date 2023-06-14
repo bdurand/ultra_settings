@@ -177,6 +177,10 @@ module UltraSettings
         get_inheritable_class_attribute(:@yaml_config_env, "development")
       end
 
+      def override!(values, &block)
+        instance.override!(values, &block)
+      end
+
       def load_yaml_config
         return nil unless configuration_file
         return nil unless configuration_file.exist? && configuration_file.file?
@@ -276,6 +280,7 @@ module UltraSettings
     def initialize
       @mutex = Mutex.new
       @memoized_values = {}
+      @override_values = {}
     end
 
     def [](name)
@@ -284,6 +289,26 @@ module UltraSettings
 
     def include?(name)
       self.class.include?(name.to_s)
+    end
+
+    def override!(values, &block)
+      save_val = @override_values[Thread.current.object_id]
+
+      temp_values = (save_val || {}).dup
+      values.each do |key, value|
+        temp_values[key.to_s] = value
+      end
+
+      begin
+        @mutex.synchronize do
+          @override_values[Thread.current.object_id] = temp_values
+        end
+        yield
+      ensure
+        @mutex.synchronize do
+          @override_values[Thread.current.object_id] = save_val
+        end
+      end
     end
 
     def __source__(name)
@@ -302,11 +327,15 @@ module UltraSettings
         return @memoized_values[name]
       end
 
-      env = ENV if field.env_var
-      settings = UltraSettings.__runtime_settings__ if field.runtime_setting
-      yaml_config = __yaml_config__ if field.yaml_key
+      if @override_values[Thread.current.object_id]&.include?(name)
+        value = field.coerce(@override_values[Thread.current.object_id][name])
+      else
+        env = ENV if field.env_var
+        settings = UltraSettings.__runtime_settings__ if field.runtime_setting
+        yaml_config = __yaml_config__ if field.yaml_key
 
-      value = field.value(yaml_config: yaml_config, env: env, settings: settings)
+        value = field.value(yaml_config: yaml_config, env: env, settings: settings)
+      end
 
       if __use_default?(value, field.default_if)
         value = field.default

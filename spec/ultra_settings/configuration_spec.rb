@@ -192,4 +192,39 @@ describe UltraSettings::Configuration do
       expect(configuration).to_not respond_to(:sub)
     end
   end
+
+  describe "override!" do
+    it "can hard code values for testing inside of a block", env: {TEST_FOO: "original foo", TEST_BAR: "original bar"} do
+      expect(configuration.foo).to eq "original foo"
+      expect(configuration.bar).to eq "original bar"
+
+      retval = configuration.override!(foo: "new foo") do
+        expect(configuration.foo).to eq "new foo"
+        expect(configuration.bar).to eq "original bar"
+        :ok
+      end
+
+      expect(retval).to eq :ok
+      expect(configuration.foo).to eq "original foo"
+      expect(configuration.bar).to eq "original bar"
+    end
+
+    it "can override using the class method", env: {TEST_FOO: "original foo"} do
+      configuration.class.override!(foo: "new foo") do
+        expect(configuration.foo).to eq "new foo"
+      end
+    end
+
+    it "casts test values to the proper type" do
+      configuration.override!(int: "1") do
+        expect(configuration.int).to eq 1
+      end
+    end
+
+    it "uses default values if the test values are blank" do
+      configuration.override!(default_int: "") do
+        expect(configuration.default_int).to eq 1
+      end
+    end
+  end
 end
