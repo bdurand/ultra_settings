@@ -8,6 +8,31 @@ module UltraSettings
     ALLOWED_TYPES = [:string, :symbol, :integer, :float, :boolean, :datetime, :array].freeze
 
     class << self
+      # Define a field on the configuration. This will create a getter method for the field.
+      # The field value will be read from the environment, runtime settings, or a YAML file
+      # and coerced to the specified type. Empty strings will be converted to nil.
+      #
+      # @param name [Symbol, String] The name of the field.
+      # @param type [Symbol] The type of the field. Valid types are :string, :symbol, :integer,
+      #   :float, :boolean, :datetime, and :array. The default type is :string. The :array type
+      #   will return an array of strings.
+      # @param description [String] A description of the field.
+      # @param default [Object] The default value of the field.
+      # @param default_if [Proc, Symbol] A proc that returns true if the default value should be used.
+      #   By default, the default value will be used if the field evaluates to nil. You can also set
+      #   this to a symbol with the name of an instance method to call.
+      # @param static [Boolean] If true, the field value should never be changed. This is useful for
+      #   fields that are used at startup to set static values in the application. Static field cannot
+      #   be read from runtime settings.
+      # @param runtime_setting [String, Symbol] The name of the runtime setting to use for the field.
+      #   By default this will be the underscored name of the class plus a dot plus the field name
+      #   (i.e. MyServiceConfiguration#foo becomes "my_service.foo").
+      # @param env_var [String, Symbol] The name of the environment variable to use for the field.
+      #   By default this will be the underscored name of the class plus an underscore plus the field name
+      #   all in uppercase (i.e. MyServiceConfiguration#foo becomes "MY_SERVICE_FOO").
+      # @param yaml_key [String, Symbol] The name of the YAML key to use for the field. By default
+      #   this is the name of the field.
+      # @return [void]
       def field(name, type: :string, description: nil, default: nil, default_if: nil, static: nil, runtime_setting: nil, env_var: nil, yaml_key: nil)
         name = name.to_s
         type = type.to_sym
@@ -48,10 +73,17 @@ module UltraSettings
         end
       end
 
+      # List of the defined fields for the configuration.
+      #
+      # @return [Array<UltraSettings::Field>]
       def fields
         defined_fields.values
       end
 
+      # Check if the field is defined on the configuration.
+      #
+      # @param name [Symbol, String] The name of the field.
+      # @return [Boolean]
       def include?(name)
         name = name.to_s
         return true if defined_fields.include?(name)
@@ -63,10 +95,19 @@ module UltraSettings
         end
       end
 
+      # Override the default environment variable prefix. By default this wil be
+      # the underscored name of the class plus an underscore
+      # (i.e. MyServiceConfiguration has a prefix of "MY_SERVICE_").
+      #
+      # @param value [String]
+      # @return [void]
       def env_var_prefix=(value)
         @env_var_prefix = value&.to_s
       end
 
+      # Get the environment variable prefix.
+      #
+      # @return [String]
       def env_var_prefix
         unless defined?(@env_var_prefix)
           @env_var_prefix = default_env_var_prefix
@@ -74,10 +115,19 @@ module UltraSettings
         @env_var_prefix
       end
 
+      # Override the default runtime setting prefix. By default this wil be
+      # the underscored name of the class plus a dot (i.e. MyServiceConfiguration
+      # has a prefix of "my_service.").
+      #
+      # @param value [String]
+      # @return [void]
       def runtime_setting_prefix=(value)
         @runtime_setting_prefix = value&.to_s
       end
 
+      # Get the runtime setting prefix.
+      #
+      # @return [String]
       def runtime_setting_prefix
         unless defined?(@runtime_setting_prefix)
           @runtime_setting_prefix = default_runtime_setting_prefix
@@ -85,11 +135,21 @@ module UltraSettings
         @runtime_setting_prefix
       end
 
+      # Override the default YAML config path. By default this will be the
+      # file matching the underscored name of the class in the configuration
+      # directory (i.e. MyServiceConfiguration has a default config path of
+      # "my_service.yml").
+      #
+      # @param value [String, Pathname]
+      # @return [void]
       def configuration_file=(value)
         value = Pathname.new(value) if value.is_a?(String)
         @configuration_file = value
       end
 
+      # Get the YAML file path.
+      #
+      # @return [Pathname, nil]
       def configuration_file
         unless defined?(@configuration_file)
           @configuration_file = default_configuration_file
@@ -103,84 +163,162 @@ module UltraSettings
         path.expand_path
       end
 
+      # Set to true to disable loading configuration from environment variables.
+      #
+      # @param value [Boolean]
+      # @return [void]
       def environment_variables_disabled=(value)
         set_inheritable_class_attribute(:@environment_variables_disabled, !!value)
       end
 
+      # Check if loading configuration from environment variables is disabled.
+      #
+      # @return [Boolean]
       def environment_variables_disabled?
         get_inheritable_class_attribute(:@environment_variables_disabled, false)
       end
 
+      # Set to true to disable loading configuration from runtime settings.
+      #
+      # @param value [Boolean]
+      # @return [void]
       def runtime_settings_disabled=(value)
         set_inheritable_class_attribute(:@runtime_settings_disabled, !!value)
       end
 
+      # Check if loading configuration from runtime settings is disabled.
+      #
+      # @return [Boolean]
       def runtime_settings_disabled?
         get_inheritable_class_attribute(:@runtime_settings_disabled, false)
       end
 
+      # Set to true to disable loading configuration from YAML files.
+      #
+      # @param value [Boolean]
+      # @return [void]
       def yaml_config_disabled=(value)
         set_inheritable_class_attribute(:@yaml_config_disabled, !!value)
       end
 
+      # Check if loading configuration from YAML files is disabled.
+      #
+      # @return [Boolean]
       def yaml_config_disabled?
         get_inheritable_class_attribute(:@yaml_config_disabled, false)
       end
 
+      # Set the environment variable delimiter used to construct the environment
+      # variable name for a field. By default this is an underscore.
+      #
+      # @param value [String]
       def env_var_delimiter=(value)
         set_inheritable_class_attribute(:@env_var_delimiter, value.to_s)
       end
 
+      # Get the environment variable delimiter.
+      #
+      # @return [String]
       def env_var_delimiter
         get_inheritable_class_attribute(:@env_var_delimiter, "_")
       end
 
+      # Set the runtime setting delimiter used to construct the runtime setting
+      # name for a field. By default this is a dot.
+      #
+      # @param value [String]
+      # @return [void]
       def runtime_setting_delimiter=(value)
         set_inheritable_class_attribute(:@runtime_setting_delimiter, value.to_s)
       end
 
+      # Get the runtime setting delimiter.
+      #
+      # @return [String]
       def runtime_setting_delimiter
         get_inheritable_class_attribute(:@runtime_setting_delimiter, ".")
       end
 
+      # Set to true to upcase the environment variable name for a field. This
+      # is true by default.
+      #
+      # @param value [Boolean]
+      # @return [void]
       def env_var_upcase=(value)
         set_inheritable_class_attribute(:@env_var_upcase, !!value)
       end
 
+      # Check if the environment variable name for a field should be upcased.
+      #
+      # @return [Boolean]
       def env_var_upcase?
         get_inheritable_class_attribute(:@env_var_upcase, true)
       end
 
+      # Set to true to upcase the runtime setting name for a field. This
+      # is false by default.
+      #
+      # @param value [Boolean]
+      # @return [void]
       def runtime_setting_upcase=(value)
         set_inheritable_class_attribute(:@runtime_setting_upcase, !!value)
       end
 
+      # Check if the runtime setting name for a field should be upcased.
+      #
+      # @return [Boolean]
       def runtime_setting_upcase?
         get_inheritable_class_attribute(:@runtime_setting_upcase, false)
       end
 
+      # Set the directory where YAML files will be loaded from. By default this
+      # is the current working directory.
+      #
+      # @param value [String, Pathname]
+      # @return [void]
       def yaml_config_path=(value)
         value = Pathname.new(value) if value.is_a?(String)
         value = value.expand_path if value&.relative?
         set_inheritable_class_attribute(:@yaml_config_path, value)
       end
 
+      # Get the directory where YAML files will be loaded from.
+      #
+      # @return [Pathname, nil]
       def yaml_config_path
         get_inheritable_class_attribute(:@yaml_config_path, nil)
       end
 
+      # Set the environment namespace used in YAML file name. By default this
+      # is "development". Settings from the specific environment hash in the YAML
+      # file will be merged with base settings specified in the "shared" hash.
+      #
+      # @param value [String]
+      # @return [void]
       def yaml_config_env=(value)
         set_inheritable_class_attribute(:@yaml_config_env, value)
       end
 
+      # Get the environment namespace used in YAML file name.
+      #
+      # @return [String]
       def yaml_config_env
         get_inheritable_class_attribute(:@yaml_config_env, "development")
       end
 
+      # Override field values within a block.
+      #
+      # @param values [Hash<Symbol, Object>]] List of fields with the values they
+      #   should return within the block.
+      # @yieldreturn [void] The value returne by the block.
       def override!(values, &block)
         instance.override!(values, &block)
       end
 
+      # Load the YAML file for this configuration and return the values for the
+      # current environment.
+      #
+      # @return [Hash]
       def load_yaml_config
         return nil unless configuration_file
         return nil unless configuration_file.exist? && configuration_file.file?

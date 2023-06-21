@@ -51,14 +51,27 @@ module UltraSettings
       fetch_value_and_source(env: env, settings: settings, yaml_config: yaml_config).first
     end
 
+    # Get the source for the field from the passed in state.
+    #
+    # @param env [Hash] The environment variables.
+    # @param settings [Hash] The runtime settings.
+    # @param yaml_config [Hash] The YAML configuration.
+    # @return [Symbol, nil] The source of the value (:env, :settings, or :yaml).
     def source(env: nil, settings: nil, yaml_config: nil)
       fetch_value_and_source(env: env, settings: settings, yaml_config: yaml_config).last
     end
 
+    # Coerce the passed in value to the type of the field.
+    #
+    # @param value [Object] The value to coerce.
+    # @return [Object] The coerced value.
     def coerce(value)
       Coerce.coerce_value(value, @type)
     end
 
+    # Returns true if the field is static.
+    #
+    # @return [Boolean]
     def static?
       @static
     end
