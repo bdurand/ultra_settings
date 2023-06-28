@@ -310,7 +310,7 @@ module UltraSettings
       #
       # @param values [Hash<Symbol, Object>]] List of fields with the values they
       #   should return within the block.
-      # @yieldreturn [void] The value returne by the block.
+      # @return [Object] The value returned by the block.
       def override!(values, &block)
         instance.override!(values, &block)
       end

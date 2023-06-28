@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module UltraSettings
+  # Helper class for rendering the settings information in an HTML page.
   class WebView
     attr_reader :css
 

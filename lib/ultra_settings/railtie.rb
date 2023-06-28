@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 module UltraSettings
+  # Railtie to automatically configure settings for Rails applications.
+  # By default this will automatically load any configuration classes in the
+  # app/configurations directory. This can be customized by setting the
+  # `config.ultra_settings.auto_load_directories` option.
   class Railtie < Rails::Railtie
     config.ultra_settings = ActiveSupport::OrderedOptions.new
     config.ultra_settings.auto_load_directories = [File.join("app", "configurations")]

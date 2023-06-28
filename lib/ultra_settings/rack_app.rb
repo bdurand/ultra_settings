@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module UltraSettings
+  # Rack application for displaying the current settings in an HTML page.
+  # No setting values are displayed, but you should still add some
+  # sort of authentication if you want to use this in production.
   class RackApp
     def call(env)
       [200, {"content-type" => "text/html; charset=utf8"}, [webview.render_settings]]

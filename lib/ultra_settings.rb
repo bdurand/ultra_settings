@@ -150,12 +150,24 @@ module UltraSettings
       Configuration.yaml_config_path = value.to_s
     end
 
+    # Set the object to use for runtime settings. This can be any object that
+    # responds to the [] method. If you are using the `super_settings` gem,
+    # you can set this to `SuperSettings`.
     attr_writer :runtime_settings
 
+    # Get the object to use for runtime settings.
+    #
+    # @return [Object, nil]
+    # @api private
     def __runtime_settings__
       @runtime_settings ||= nil
     end
 
+    # Explicitly set setting values within a block. This is useful for testing
+    # or other situations where you want hard code a specific set of values.
+    #
+    # @param settings [Hash] The settings to set.
+    # @return [Object] The result of the block.
     def override!(settings, &block)
       settings = settings.to_a
       config_name, values = settings.first
