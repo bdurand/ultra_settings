@@ -58,4 +58,14 @@ RSpec.configure do |config|
       example.run
     end
   end
+
+  config.around do |example|
+    if example.metadata[:ultra_settings].is_a?(Hash)
+      UltraSettings.override!(example.metadata[:ultra_settings]) do
+        example.run
+      end
+    else
+      example.run
+    end
+  end
 end

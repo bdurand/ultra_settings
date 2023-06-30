@@ -180,7 +180,35 @@ end, at: "/ultra_settings"
 
 ### Testing
 
-TODO describe override!
+You can use the `UltraSettings.override!` method to force different configuration settings in you automated tests. Here's an example of overriding the `TestConfiguration#foo` value in a test block:
+
+```ruby
+UltraSettings.override!(test: {foo: "bar"}) do
+  expect(TestConfiguration.instance.foo).to eq "bar"
+end
+```
+
+If you are using RSpec, you can set up a global before handler to make it easier to specify settings within your test blocks.
+
+```ruby
+# RSpec setup
+RSpec.configure do |config|
+  config.around do |example|
+    if example.metadata[:ultra_settings].is_a?(Hash)
+      UltraSettings.override!(example.metadata[:ultra_settings]) do
+        example.run
+      end
+    else
+      example.run
+    end
+  end
+end
+
+# In a test
+it 'has the settings I want', ultra_settings: {test: {foo: "bar"}} do
+  expect(UltraSettings.test.foo).to eq("bar")
+end
+```
 
 ## Installation
 

@@ -32,5 +32,9 @@ describe UltraSettings do
       expect(UltraSettings.test.foo).to eq("test foo")
       expect(UltraSettings.test2.foo).to eq("other foo")
     end
+
+    it "can override with an rspec helper", ultra_settings: {test: {foo: "new test foo"}} do
+      expect(UltraSettings.test.foo).to eq("new test foo")
+    end
   end
 end
