@@ -105,7 +105,6 @@ module UltraSettings
     def yaml_value(yaml_config)
       return nil unless yaml_config && yaml_key
 
-      # TODO implement dot syntax
       yaml_config[yaml_key]
     end
   end

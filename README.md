@@ -63,28 +63,6 @@ Configurations are classes that extend from the `UltraSettings::Configuration` c
 
 You can define fields on your configuration classes with the `field` method. This will define a method on you configuration object with the given name.
 
-You can specify a return type with the `:type` option. The value of the setting will be cast to this type. Valid types are:
-
-- :string (the default)
-- :integer
-- :float
-- :boolean
-- :datetime
-- :symbol
-- :array (of strings)
-
-You can specify a default value with the `:default` option. Note that this value will still be cast to the proper type.
-
-You can specify a trigger of when the default should be used with the `:default_if` option. If this option is specified, then it should be either a `Proc` or the name of a method in the class to call with the value from the settings. You can use this feature, for example, to always ensure that a value meets certain constraints.
-
-TODO description
-
-TODO env_var
-
-TODO yaml_key
-
-TODO runtime_setting
-
 ```ruby
 class MyServiceConfiguration < UltraSettings::Configuration
   field :host, type: :string
@@ -110,13 +88,93 @@ class MyServiceConfiguration < UltraSettings::Configuration
 end
 ```
 
-TODO env_var_prefix, env_var_delimiter, env_var_upcase
+- You can specify a return type with the `:type` option. The value of the setting will be cast to this type. Valid types are:
 
-TODO runtime_setting_prefix, runtime_setting_delimiter, runtime_setting_upcase
+  - :string (the default)
+  - :integer
+  - :float
+  - :boolean
+  - :datetime
+  - :symbol
+  - :array (of strings)
 
-TODO configuration_file, yaml_config_path, yaml_config_env
+- You can specify a default value with the `:default` option. Note that this value will still be cast to the proper type.
 
-TODO environment_variables_disabled, runtime_settings_disabled, yaml_config_disabled
+- You can specify a trigger of when the default should be used with the `:default_if` option. If this option is specified, then it should be either a `Proc` or the name of a method in the class to call with the value from the settings. You can use this feature, for example, to always ensure that a value meets certain constraints.
+
+- You can describe what your setting does with the `:description` option. This value is only for documentation purposes.
+
+- You can override the environment variable used to populate the setting with the `:env_var` option. You can use this to point to an environment variable name that does not match the conventional pattern. You can also set this to `false` to disable loading the setting from an environment variable.
+
+- You can override the key in the YAML file with the `:yaml_key` option. You can use this to use a specific key that does not match the setting name. You can also set this to `false` to disable loading the setting from a YAML file.
+
+- You can override the name of the runtime setting used to populate the setting with the `:runtime_setting` option. You can use this to point to a setting whose name does not match the conventional pattern. You can also set this to `false` to disable loading the setting from runtime settings.
+
+### Environment Variable Configuration
+
+By default settings will be loaded from environment variables by constructing a prefix from the configuration class name (i.e. `Configs::MySettingsConfiguration` uses the prefix "CONFIGS_MY_SETTINGS_") with the setting name appended to it. By default environment variables will be in all uppercase letters.
+
+- You can use lowercase environment variable names by setting `env_var_upcase` to `false` on your configuration class.
+- You can use a different delimiter by setting `env_var_delimiter` on your configuration class. The delimiter is used between modules and before the setting name so a delimiter of "." on `Configs::MySettingsConfiguration#setting` would produce "CONFIGS.MY_SETTINGS.SETTING".
+- You can set an explicit prefix by setting `env_var_prefix` on your configuration class.
+- You can disable environment variables as a default source on your fields by setting `environment_variables_disabled` to true on your configuration class.
+
+### Runtime Settings Configuration
+
+By default settings will be loaded from runtime settings by constructing a prefix from the configuration class name (i.e. `Configs::MySettingsConfiguration` uses the prefix "configs.my_settings.") with the setting name appended to it. By default runtime settings will be in all lowercase letters.
+
+- You can use uppercase runtime setting names by setting `runtime_setting_upcase` to `true` on your configuration class.
+- You can use a different delimiter by setting `runtime_setting_delimiter` on your configuration class. The delimiter is used between modules and before the setting name so a delimiter of "/" on `Configs::MySettingsConfiguration#setting` would produce "configs/my_settings/setting".
+- You can set an explicit prefix by setting `runtime_setting_prefix` on your configuration class.
+- You can disable runtime settings as a default source on your fields by setting `runtime_settings_disabled` to true on your configuration class.
+
+### YAML File Configuration
+
+By default settings will be loaded from a YAML file determined by its class name (i.e. `Configs::MySettingsConfiguration` uses the file "configs/my_settings.yml"). The file will be looked for in the path defined by `UltraSettings.yaml_config_path`. If the file does not exist, then settings will not use the YAML source strategy.
+
+- You can specify an explicit YAML file to use by setting `configuration_file` on your configuration class.
+- You can disable YAML files as a default source on your fields by setting `yaml_config_disabled` to true on your configuration class.
+
+YAML files support ERB templates within them so you can include dynamic values if needed.
+
+YAML files can define environment specific configurations. This is done by defining an environment key with `UltraSettings.yaml_config_env`. The values for this key in the YAML file will be the one used. There is also a special key named "shared" which will be merged with all environments.
+
+So, for this YAML file:
+
+```yaml
+shared:
+  timeout: 5
+  port: 8000
+
+development:
+  timeout: 10
+  host: localhost
+
+production:
+  host: prod.example.com
+```
+
+The values for the "developent" environment would be:
+
+```ruby
+{
+  timeout: 10,
+  port: 8000,
+  host: "localhost"
+}
+```
+
+While for "production", they would be:
+
+```ruby
+{
+  timeout: 5,
+  port: 8000,
+  host: "prod.example.com"
+}
+```
+
+In a Rails application, the YAML environment will be set to the Rails environment and YAML files will be assumed to exist in the `config` directory.
 
 ### Accessing settings
 ```ruby
