@@ -3,25 +3,25 @@
 [![Continuous Integration](https://github.com/bdurand/ultra_settings/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/bdurand/ultra_settings/actions/workflows/continuous_integration.yml)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
-This gem provides a method for managing application settings and loading their values from a variety of sources. By using it you can write safer and cleaner code in your application and have a good method for documenting your application's settings.
+This gem provides a method for managing application settings and loading their values from a variety of sources. It can help you get a handle on you application's configuration by providing a consistent method for accessing settings. It also provides a method for documenting your application's settings.
 
-It allows you to define a hierarchy with three layers of settings:
+It allows you to define a hierarchy with three layers of sources for your configuration values:
 
 1. Environment variables
 2. Runtime settings (i.e. settings updatable from within the running application)
 3. YAML configuration files
 
-Settings at a higher level will override those set at a lower level. So, for instance, you can override values set in a YAML file with environment variables or runtime settings.
+Settings at a higher level will override those set at a lower level. So, for instance, you can override values set in a YAML file with either environment variables or runtime settings. Your application code, however, does not need to concern itself how a setting value is being loaded and from what source.
 
-Settings are also type casted so you can always be assured that values are returned as a predetermined class. The supported types are:
+Settings are also type casted so you can always be assured that values are returned as a predetermined class and your application does not need to worry about type coercion. The supported types are:
 
-- String
-- Integer
-- Float
-- Boolean
-- Time
-- Symbol
-- Array<String>
+- 'String'
+- 'Integer'
+- 'Float'
+- 'Boolean'
+- 'Time'
+- 'Symbol'
+- 'Array<String>'
 
 You can also define default values to be returned in case the configured value is missing or it fails to match a constraint so you can rest assured that your app won't break if someone messes up the environment variables.
 
@@ -82,9 +82,13 @@ end
 
 - You can override the name of the runtime setting used to populate the setting with the `:runtime_setting` option. You can use this to point to a setting whose name does not match the conventional pattern. You can also set this to `false` to disable loading the field from runtime settings.
 
+- You can define a value as a static value by settin the `:static` option to true. Static values will not be changed once they are set. Static values also cannot be set from runtime settings. If you are referencing a setting during your application's initialization, then you should declare it as a static field.
+
 ### Environment Variables
 
-By default settings will be loaded from environment variables by constructing a prefix from the configuration class name (i.e. `Configs::MySettingsConfiguration` uses the prefix "CONFIGS_MY_SETTINGS_") with the setting name appended to it. By default environment variables will be in all uppercase letters.
+Settings will first try to load values from environment variables. Environment variables are a good place to define environment specific values.
+
+By default settings will be loaded from environment variables by constructing a prefix from the configuration class name (i.e. `Configs::MySettingsConfiguration` uses the prefix "CONFIGS_MY_SETTINGS_") with the field name appended to it. By default environment variables will be in all uppercase letters.
 
 You can use lowercase environment variable names by setting `env_var_upcase` to `false` on your configuration class.
 
@@ -92,7 +96,9 @@ You can use a different delimiter by setting `env_var_delimiter` on your configu
 
 You can set an explicit prefix by setting `env_var_prefix` on your configuration class.
 
-You can disable environment variables as a default source on your fields by setting `environment_variables_disabled` to true on your configuration class.
+You can disable environment variables as a default source on your fields by setting `environment_variables_disabled` to `true` on your configuration class.
+
+If a setting value cannot be loaded from an environment variable, then it's value will attempt to be loaded from a runtime setting.
 
 ### Runtime Settings
 
@@ -120,7 +126,7 @@ There is a companion gem [super_settings](https://github.com/bdurand/super_setti
 UltraSettings.runtime_settings = SuperSettings
 ```
 
-By default settings will be loaded from runtime settings by constructing a prefix from the configuration class name (i.e. `Configs::MySettingsConfiguration` uses the prefix "configs.my_settings.") with the setting name appended to it. By default runtime settings will be in all lowercase letters.
+By default settings will be loaded from runtime settings by constructing a prefix from the configuration class name (i.e. `Configs::MySettingsConfiguration` uses the prefix "configs.my_settings.") with the field name appended to it. By default runtime settings will be in all lowercase letters.
 
 You can use uppercase runtime setting names by setting `runtime_setting_upcase` to `true` on your configuration class.
 
@@ -128,19 +134,23 @@ You can use a different delimiter by setting `runtime_setting_delimiter` on your
 
 You can set an explicit prefix by setting `runtime_setting_prefix` on your configuration class.
 
-You can disable runtime settings as a default source on your fields by setting `runtime_settings_disabled` to true on your configuration class.
+You can disable runtime settings as a default source on your fields by setting `runtime_settings_disabled` to `true` on your configuration class.
+
+If a setting value cannot be loaded from the runtime settings, then it's value will attempt to be loaded from a YAML file.
 
 ### YAML Files
 
-By default settings will be loaded from a YAML file determined by its class name (i.e. `Configs::MySettingsConfiguration` uses the file "configs/my_settings.yml"). The file will be looked for in the path defined by `UltraSettings.yaml_config_path`. If the file does not exist, then settings will not use the YAML source strategy.
+The last place settings will be loaded from are from static YAML files. These can provide a good place to store default values for you application since they can be distributed with your application code.
 
-You can specify an explicit YAML file to use by setting `configuration_file` on your configuration class.
+By default settings will be loaded from a YAML file determined by its class name (i.e. `Configs::MySettingsConfiguration` uses the file "configs/my_settings.yml"). The file will be searched for in the path defined by `UltraSettings.yaml_config_path`. If the file does not exist, then settings will not use the YAML source strategy.
 
-You can disable YAML files as a default source on your fields by setting `yaml_config_disabled` to true on your configuration class.
+You can specify an explicit YAML file to use by setting `configuration_file` on your configuration class to the path to the file.
 
-YAML files support ERB evaluation within them so you can include dynamic values if needed by using the ERB `<%= %>` markup.
+You can disable YAML files as a default source on your fields by setting `yaml_config_disabled` to `true` on your configuration class.
 
-YAML files define environment specific configurations. YAML files must define a hash where the keys are the names of you application environments. You define which environment to use with `UltraSettings.yaml_config_env` (default is "development"). There is also a special key named "shared" which, if defined, will be merged with the environment hash.
+YAML files will be evaluated for an ERB markup (i.e. `<%= %>`) before the YAML itself is evaluated. You can use this feature to dynamically generate values within the YAML file.
+
+YAML files define environment specific configurations. YAML files must define a hash where the keys are the names of your application environments (i.e. development, test, production, etc.). You define which environment to use with `UltraSettings.yaml_config_env` (the default environment is "development"). There is also a special key `"shared"` which, if defined, will be merged with the environment hash.
 
 So, for this YAML file:
 
@@ -157,7 +167,7 @@ production:
   host: prod.example.com
 ```
 
-The values for the "development" environment would be:
+The values for the "development" environment would be the combination of development and shared:
 
 ```ruby
 {
@@ -167,7 +177,7 @@ The values for the "development" environment would be:
 }
 ```
 
-While for "production", the values would be:
+While for "production", the values would be the combination of production and shared:
 
 ```ruby
 {
@@ -177,12 +187,14 @@ While for "production", the values would be:
 }
 ```
 
+Values for the environment will always overwrite values from the shared hash.
+
 In a Rails application, the YAML environment will be set to the Rails environment and YAML files will be assumed to exist in the `config` directory.
 
 ### Accessing settings
 
 ```ruby
-# Configurations are singleton objects.
+# Configurations are singleton objects. Settings are accessed by calling methods.
 MyServiceConfiguration.instance.host
 
 # You can add configurations as methods onto the `UltraSettings` object.
