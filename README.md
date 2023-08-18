@@ -17,13 +17,13 @@ Your application code, however, does not need to concern itself with how a setti
 
 Settings are also type cast so you can always be assured that values are returned as a predetermined class and your application does not need to worry about type coercion. The supported types are:
 
-- 'String'
-- 'Integer'
-- 'Float'
-- 'Boolean'
-- 'Time'
-- 'Symbol'
-- 'Array<String>'
+- `String`
+- `Integer`
+- `Float`
+- `Boolean`
+- `Time`
+- `Symbol`
+- `Array<String>`
 
 You can also define default values to be returned in case the configured value is missing or it fails to match a constraint.
 
