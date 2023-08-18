@@ -11,9 +11,11 @@ It allows you to define a hierarchy with three layers of sources for your config
 2. Runtime settings (i.e. settings updatable from within the running application)
 3. YAML configuration files
 
-Settings at a higher level will override those set at a lower level. So, for instance, you can override values set in a YAML file with either environment variables or runtime settings. Your application code, however, does not need to concern itself how a setting value is being loaded and from what source.
+Settings at a higher level will override those set at a lower level. So, for instance, you can override values set in a YAML file with either environment variables or runtime settings.
 
-Settings are also type casted so you can always be assured that values are returned as a predetermined class and your application does not need to worry about type coercion. The supported types are:
+Your application code, however, does not need to concern itself with how a setting value is being loaded or from what source. It can just reference configuration settings using plain old Ruby objects and methods.
+
+Settings are also type cast so you can always be assured that values are returned as a predetermined class and your application does not need to worry about type coercion. The supported types are:
 
 - 'String'
 - 'Integer'
@@ -23,7 +25,7 @@ Settings are also type casted so you can always be assured that values are retur
 - 'Symbol'
 - 'Array<String>'
 
-You can also define default values to be returned in case the configured value is missing or it fails to match a constraint so you can rest assured that your app won't break if someone messes up the environment variables.
+You can also define default values to be returned in case the configured value is missing or it fails to match a constraint.
 
 Settings are accessed through singleton classes that you define.
 
@@ -33,7 +35,7 @@ Settings are accessed through singleton classes that you define.
 
 Configurations are classes that extend from the `UltraSettings::Configuration` class. Configuration classes are [singleton classes](https://ruby-doc.org/3.2.2/stdlibs/singleton/Singleton.html).
 
-You can define fields on your configuration classes with the `field` method. This will define a method on you configuration object with the given name.
+You can define fields on your configuration classes with the `field` method. This will define a method on your configuration object with the given name.
 
 ```ruby
 class MyServiceConfiguration < UltraSettings::Configuration
