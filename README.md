@@ -1,4 +1,4 @@
-# UltraSettings :construction:
+# UltraSettings
 
 [![Continuous Integration](https://github.com/bdurand/ultra_settings/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/bdurand/ultra_settings/actions/workflows/continuous_integration.yml)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
@@ -201,7 +201,7 @@ Configurations are singleton objects. Settings are accessed by calling methods.
 MyServiceConfiguration.instance.host
 ```
 
-You can add configurations as methods onto the `UltraSettings` object. By default the configuration class name will be guessed (i.e. "my_service" maps to "MyServiceConfiguration").
+You can add configurations as methods onto the `UltraSettings` object. By default the configuration class name will be guessed (i.e. "my_service" maps to `MyServiceConfiguration`).
 ```ruby
 UltraSettings.add(:my_service)
 UltraSettings.my_service.host
@@ -232,7 +232,7 @@ You can also keep things clean if your configuration is mostly accessed from wit
 ```ruby
 class MyService
 
-  # Reference the host settings.host
+  # Reference the value as `settings.host`
 
   private
 
@@ -244,7 +244,7 @@ end
 
 ### Web UI
 
-There is a web UI available via a mountable Rack application. The UI will only expose the source of where settings are being loaded from. It will not show any of the setting values, but it's still highly advised to put it behind whatever authorization framework you application uses.
+There is a web UI available via a mountable Rack application. The UI will only expose the source of where settings are being loaded from. For security reasons, it will not show any of the setting values. It is still highly advised to put it behind whatever authorization framework you application uses.
 
 ![Web UI](assets/web_ui.png)
 
