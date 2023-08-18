@@ -13,7 +13,7 @@ It allows you to define a hierarchy with three layers of sources for your config
 
 Settings at a higher level will override those set at a lower level. So, for instance, you can override values set in a YAML file with either environment variables or runtime settings.
 
-Your application code, however, does not need to concern itself with how a setting value is being loaded or from what source. It can just reference configuration settings using plain old Ruby objects and methods.
+Your application code does not need to concern itself with how a setting value is being loaded or from what source. It can just reference configuration settings using plain old Ruby objects and methods.
 
 Settings are also type cast so you can always be assured that values are returned as a predetermined class and your application does not need to worry about type coercion. The supported types are:
 
@@ -74,23 +74,23 @@ end
 
 - You can specify a default value with the `:default` option. Note that this value will still be cast to the defined type.
 
-- You can specify a trigger of when the default should be used with the `:default_if` option. If this option is specified, then it should be either a `Proc` or the name of a method in the class to call with the value from the settings. You can use this feature, for example, to always ensure that a value meets certain constraints.
+- You can specify a trigger of when the default should be used with the `:default_if` option. If this option is provided, then it should be either a `Proc` or the name of a method in the class to call with the value from the settings. You can use this feature, for example, to always ensure that a value meets certain constraints.
 
 - You can describe what your setting does with the `:description` option. This value is only for documentation purposes.
 
 - You can override the environment variable used to populate the setting with the `:env_var` option. You can use this to point to an environment variable name that does not match the conventional pattern. You can also set this to `false` to disable loading the field from an environment variable.
 
-- You can override the key in the YAML file with the `:yaml_key` option. You can use this to use map a setting to a key in the YAML hash if when the key doesn't match the field name. You can also set this to `false` to disable loading the field from a YAML file.
+- You can override the key in the YAML file with the `:yaml_key` option. You can use this to map a setting to a key in the YAML hash if the key doesn't match the field name. You can also set this to `false` to disable loading the field from a YAML file.
 
 - You can override the name of the runtime setting used to populate the setting with the `:runtime_setting` option. You can use this to point to a setting whose name does not match the conventional pattern. You can also set this to `false` to disable loading the field from runtime settings.
 
-- You can define a value as a static value by settin the `:static` option to true. Static values will not be changed once they are set. Static values also cannot be set from runtime settings. If you are referencing a setting during your application's initialization, then you should declare it as a static field.
+- You can define a value as a static value by setting the `:static` option to true. Static values will not be changed once they are set. Static values also cannot be set from runtime settings. If you are referencing a setting during your application's initialization, then you should declare it as a static field.
 
 ### Environment Variables
 
 Settings will first try to load values from environment variables. Environment variables are a good place to define environment specific values.
 
-By default settings will be loaded from environment variables by constructing a prefix from the configuration class name (i.e. `Configs::MySettingsConfiguration` uses the prefix "CONFIGS_MY_SETTINGS_") with the field name appended to it. By default environment variables will be in all uppercase letters.
+By default settings will be loaded from environment variables by constructing a prefix from the configuration class name (i.e. `Configs::MySettingsConfiguration` uses the prefix `"CONFIGS_MY_SETTINGS_"`) with the field name appended to it. By default environment variables will be in all uppercase letters.
 
 You can use lowercase environment variable names by setting `env_var_upcase` to `false` on your configuration class.
 
@@ -122,13 +122,13 @@ end
 UltraSettings.runtime_settings = RedisRuntimeSettings.new
 ```
 
-There is a companion gem [super_settings](https://github.com/bdurand/super_settings) that can be used as a drop in implementation for the runtime settings. You would just need to set the runtime settings to the `SuperSettings` object itself.
+There is a companion gem [super_settings](https://github.com/bdurand/super_settings) that can be used as a drop in implementation for the runtime settings. You just need to set the runtime settings to the `SuperSettings` object itself.
 
 ```ruby
 UltraSettings.runtime_settings = SuperSettings
 ```
 
-By default settings will be loaded from runtime settings by constructing a prefix from the configuration class name (i.e. `Configs::MySettingsConfiguration` uses the prefix "configs.my_settings.") with the field name appended to it. By default runtime settings will be in all lowercase letters.
+By default settings will be loaded from runtime settings by constructing a prefix from the configuration class name (i.e. `Configs::MySettingsConfiguration` uses the prefix `"configs.my_settings."`) with the field name appended to it. By default runtime settings will be in all lowercase letters.
 
 You can use uppercase runtime setting names by setting `runtime_setting_upcase` to `true` on your configuration class.
 
@@ -144,7 +144,7 @@ If a setting value cannot be loaded from the runtime settings, then it's value w
 
 The last place settings will be loaded from are from static YAML files. These can provide a good place to store default values for you application since they can be distributed with your application code.
 
-By default settings will be loaded from a YAML file determined by its class name (i.e. `Configs::MySettingsConfiguration` uses the file "configs/my_settings.yml"). The file will be searched for in the path defined by `UltraSettings.yaml_config_path`. If the file does not exist, then settings will not use the YAML source strategy.
+By default settings will be loaded from a YAML file determined by its class name (i.e. `Configs::MySettingsConfiguration` uses the file `"configs/my_settings.yml"`). The file will be searched for in the path defined by `UltraSettings.yaml_config_path`. If the file does not exist, then settings will not use the YAML source strategy.
 
 You can specify an explicit YAML file to use by setting `configuration_file` on your configuration class to the path to the file.
 
@@ -195,22 +195,27 @@ In a Rails application, the YAML environment will be set to the Rails environmen
 
 ### Accessing settings
 
-```ruby
-# Configurations are singleton objects. Settings are accessed by calling methods.
-MyServiceConfiguration.instance.host
+Configurations are singleton objects. Settings are accessed by calling methods.
 
-# You can add configurations as methods onto the `UltraSettings` object.
-# By default the configuration class name will be guessed (i.e. "my_service"
-# maps to "MyServiceConfiguration").
+```ruby
+MyServiceConfiguration.instance.host
+```
+
+You can add configurations as methods onto the `UltraSettings` object. By default the configuration class name will be guessed (i.e. "my_service" maps to "MyServiceConfiguration").
+```ruby
 UltraSettings.add(:my_service)
 UltraSettings.my_service.host
+```
 
-# You can also specify the class name to map to a different method name.
+You can also specify the class name to map to a different method name.
+```ruby
 UltraSettings.add(:my, "MyServiceConfiguration")
 UltraSettings.my.host
+```
 
-# In a Rails application, you could add some syntactic sugar and expose
-# the `UltraSettings` object as a helper method in application.rb.
+In a Rails application, you could add some syntactic sugar and expose the `UltraSettings` object as a helper method in application.rb.
+
+```ruby
 module MyApp
   class Application < Rails::Application
     def settings
@@ -220,9 +225,11 @@ module MyApp
 end
 
 Rails.application.settings.my_service.host
+```
 
-# You can also keep things clean if your configuration is mostly accessed
-# from within another class.
+You can also keep things clean if your configuration is mostly accessed from within another class.
+
+```ruby
 class MyService
 
   # Reference the host settings.host
