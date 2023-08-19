@@ -11,7 +11,7 @@ It allows you to define a hierarchy with three layers of sources for your config
 2. Runtime settings (i.e. settings updatable from within the running application)
 3. YAML configuration files
 
-Settings at a higher level will override those set at a lower level. So, for instance, you can override values set in a YAML file with either environment variables or runtime settings.
+Settings at a higher level will override those set at a lower level. So, for instance, you can override values set in a YAML file with either environment variables or runtime settings. The hierarchy is an optional feature and can be disabled in favor of explicitly defined data sources if you want.
 
 Your application code does not need to concern itself with how a setting value is being loaded or from what source. It can just reference configuration settings using plain old Ruby objects and methods.
 
