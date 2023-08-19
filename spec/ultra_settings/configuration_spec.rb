@@ -227,4 +227,16 @@ describe UltraSettings::Configuration do
       end
     end
   end
+
+  describe "with hierarchy disabled" do
+    it "loads values only from explicitly defined sources", {
+      env: {EXPLICIT_HOST: "env.host", EXPLICIT_TIMEOUT: "4", EXPLICIT_TOKEN: "envtoken"},
+      settings: {"explicit.host" => "runtime.host", "explicit.timeout" => 10, "explicit.token" => "runtimetoken"}
+    } do
+      config = ExplicitConfiguration.instance
+      expect(config.host).to eq "yaml.host"
+      expect(config.timeout).to eq 10
+      expect(config.token).to eq "envtoken"
+    end
+  end
 end

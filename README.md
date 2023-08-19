@@ -193,6 +193,30 @@ Values for the environment will always overwrite values from the shared hash.
 
 In a Rails application, the YAML environment will be set to the Rails environment and YAML files will be assumed to exist in the `config` directory.
 
+### Removing The Hierarchy
+
+If you don't like the default behavior of the hierarchy of environment variables, runtime settings, and YAML files, you can disable it and then explicitly enable only the appropriate data source on each field.
+
+```ruby
+class MyServiceConfiguration < UtraSettings::Configuration
+  self.environment_variables_disabled = false
+  self.runtime_settings_disabled = false
+  self.yaml_config_disabled = false
+
+field :host, yaml_key: "host"
+  field :token, env_var: "MY_SERVICE_TOKEN"
+  field :timeout, runtime_setting: "my_service.timeout", default: 5
+end
+```
+
+If you don't want the hierarchy in any configuration, then you can disable it globally.
+
+```ruby
+UltraSettings.environment_variables_disabled = true
+UltraSettings.runtime_settings_disabled = true
+UltraSettings.yaml_config_disabled = true
+```
+
 ### Accessing settings
 
 Configurations are singleton objects. Settings are accessed by calling methods.

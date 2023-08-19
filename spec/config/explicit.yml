@@ -1,0 +1,4 @@
+shared:
+  host: yaml.host
+  token: yamltoken
+  timeout: 100
