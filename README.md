@@ -1,6 +1,7 @@
 # UltraSettings
 
 [![Continuous Integration](https://github.com/bdurand/ultra_settings/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/bdurand/ultra_settings/actions/workflows/continuous_integration.yml)
+[![Regression Test](https://github.com/bdurand/ultra_settings/actions/workflows/regression_test.yml/badge.svg)](https://github.com/bdurand/ultra_settings/actions/workflows/regression_test.yml)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
 This gem provides a method for managing application settings and loading their values from a variety of sources. It can help you get a handle on you application's configuration by providing a consistent method for accessing settings. It also provides a method for documenting your application's settings.
