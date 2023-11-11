@@ -29,6 +29,7 @@ module UltraSettings
 
   @configurations = {}
   @mutex = Mutex.new
+  @runtime_settings = nil
 
   class << self
     # Adds a configuration to the root namespace. The configuration will be
@@ -160,7 +161,7 @@ module UltraSettings
     # @return [Object, nil]
     # @api private
     def __runtime_settings__
-      @runtime_settings ||= nil
+      @runtime_settings
     end
 
     # Explicitly set setting values within a block. This is useful for testing
