@@ -419,6 +419,7 @@ module UltraSettings
       @mutex = Mutex.new
       @memoized_values = {}
       @override_values = {}
+      @yaml_config = nil
     end
 
     def [](name)
