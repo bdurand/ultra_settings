@@ -1,0 +1,83 @@
+  <table class="<%= html_escape(table_class.to_s) %>">
+    <thead>
+      <% unless configuration.class.yaml_config_disabled? || configuration.class.configuration_file.nil? %>
+        <tr>
+          <th colspan="6">
+            YAML File:
+            <span style="font-weight: normal;">
+              <%= html_escape(relative_path(configuration.class.configuration_file)) %>
+              <% unless configuration.class.configuration_file&.exist? %>
+                <em>(File does not exist)</em>
+              <% end %>
+            </span>
+          </th>
+        </tr>
+      <% end %>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Value</th>
+        <th>Set Via</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% configuration.class.fields.each do |field| %>
+        <tr>
+          <td>
+            <code class="ultra-settings-name"><%= html_escape(field.name) %></code>
+            <% unless field.description.to_s.empty? %>
+              <div class="ultra-settings-description">
+                <%= html_escape(field.description) %>
+              </div>
+            <% end %>
+          </td>
+          <td>
+            <%= html_escape(field.type) %>
+            <%
+              options = []
+              options << 'static' if field.static?
+              options << 'secret' if field.secret?
+            %>
+            <% unless options.empty? %>
+              <div>
+                <em class="ultra-settings-options"><%= html_escape(options.join(', ')) %></em>
+              </div>
+            <% end %>
+          </td>
+
+          <td style="word-wrap: break-word; max-width:30em;">
+            <% if configuration[field.name].nil? %>
+              <em>nil</em>
+            <% elsif field.secret? %>
+              <%= html_escape(secret_value(configuration[field.name])) %>
+            <% else %>
+              <%= html_escape(display_value(configuration[field.name])) %>
+            <% end %>
+          </td>
+
+          <td>
+            <% if field.env_var && !configuration.class.environment_variables_disabled? %>
+              <div>
+                <%= set_via("Environment Variable", field.env_var, configuration, field, :env) %>
+              </div>
+            <% end %>
+            <% if field.runtime_setting && !configuration.class.runtime_settings_disabled? %>
+              <div>
+                <%= set_via("Runtime Setting", field.runtime_setting, configuration, field, :settings) %>
+              </div>
+            <% end %>
+            <% if field.yaml_key && !configuration.class.yaml_config_disabled? %>
+              <div>
+                <%= set_via("YAML Key", field.yaml_key, configuration, field, :yaml) %>
+              </div>
+            <% end %>
+            <% unless field.default.nil? %>
+              <div>
+                <%= set_via("Default", nil, configuration, field, :default) %>
+              </div>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>

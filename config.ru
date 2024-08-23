@@ -18,6 +18,7 @@ require_relative "spec/test_configs/namespace_configuration"
 require_relative "spec/test_configs/subclass_configuration"
 require_relative "spec/test_configs/my_service_configuration"
 
+UltraSettings.fields_secret_by_default = false
 UltraSettings.yaml_config_path = File.join(__dir__, "spec", "config")
 UltraSettings.runtime_settings = {}
 UltraSettings.add(:test)

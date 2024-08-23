@@ -28,19 +28,25 @@
   background-color: rgba(0, 0, 0, .03);
 }
 
-.ultra-settings-code {
+.ultra-settings-name {
   font-family: monospace;
   font-size: 0.9rem;
   display: inline;
 }
 
-.ultra-settings-static {
+.ultra-settings-set-via {
+  font-family: monospace;
+  font-size: 0.9rem;
+  display: inline;
+}
+
+.ultra-settings-options {
   color: gray;
   font-style: italic;
   font-size: 0.9rem;
 }
 
-.ultra-settings-current-source {
+.ultra-settings-set-via-selected {
   font-weight: 600;
   color: blue;
 }

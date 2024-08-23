@@ -20,6 +20,8 @@ module UltraSettings
     # @param env_var [String, Symbol] The name of the environment variable to use for the field.
     # @param runtime_setting [String, Symbol] The name of the setting to use for the field.
     # @param yaml_key [String, Symbol] The name of the YAML key to use for the field.
+    # @param static [Boolean] Whether or not the field is static and cannot be changed at runtime.
+    # @param secret [Boolean] Whether or not the field contains a value that should be kept secret.
     def initialize(
       name:,
       type: :string,
@@ -29,7 +31,8 @@ module UltraSettings
       env_var: nil,
       runtime_setting: nil,
       yaml_key: nil,
-      static: false
+      static: false,
+      secret: false
     )
       @name = name.to_s.freeze
       @type = type.to_sym
@@ -40,13 +43,14 @@ module UltraSettings
       @runtime_setting = runtime_setting&.to_s&.freeze
       @yaml_key = yaml_key&.to_s&.freeze
       @static = !!static
+      @secret = (secret.respond_to?(:call) ? secret : !!secret)
     end
 
     # Get the value for the field from the passed in state.
     #
-    # @param env [#[]] The environment variables.
-    # @param settings [#[]] The runtime settings.
-    # @param yaml_config [#[]] The YAML configuration.
+    # @param env [Hash, nil] The environment variables.
+    # @param settings [Hash, nil] The runtime settings.
+    # @param yaml_config [Hash, nil] The YAML configuration.
     def value(env: nil, settings: nil, yaml_config: nil)
       fetch_value_and_source(env: env, settings: settings, yaml_config: yaml_config).first
     end
@@ -74,6 +78,17 @@ module UltraSettings
     # @return [Boolean]
     def static?
       @static
+    end
+
+    # Returns true if the field is marked as having a secret value.
+    #
+    # @return [Boolean]
+    def secret?
+      if @secret.respond_to?(:call)
+        !!@secret.call
+      else
+        @secret
+      end
     end
 
     private

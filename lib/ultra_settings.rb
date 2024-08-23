@@ -5,12 +5,14 @@ require "yaml"
 require "time"
 require "pathname"
 require "singleton"
+require "digest"
 
 require_relative "ultra_settings/configuration"
 require_relative "ultra_settings/coerce"
 require_relative "ultra_settings/field"
 require_relative "ultra_settings/rack_app"
 require_relative "ultra_settings/web_view"
+require_relative "ultra_settings/configuration_view"
 require_relative "ultra_settings/yaml_config"
 require_relative "ultra_settings/version"
 
@@ -164,7 +166,11 @@ module UltraSettings
       @runtime_settings
     end
 
-    # Explicitly set setting values within a block. This is useful for testing
+    def fields_secret_by_default=(value)
+      Configuration.fields_secret_by_default = value
+    end
+
+    # Explicitly set values for setting within a block. This is useful for testing
     # or other situations where you want hard code a specific set of values.
     #
     # @param settings [Hash] The settings to set.

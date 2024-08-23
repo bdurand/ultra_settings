@@ -5,7 +5,7 @@
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 [![Gem Version](https://badge.fury.io/rb/ultra_settings.svg)](https://badge.fury.io/rb/ultra_settings)
 
-This gem provides a method for managing application settings and loading their values from a variety of sources. It can help you get a handle on you application's configuration by providing a consistent method for accessing settings. It also provides a method for documenting your application's settings.
+This gem provides a method for managing application settings and loading their values from a variety of sources. It can help you get a handle on you application's configuration by providing a consistent method for accessing settings. It also provides a method for documenting and viewing your application's settings.
 
 It allows you to define a hierarchy with three layers of sources for your configuration values:
 
@@ -41,6 +41,8 @@ You can define fields on your configuration classes with the `field` method. Thi
 
 ```ruby
 class MyServiceConfiguration < UltraSettings::Configuration
+  self.fields_secret_by_default = false
+
   field :host, type: :string
 
   field :port, type: :integer, default: 80
@@ -54,6 +56,7 @@ class MyServiceConfiguration < UltraSettings::Configuration
     env_var: "MY_SERVICE_TOKEN",
     runtime_setting: false,
     yaml_key: false,
+    secret: true,
     description: "Bearer token for accessing the service"
 
   # You aren't limited to just defining fields, you can define other
@@ -75,6 +78,8 @@ end
   - `:array` (of strings)
 
 - You can specify a default value with the `:default` option. Note that this value will still be cast to the defined type.
+
+- You can define a field as being secret with the `:secret` option. Secret fields will not be displayed in the web UI. By default all fields are considered secrets. This is by design so that sensitive values are not accidentally exposed. However, you can change the default (either globally on `UltraSettings` or per configuration) by setting the `fields_secret_by_default` property to `false`.
 
 - You can specify a trigger of when the default should be used with the `:default_if` option. If this option is provided, then it should be either a `Proc` or the name of a method in the class to call with the value from the settings. You can use this feature, for example, to always ensure that a value meets certain constraints.
 
@@ -285,6 +290,13 @@ mount Rack::Builder.new do
   end
   run UltraSettings::RackApp
 end, at: "/ultra_settings"
+```
+
+You can also embed the settings view into your own admin tools by using the `UltraSettings::ConfigurationView` class.
+
+```erb
+<h1>My Service Settings</h1>
+<%= UltraSettings::ConfigurationView.new(MyServiceConfiguration.instance).render %>
 ```
 
 ### Testing

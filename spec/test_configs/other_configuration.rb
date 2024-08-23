@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class OtherConfiguration < UltraSettings::Configuration
+  self.fields_secret_by_default = true
+
   self.env_var_prefix = "OTHER_CONFIG_"
   self.runtime_setting_prefix = "other_config_"
   self.configuration_file = "other_config.yml"

@@ -1,4 +1,6 @@
 class MyServiceConfiguration < UltraSettings::Configuration
+  self.fields_secret_by_default = false
+
   field :host, type: :string
 
   field :port, type: :integer, default: 80
@@ -12,7 +14,8 @@ class MyServiceConfiguration < UltraSettings::Configuration
     env_var: "MY_SERVICE_TOKEN",
     runtime_setting: false,
     yaml_key: false,
-    description: "Bearer token for accessing the service"
+    description: "Bearer token for accessing the service",
+    secret: true
 
   def uri
     URI("#{protocol}://#{host}:#{port}")
