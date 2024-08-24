@@ -30,8 +30,6 @@ Settings are also type cast so you can always be assured that values are returne
 
 You can also define default values to be returned in case the configured value is missing or it fails to match a constraint.
 
-Settings are accessed through singleton classes that you define.
-
 ## Usage
 
 ### Defining Configurations
