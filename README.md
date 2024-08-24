@@ -4,9 +4,11 @@
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 [![Gem Version](https://badge.fury.io/rb/ultra_settings.svg)](https://badge.fury.io/rb/ultra_settings)
 
-This gem provides a method for managing application settings and loading their values from a variety of sources. It can help you get a handle on you application's configuration by providing a consistent method for accessing settings. It also provides a method for documenting and viewing your application's settings.
+This gem provides a method for managing application settings and loading their values from a variety of sources. It can help you get a handle on you application's configuration by providing a consistent method for accessing settings.
 
-It allows you to define a hierarchy with three layers of sources for your configuration values:
+It provides an emphasis on ensuring that you configuration is documented. Documentation can be included directly in the configuration code. There is an included web UI that can either be mounted as a rack app or embedded in other view to provide a means of documenting what the configuration is, and how to change it.
+
+This gem allows you to define a hierarchy with three layers of sources for your configuration values:
 
 1. Environment variables
 2. Runtime settings (i.e. settings updatable from within the running application)
