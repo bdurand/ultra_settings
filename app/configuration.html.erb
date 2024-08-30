@@ -3,7 +3,7 @@
       <% unless configuration.class.yaml_config_disabled? || configuration.class.configuration_file.nil? %>
         <tr>
           <th colspan="6">
-            YAML File:
+            Configuration File:
             <span style="font-weight: normal;">
               <%= html_escape(relative_path(configuration.class.configuration_file)) %>
               <% unless configuration.class.configuration_file&.exist? %>
@@ -15,9 +15,9 @@
       <% end %>
       <tr>
         <th>Name</th>
-        <th>Type</th>
         <th>Value</th>
-        <th>Set Via</th>
+        <th>Type</th>
+        <th>Notes</th>
       </tr>
     </thead>
     <tbody>
@@ -25,12 +25,18 @@
         <tr>
           <td>
             <code class="ultra-settings-name"><%= html_escape(field.name) %></code>
-            <% unless field.description.to_s.empty? %>
-              <div class="ultra-settings-description">
-                <%= html_escape(field.description) %>
-              </div>
+          </td>
+
+          <td style="word-wrap: break-word; max-width:30em;">
+            <% if configuration[field.name].nil? %>
+              <em>nil</em>
+            <% elsif field.secret? %>
+              <%= html_escape(secret_value(configuration[field.name])) %>
+            <% else %>
+              <%= html_escape(display_value(configuration[field.name])) %>
             <% end %>
           </td>
+
           <td>
             <%= html_escape(field.type) %>
             <%
@@ -45,37 +51,39 @@
             <% end %>
           </td>
 
-          <td style="word-wrap: break-word; max-width:30em;">
-            <% if configuration[field.name].nil? %>
-              <em>nil</em>
-            <% elsif field.secret? %>
-              <%= html_escape(secret_value(configuration[field.name])) %>
-            <% else %>
-              <%= html_escape(display_value(configuration[field.name])) %>
-            <% end %>
-          </td>
-
           <td>
-            <% if field.env_var && !configuration.class.environment_variables_disabled? %>
-              <div>
-                <%= set_via("Environment Variable", field.env_var, configuration, field, :env) %>
+            <% unless field.description.to_s.empty? %>
+              <div class="ultra-settings-description">
+                <%= html_escape(field.description) %>
               </div>
             <% end %>
-            <% if field.runtime_setting && !configuration.class.runtime_settings_disabled? %>
-              <div>
-                <%= set_via("Runtime Setting", field.runtime_setting, configuration, field, :settings) %>
-              </div>
-            <% end %>
-            <% if field.yaml_key && !configuration.class.yaml_config_disabled? %>
-              <div>
-                <%= set_via("YAML Key", field.yaml_key, configuration, field, :yaml) %>
-              </div>
-            <% end %>
-            <% unless field.default.nil? %>
-              <div>
-                <%= set_via("Default", nil, configuration, field, :default) %>
-              </div>
-            <% end %>
+
+            <ul style="margin:0">
+              <li>
+                <%= set_via_description(configuration, field) %>
+              </li>
+
+              <% if field.env_var && !configuration.class.environment_variables_disabled? %>
+                <li>
+                  Can be changed with the <code><%= html_escape(field.env_var) %></code> environment variable.
+                </li>
+              <% end %>
+              <% if field.runtime_setting && !configuration.class.runtime_settings_disabled? %>
+                <li>
+                  Can be changed with the <code><%= html_escape(field.runtime_setting) %></code> runtime setting.
+                </li>
+              <% end %>
+              <% if field.yaml_key && !configuration.class.yaml_config_disabled? %>
+                <li>
+                  Can be changed with the <code><%= html_escape(field.yaml_key) %></code> key in the configuration file.
+                </li>
+              <% end %>
+              <% unless field.default.nil? %>
+                <li>
+                  This field has a default value.
+                </li>
+              <% end %>
+            </ul>
           </td>
         </tr>
       <% end %>

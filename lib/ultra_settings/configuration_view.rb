@@ -37,7 +37,7 @@ module UltraSettings
     def render(table_class: "ultra-settings-table")
       configuration = @configuration
       html = self.class.template.result(binding)
-      html.html_safe if html.respond_to?(:html_safe)
+      html = html.html_safe if html.respond_to?(:html_safe)
       html
     end
 
@@ -60,13 +60,18 @@ module UltraSettings
       end
     end
 
-    def set_via(label, value, configuration, field, option)
-      html = html_escape(label)
-      html = "#{html}: <code class=\"ultra-settings-set-via\">#{html_escape(value)}</code>" unless value.nil?
-      if configuration.__source__(field.name) == option
-        html = "<strong class=\"ultra-settings-set-via-selected\">#{html}</strong>"
+    def set_via_description(configuration, field)
+      if configuration.__source__(field.name) == :env
+        "Currntly set via environment variable"
+      elsif configuration.__source__(field.name) == :settings
+        "Currently set via runtime settings"
+      elsif configuration.__source__(field.name) == :yaml
+        "Currently set via configuration file"
+      elsif !field.default.nil?
+        "Currently using the default value"
+      else
+        "Not set"
       end
-      html
     end
 
     def secret_value(value)
@@ -78,7 +83,12 @@ module UltraSettings
     end
 
     def relative_path(path)
-      path.relative_path_from(UltraSettings::Configuration.yaml_config_path)
+      root_path = Pathname.new(Dir.pwd)
+      config_path = UltraSettings::Configuration.yaml_config_path
+      unless config_path.realpath.to_s.start_with?("#{root_path.realpath}#{File::SEPARATOR}")
+        root_path = config_path
+      end
+      path.relative_path_from(root_path)
     end
   end
 end
