@@ -17,4 +17,10 @@ describe UltraSettings::WebView do
     app = UltraSettings::WebView.new
     expect(app.content).to be_a(String)
   end
+
+  it "renders valid HTML" do
+    app = UltraSettings::WebView.new
+    doc = Nokogiri::HTML(app.content)
+    expect(doc.errors).to be_empty
+  end
 end

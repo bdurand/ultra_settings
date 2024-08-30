@@ -469,10 +469,39 @@ module UltraSettings
       end
     end
 
+    # Get the current source for the field.
+    #
+    # @param name [String, Symbol] the name of the field.
+    # @return [Symbol, nil] The source of the value (:env, :settings, :yaml, or :default).
     def __source__(name)
-      field = self.class.send(:defined_fields)[name]
+      field = self.class.send(:defined_fields)[name.to_s]
+      raise ArgumentError.new("Unknown field: #{name.inspect}") unless field
+
       source = field.source(env: ENV, settings: UltraSettings.__runtime_settings__, yaml_config: __yaml_config__)
       source || :default
+    end
+
+    # Get the value of the field from the specified source.
+    #
+    # @param name [String, Symbol] the name of the field.
+    # @param source [Symbol] the source of the value (:env, :settings, :yaml, or :default).
+    # @return [Object] The value of the field.
+    def __value_from_source__(name, source)
+      field = self.class.send(:defined_fields)[name.to_s]
+      raise ArgumentError.new("Unknown field: #{name.inspect}") unless field
+
+      case source
+      when :env
+        field.value(env: ENV)
+      when :settings
+        field.value(settings: UltraSettings.__runtime_settings__)
+      when :yaml
+        field.value(yaml_config: __yaml_config__)
+      when :default
+        field.default
+      else
+        raise ArgumentError.new("Unknown source: #{source.inspect}")
+      end
     end
 
     # Output the current state of the configuration as a hash. If the field is marked as a secret,

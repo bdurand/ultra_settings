@@ -28,45 +28,18 @@
   background-color: rgba(0, 0, 0, .03);
 }
 
-.ultra-settings-name {
+.ultra-settings-table code {
   font-family: monospace;
   font-size: 0.9rem;
   display: inline;
-}
-
-.ultra-settings-set-via {
-  font-family: monospace;
-  font-size: 0.9rem;
-  display: inline;
-}
-
-.ultra-settings-options {
-  color: gray;
-  font-style: italic;
-  font-size: 0.9rem;
-}
-
-.ultra-settings-set-via-selected {
-  font-weight: 600;
-  color: blue;
-}
-
-.ultra-settings-description {
-  font-size: 0.9rem;
-  color: gray;
-}
-
-.ultra-settings-info {
-  margin-bottom: 1rem;
-}
-
-.ultra-settings-error {
   color: darkred;
+  font-weight: 600;
 }
 
-.ultra-settings-not-applicable {
-  color: #999;
+.ultra-settings-table em {
+  color: gray;
   font-style: italic;
+  font-size: 0.9rem;
 }
 
 .ultra-settings-select {

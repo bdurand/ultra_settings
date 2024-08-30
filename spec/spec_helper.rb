@@ -3,6 +3,7 @@
 require "bundler/setup"
 
 require "climate_control"
+require "nokogiri"
 
 require_relative "../lib/ultra_settings"
 

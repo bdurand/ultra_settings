@@ -24,7 +24,7 @@
       <% configuration.class.fields.each do |field| %>
         <tr>
           <td>
-            <code class="ultra-settings-name"><%= html_escape(field.name) %></code>
+            <code><%= html_escape(field.name) %></code>
           </td>
 
           <td style="word-wrap: break-word; max-width:30em;">
@@ -46,41 +46,47 @@
             %>
             <% unless options.empty? %>
               <div>
-                <em class="ultra-settings-options"><%= html_escape(options.join(', ')) %></em>
+                <em><%= html_escape(options.join(', ')) %></em>
               </div>
             <% end %>
           </td>
 
           <td>
             <% unless field.description.to_s.empty? %>
-              <div class="ultra-settings-description">
+              <div>
                 <%= html_escape(field.description) %>
               </div>
             <% end %>
 
-            <ul style="margin:0">
+            <ul style="margin: 0; padding: 0;list-style-type: disc; list-style-position: inside;">
               <li>
                 <%= set_via_description(configuration, field) %>
               </li>
 
               <% if field.env_var && !configuration.class.environment_variables_disabled? %>
                 <li>
-                  Can be changed with the <code><%= html_escape(field.env_var) %></code> environment variable.
+                  Can be changed with the
+                  <code><%= show_defined_value(field.env_var, configuration.__value_from_source__(field.name, :env), field.secret?) %></code>
+                  environment variable.
                 </li>
               <% end %>
               <% if field.runtime_setting && !configuration.class.runtime_settings_disabled? %>
                 <li>
-                  Can be changed with the <code><%= html_escape(field.runtime_setting) %></code> runtime setting.
+                  Can be changed with the
+                  <code><%= show_defined_value(field.runtime_setting, configuration.__value_from_source__(field.name, :settings), field.secret?) %></code>
+                  runtime setting.
                 </li>
               <% end %>
               <% if field.yaml_key && !configuration.class.yaml_config_disabled? %>
                 <li>
-                  Can be changed with the <code><%= html_escape(field.yaml_key) %></code> key in the configuration file.
+                  Can be changed with the
+                  <code><%= show_defined_value(field.yaml_key, configuration.__value_from_source__(field.name, :yaml), field.secret?) %></code>
+                  key in the configuration file.
                 </li>
               <% end %>
               <% unless field.default.nil? %>
                 <li>
-                  This field has a default value.
+                  This field has a <%= show_defined_value("default value", field.default, field.secret?) %>.
                 </li>
               <% end %>
             </ul>

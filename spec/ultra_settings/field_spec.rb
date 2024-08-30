@@ -48,6 +48,7 @@ describe UltraSettings::Field do
       expect(field.secret?).to be false
     end
   end
+
   describe "type" do
     describe "string" do
       it "coerces the value to a string" do

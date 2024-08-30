@@ -24,4 +24,10 @@ describe UltraSettings::ConfigurationView do
     expect(html).to include("••••••••")
     expect(html).not_to include("secretvalue")
   end
+
+  it "renders valid HTML", env: {TEST_STRING: "<script"} do
+    html = UltraSettings::ConfigurationView.new(TestConfiguration.instance).render
+    doc = Nokogiri::HTML(html)
+    expect(doc.errors).to be_empty
+  end
 end

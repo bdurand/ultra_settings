@@ -6,9 +6,9 @@
 
 ## Introduction
 
-**UltraSettings** is a Ruby gem designed for managing application settings from various sources, providing a consistent method for accessing configuration values. It simplifies your application's configuration management by allowing settings to be defined, documented, and accessed seamlessly.
+UltraSettings is a Ruby gem designed for managing application settings from various sources providing a consistent method for accessing configuration values. It simplifies your application's configuration management by allowing settings to be defined, documented, and accessed seamlessly.
 
-**UltraSettings** emphasizes well-documented configuration. You can include documentation directly in the configuration code. The gem also includes a web UI that can be mounted as a Rack app or embedded in other views, allowing admin users to easily view configuration settings and documentation##.
+UltraSettings emphasizes well-documented configuration. You can include documentation directly in the configuration code. The gem also includes a web UI that can be mounted as a Rack app or embedded in other views allowing admin users to easily view configuration settings and documentation.
 
 ## Key Features
 
@@ -22,7 +22,7 @@ Settings from higher levels override those from lower ones. For example, values 
 
 ### Simplified Access and Type Safety
 
-With **UltraSettings**, your application code does not need to worry about how or from where a setting value is loaded from. Configuration settings can be accessed using plain Ruby objects and methods, simplifying the development process.
+With UltraSettings, your application code does not need to worry about how or from where a setting value is loaded from. Configuration settings can be accessed using plain Ruby objects and methods simplifying the development process.
 
 The gem also ensures type safety by typecasting settings to specific data types, so you can rely on consistent data formats without manual type coercion. Supported types include:
 
@@ -48,21 +48,25 @@ You can define fields on your configuration classes with the `field` method. Thi
 class MyServiceConfiguration < UltraSettings::Configuration
   self.fields_secret_by_default = false
 
-  field :host, type: :string
+  field :host, type: :string, description: "The hostname for the service"
 
-  field :port, type: :integer, default: 80
+  field :port, type: :integer, default: 80, description: "The port for the service"
 
-  field :protocol, type: :string, default: "https"
+  field :protocol, type: :string, default: "https", description: "The protocol for the service"
 
-  field :timeout, type: :float, default: 1.0, default_if: ->(val) { val <= 0 }
+  field :timeout,
+    type: :float,
+    default: 1.0,
+    default_if: ->(val) { val <= 0 },
+    description: "Network timeout in seconds for requests to the service."
 
   field :auth_token,
     type: :string,
     env_var: "MY_SERVICE_TOKEN",
     runtime_setting: false,
     yaml_key: false,
-    secret: true,
-    description: "Bearer token for accessing the service"
+    description: "Bearer token for accessing the service",
+    secret: true
 
   # You aren't limited to just defining fields, you can define other
   # helper methods to make using the configuration easier.
@@ -76,15 +80,17 @@ end
 
 You can customize the behavior of each field using various options:
 
-- `:type` -  Specifies the type of the field. The value of the setting will be cast to this type. Supported types are:
+- `:type` -  Specifies the type of the field. The value of the setting will be cast to this type. If the value in the data source cannot be cast to the data type, then it will not be used. Supported types are:
 
   - `:string` (the default)
   - `:integer`
   - `:float`
-  - `:boolean`
+  - `:boolean` (will accept case insensitive strings "true", "false", "1", "0", "t", "f", "yes", "no", "y", "n")
   - `:datetime`
   - `:symbol`
   - `:array` (of strings)
+
+- `:description` - Provides a description of the field. This is used for documentation purposes.
 
 - `:default` - Sets a default value for the field. The value will be cast to the specified type.
 
@@ -92,11 +98,7 @@ You can customize the behavior of each field using various options:
 
 - `:secret` - Marks the field as secret. Secret fields are not displayed in the web UI. By default, all fields are considered secret to avoid accidentally exposing sensitive values. You can change this default behavior by setting `fields_secret_by_default` to `false` either globally or per configuration.
 
-- `:description` - Provides a description of the field. This is used for documentation purposes only.
-- You can specify a trigger of when the default should be used with the `:default_if` option. If this option is provided, then it should be either a `Proc` or the name of a method in the class to call with the value from the settings. You can use this feature, for example, to always ensure that a value meets certain constraints.
-
 - `:env_var` - Overrides the environment variable name used to populate the field. This is useful if the variable name does not follow the conventional pattern. Set this to `false` to disable loading the field from an environment variable.
-
 
 - `:runtime_setting` - Overrides the runtime setting name for the field. Useful if the runtime setting name does not match the conventional pattern. Set this to `false` to disable loading the field from runtime settings.
 
@@ -106,25 +108,25 @@ You can customize the behavior of each field using various options:
 
 ### Environment Variables
 
-Settings will first try to load values from environment variables. Environment variables are a good place to define environment specific values.
+Settings will first try to load values from environment variables. Environment variables are a good place to define environment specific values or sensitive values that you do not want to store in your codebase.
 
 #### Default Behavior
 
-By default, environment variables for settings are constructed using a prefix based on the configuration class name, with the field name appended. For example, a class named `Configs::MySettingsConfiguration` will use the prefix `CONFIGS_MY_SETTINGS_`, resulting in environment variables like CONFIGS_MY_SETTINGS_HOST.
+By default, environment variables for settings are constructed using a prefix based on the configuration class name, with the field name appended. For example, a class named `Configs::MySettingsConfiguration` will use the prefix `CONFIGS_MY_SETTINGS_`, resulting in environment variables like `CONFIGS_MY_SETTINGS_HOST`.
 
 #### Customizing Environment Variables
 
 You can customize the behavior of environment variable naming in several ways:
 
-- Explicit Environment Variables: You can specify the name of the environment variable to use for a field by setting the `env_var` option on the field. This allows you to use a different name than the default.
+- **Explicit Environment Variables:** You can specify the name of the environment variable to use for a field by setting the `env_var` option on the field. This allows you to use a different name than the default.
 
-- Lowercase Environment Variables: Set `env_var_upcase` to false in your configuration class to use lowercase environment variable names.
+- **Lowercase Environment Variables:** Set `env_var_upcase` to false in your configuration class to use lowercase environment variable names.
 
-- Custom Delimiter: The delimiter between module names and before the setting name can be customized by setting `env_var_delimiter` on your configuration class. For example, using a delimiter of "." in `Configs::MySettingsConfiguration` would produce environment variables like `CONFIGS.MY_SETTINGS.HOST`.
+- **Custom Delimiter:** The delimiter between module names and before the setting name can be customized by setting `env_var_delimiter` on your configuration class. For example, using a delimiter of "." in `Configs::MySettingsConfiguration` would produce environment variables like `CONFIGS.MY_SETTINGS.HOST`.
 
-- Custom Prefix: Set `env_var_prefix` on your configuration class to specify an explicit prefix for environment variables. This allows for more flexibility in naming conventions.
+- **Custom Prefix:** Set `env_var_prefix` on your configuration class to specify an explicit prefix for environment variables. This allows for more flexibility in naming conventions.
 
-- Disabling Environment Variables: You can disable environment variables as a default source for fields by setting `environment_variables_disabled` to `true` in your configuration class.
+- **Disabling Environment Variables:** You can disable environment variables as a default source for fields by setting `environment_variables_disabled` to `true` in your configuration class. You can disable environent variables on individual fields by setting `env_var` on the field to `false`.
 
 If a setting value cannot be loaded from an environment variable, then it's value will attempt to be loaded from a runtime setting.
 
@@ -135,8 +137,6 @@ Runtime settings are configurations loaded while your application is running, al
 #### Setting Up Runtime Settings
 
 To enable runtime settings, set the `UltraSettings.runtime_settings` attribute to an object that implements a `[]` method and accepts a string argument. For example, to load runtime settings from a Redis database, you could use the following implementation:
-
-Runtime settings are settings that are loaded at runtime while your application is running. The advantage to this kind of setting is that your application does not need to restart in order to get an updated value.
 
 ```ruby
 class RedisRuntimeSettings
@@ -166,15 +166,15 @@ By default settings will be loaded from runtime settings by constructing a prefi
 
 You can customize the behavior of runtime setting names with the following options:
 
-- Explicit Runtime Setting Names: You can specify the name of the runtime setting to use for a field by setting the `runtime_setting` option on the field. This allows you to use a different name than the default.
+- **Explicit Runtime Setting Names:** You can specify the name of the runtime setting to use for a field by setting the `runtime_setting` option on the field. This allows you to use a different name than the default.
 
-- Uppercase Runtime Setting Names: Set `runtime_setting_upcase` to true in your configuration class to use uppercase runtime setting names.
+- **Uppercase Runtime Setting Names:** Set `runtime_setting_upcase` to true in your configuration class to use uppercase runtime setting names.
 
-- Custom Delimiter: Change the delimiter used between module names and before the setting name by setting `runtime_setting_delimiter` on your configuration class. For example, using a delimiter of "/" would produce runtime settings like `configs/my_settings/host`.
+- **Custom Delimiter:** Change the delimiter used between module names and before the setting name by setting `runtime_setting_delimiter` on your configuration class. For example, using a delimiter of "/" would produce runtime settings like `configs/my_settings/host`.
 
-- Custom Prefix: Set `runtime_setting_prefix` on your configuration class to specify a custom prefix for runtime settings, giving you flexibility in naming conventions.
+- **Custom Prefix:** Set `runtime_setting_prefix` on your configuration class to specify a custom prefix for runtime settings, giving you flexibility in naming conventions.
 
-- Disabling Runtime Settings: You can disable runtime settings as a default source for fields by setting `runtime_settings_disabled` to `true` in your configuration class.
+- **Disabling Runtime Settings:** You can disable runtime settings as a default source for fields by setting `runtime_settings_disabled` to `true` in your configuration class. You can disable runtime settings on individual fields by setting `runtime_setting` on the field to `false`.
 
 If a setting value cannot be loaded from the runtime settings, then it's value will attempt to be loaded from a YAML file.
 
@@ -186,19 +186,19 @@ By default settings will be loaded from a YAML file determined by its class name
 
 #### Customizing YAML Files
 
-- Explicit YAML Key: You can specify the key in the YAML file to use for a field by setting the `yaml_key` option on the field. This allows you to use a different key than the default.
+- **Explicit YAML Key:** You can specify the key in the YAML file to use for a field by setting the `yaml_key` option on the field. This allows you to use a different key than the default.
 
-- Custom YAML File Path: You can specify an explicit YAML file by setting `configuration_file` on your configuration class to the desired file path.
+- **Custom YAML File Path:** You can specify an explicit YAML file by setting `configuration_file` on your configuration class to the desired file path.
 
-- Disable YAML Source: To disable YAML files as a default source for your fields, set `yaml_config_disabled` to true on your configuration class.
+- **Disable YAML Source:** To disable YAML files as a default source for your fields, set `yaml_config_disabled` to true on your configuration class. You can disable YAML files on individual fields by setting `yaml_key` on the field to `false`.
 
 #### ERB Support
 
-YAML files support ERB markup (e.g., <%= %>) that will be evaluated before the YAML is parsed. This feature allows for dynamically generated values within the YAML file.
+YAML files support ERB markup (i.e., <%= %>) that will be evaluated before the YAML is parsed. This feature allows for dynamically generated values within the YAML file.
 
 #### Environment-Specific Configurations
 
-YAML files can define environment-specific configurations. The file must contain a hash where the keys represent the names of your application environments (e.g., development, test, production). You can specify the environment to use by setting `UltraSettings.yaml_config_env` (default is "development").
+YAML files can define environment-specific configurations. The file must contain a hash where the keys represent the names of your application environments (e.g., `development`, `test`, `production`). You can specify the environment to use by setting `UltraSettings.yaml_config_env` (default is "development").
 
 A special key, `shared`, can be defined in the YAML file. The settings under this key will be merged with the environment-specific settings. Values from the specific environment will always overwrite those from `shared`.
 
@@ -217,7 +217,7 @@ production:
   host: prod.example.com
 ```
 
-The values for the "development" environment would be the combination of development and shared:
+The values for the development environment would be the combination of `development` and `shared`:
 
 ```ruby
 {
@@ -227,7 +227,7 @@ The values for the "development" environment would be the combination of develop
 }
 ```
 
-While for "production", the values would be the combination of production and shared:
+While for production, the values would be the combination of `production` and `shared`:
 
 ```ruby
 {
@@ -275,7 +275,7 @@ MyServiceConfiguration.instance.host
 
 #### Adding Configurations to UltraSettings
 
-To simplify access, you can add configurations as methods on the `UltraSettings` object. UltraSettings will derive the configuration class name based on the method name provided. For example:
+To simplify access, you can add configurations to the `UltraSettings` object. UltraSettings will derive the configuration class name based on the name provided and define a method that returns the configuraiton object. For example:
 
 ```ruby
 UltraSettings.add(:my_service)
@@ -324,9 +324,11 @@ end
 
 ### Web UI
 
-UltraSettings provides a web UI via a mountable Rack application, allowing you to view the settings values and docuentation. The UI will not display the value of any setting marked as secret. It is strongly recommended to secure the web UI with your application's authorization framework.
+UltraSettings provides a web UI via a mountable Rack application. You can use this to view the settings values and documentation. The UI will not display the value of any setting marked as secret.
 
 ![Web UI](assets/web_ui.png)
+
+It is strongly recommended to secure the web UI with your application's authorization framework so that it is only visible to internal admin users.
 
 #### Mounting the Web UI in a Rails Application
 
@@ -361,8 +363,9 @@ This approach allows for seamless integration of the settings UI into your appli
 When writing automated tests, you may need to override configuration settings to test different scenarios. UltraSettings provides the `UltraSettings.override!` method to temporarily change settings within a test block. Below are examples of how to override the `TestConfiguration#foo` value in a test.
 
 ```ruby
-# Override a configuration added on the global namespace
+# Override a configuration added on the global namespace.
 
+# Note: you must have already added the configuration with UltraSettings.add(:test)
 UltraSettings.override!(test: {foo: "bar"}) do
   expect(TestConfiguration.instance.foo).to eq "bar"
 end

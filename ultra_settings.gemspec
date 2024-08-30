@@ -4,10 +4,16 @@ Gem::Specification.new do |spec|
   spec.authors = ["Brian Durand"]
   spec.email = ["bbdurand@gmail.com"]
 
-  spec.summary = "Unified application configuration that allows for configuration via environment variables, YAML files, and dynamic runtime setting."
+  spec.summary = "UltraSettings is a Ruby gem that provides a flexible and documented approach to managing application configurations from multiple sources, including environment variables, runtime settings, and YAML files, with an optional web UI for easy documentation."
 
   spec.homepage = "https://github.com/bdurand/ultra_settings"
   spec.license = "MIT"
+
+  spec.metadata = {
+    "homepage_uri" => spec.homepage,
+    "source_code_uri" => spec.homepage,
+    "changelog_uri" => "#{spec.homepage}/blob/main/CHANGELOG.md"
+  }
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.

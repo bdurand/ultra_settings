@@ -1,5 +1,5 @@
 shared:
-  timout: 5.0
+  timeout: 5.0
 
 development:
   host: localhost

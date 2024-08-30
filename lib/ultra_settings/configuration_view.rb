@@ -60,15 +60,26 @@ module UltraSettings
       end
     end
 
+    def show_defined_value(label, value, secret)
+      title = if value.nil?
+        "Not set"
+      elsif secret
+        "Secret value"
+      else
+        "Current value: #{display_value(value)}"
+      end
+      "<dfn title=\"#{html_escape(title)}\">#{html_escape(label)}</dfn>"
+    end
+
     def set_via_description(configuration, field)
       if configuration.__source__(field.name) == :env
-        "Currntly set via environment variable"
+        "Currntly set via <strong>environment variable</strong>"
       elsif configuration.__source__(field.name) == :settings
-        "Currently set via runtime settings"
+        "Currently set via <strong>runtime settings</strong>"
       elsif configuration.__source__(field.name) == :yaml
-        "Currently set via configuration file"
+        "Currently set via <strong>configuration file</strong>"
       elsif !field.default.nil?
-        "Currently using the default value"
+        "Currently using the <strong>default value</strong>"
       else
         "Not set"
       end
