@@ -66,7 +66,7 @@ module UltraSettings
       elsif secret
         "Secret value"
       else
-        "Current value: #{display_value(value)}"
+        "Value: #{display_value(value)}"
       end
       "<dfn title=\"#{html_escape(title)}\">#{html_escape(label)}</dfn>"
     end

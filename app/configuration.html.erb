@@ -65,21 +65,21 @@
 
               <% if field.env_var && !configuration.class.environment_variables_disabled? %>
                 <li>
-                  Can be changed with the
+                  Can be set with the
                   <code><%= show_defined_value(field.env_var, configuration.__value_from_source__(field.name, :env), field.secret?) %></code>
                   environment variable.
                 </li>
               <% end %>
               <% if field.runtime_setting && !configuration.class.runtime_settings_disabled? %>
                 <li>
-                  Can be changed with the
+                  Can be set with the
                   <code><%= show_defined_value(field.runtime_setting, configuration.__value_from_source__(field.name, :settings), field.secret?) %></code>
                   runtime setting.
                 </li>
               <% end %>
               <% if field.yaml_key && !configuration.class.yaml_config_disabled? %>
                 <li>
-                  Can be changed with the
+                  Can be set with the
                   <code><%= show_defined_value(field.yaml_key, configuration.__value_from_source__(field.name, :yaml), field.secret?) %></code>
                   key in the configuration file.
                 </li>
