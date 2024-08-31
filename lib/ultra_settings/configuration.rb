@@ -512,7 +512,7 @@ module UltraSettings
     # to compare the configuration of you application between two different environments.
     #
     # @return [Hash]
-    def _to_h
+    def __to_hash__
       payload = {}
       self.class.fields.each do |field|
         value = self[field.name]

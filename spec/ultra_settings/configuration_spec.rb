@@ -240,9 +240,9 @@ describe UltraSettings::Configuration do
     end
   end
 
-  describe "_to_h" do
+  describe "__to_hash__" do
     it "returns a hash of the configuration values", env: {MY_SERVICE_TOKEN: "foobar"} do
-      expect(MyServiceConfiguration.instance._to_h).to eq({
+      expect(MyServiceConfiguration.instance.__to_hash__).to eq({
         "auth_token" => "securehash:7edf2d5530bce0def047b22f611ce887",
         "host" => nil,
         "port" => 80,

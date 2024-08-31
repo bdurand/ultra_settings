@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Revamped web UI that can now display setting values.
 - Added option to specify fields as a secret in the configuration to prevent exposing sensitive information in the web interface. By default all fields are considered secrets. This can be changed per configuration by setting the `fields_secret_by_default` property to `false`.
 - Added `UltraSettings::ConfigurationView` which can be used to embed the HTML table showing the configuration options and values other admin views. So now you can integrate the settings view into your own admin tools.
-- Add `_to_h` method to `UltraSettings::Configuration` which can to serialize the current configuration values as a hash. This value can be used for comparing configuration between environments.
+- Add `__to_hash__` method to `UltraSettings::Configuration` which can to serialize the current configuration values as a hash. This value can be used for comparing configuration between environments.
 
 ## 1.0.1
 
