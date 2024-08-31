@@ -18,7 +18,7 @@ This gem supports a three-layer hierarchy for defining configuration sources:
 2. Runtime Settings (modifiable within the running application)
 3. YAML Configuration Files
 
-Settings from higher levels override those from lower ones. For example, values defined in environment variables or runtime settings will override those specified in YAML files. This hierarchy is optional —- you can disable it and define specific data sources as needed for each configuration field.
+Settings from higher levels override those from lower ones. For example, values defined in environment variables or runtime settings will override those specified in YAML files. This hierarchy is optional — you can disable it and define specific data sources as needed for each configuration field.
 
 ### Simplified Access and Type Safety
 
