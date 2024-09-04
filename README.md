@@ -8,7 +8,7 @@
 
 UltraSettings is a Ruby gem designed for managing application settings from various sources providing a consistent method for accessing configuration values. It simplifies your application's configuration management by allowing settings to be defined, documented, and accessed seamlessly.
 
-UltraSettings emphasizes well-documented configuration. You can include documentation directly in the configuration code. The gem also includes a [web UI][#web-ui] that can be mounted as a Rack app or embedded in other views allowing admin users to easily view configuration settings and documentation.
+UltraSettings emphasizes well-documented configuration. You can include documentation directly in the configuration code. The gem also includes a [web UI](#web-ui) that can be mounted as a Rack app or embedded in other views allowing admin users to easily view configuration settings and documentation.
 
 ## Key Features
 
