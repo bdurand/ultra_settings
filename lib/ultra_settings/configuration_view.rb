@@ -71,20 +71,6 @@ module UltraSettings
       "<dfn title=\"#{html_escape(title)}\">#{html_escape(label)}</dfn>"
     end
 
-    def set_via_description(configuration, field)
-      if configuration.__source__(field.name) == :env
-        "Currently set via <strong>environment variable</strong>"
-      elsif configuration.__source__(field.name) == :settings
-        "Currently set via <strong>runtime settings</strong>"
-      elsif configuration.__source__(field.name) == :yaml
-        "Currently set via <strong>configuration file</strong>"
-      elsif !field.default.nil?
-        "Currently using the <strong>default value</strong>"
-      else
-        "Not set"
-      end
-    end
-
     def secret_value(value)
       if value.nil?
         "nil"

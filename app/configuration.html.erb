@@ -108,16 +108,18 @@
                   <% end %>
                 </li>
               <% end %>
-              <% unless field.default.nil? %>
+              <% if field.default.nil? %>
+                <% if source == :default %>
+                  <li>
+                    <strong>Not set</strong>
+                  </li>
+                <% end %>
+              <% else %>
                 <li>
                   <% if source == :default %>
                     <strong>
-                    <% if field.default.nil? %>
-                      Not currently set.
-                    <% else %>
                       Currently set with the
                       <%= show_defined_value("default value", field.default, field.secret?) %>.
-                    <% end %>
                     </strong>
                   <% else %>
                     This field has a <%= show_defined_value("default value", field.default, field.secret?) %>.
