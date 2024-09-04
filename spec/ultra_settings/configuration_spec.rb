@@ -239,4 +239,35 @@ describe UltraSettings::Configuration do
       expect(config.token).to eq "envtoken"
     end
   end
+
+  describe "__to_hash__" do
+    it "returns a hash of the configuration values", env: {MY_SERVICE_TOKEN: "foobar"} do
+      expect(MyServiceConfiguration.instance.__to_hash__).to eq({
+        "auth_token" => "securehash:7edf2d5530bce0def047b22f611ce887",
+        "host" => nil,
+        "port" => 80,
+        "protocol" => "https",
+        "timeout" => 5.0
+      })
+    end
+  end
+
+  describe "__source__" do
+    it "returns the source of the value", env: {MY_SERVICE_TOKEN: "foobar"}, settings: {"my_service.host" => "host"} do
+      expect(MyServiceConfiguration.instance.__source__(:auth_token)).to eq :env
+      expect(MyServiceConfiguration.instance.__source__(:host)).to eq :settings
+      expect(MyServiceConfiguration.instance.__source__(:timeout)).to eq :yaml
+      expect(MyServiceConfiguration.instance.__source__(:port)).to eq :default
+    end
+  end
+
+  describe "__value_from_source__" do
+    it "returns the value from the specified source", env: {MY_SERVICE_PORT: "4000"}, settings: {"my_service.port" => 5000}, yaml: {my_service: {port: 6000}} do
+      expect(MyServiceConfiguration.instance.__value_from_source__(:port, :env)).to eq 4000
+      expect(MyServiceConfiguration.instance.__value_from_source__(:port, :settings)).to eq 5000
+      expect(MyServiceConfiguration.instance.__value_from_source__(:port, :default)).to eq 80
+      expect(MyServiceConfiguration.instance.__value_from_source__(:port, :yaml)).to eq nil
+      expect(MyServiceConfiguration.instance.__value_from_source__("timeout", :yaml)).to eq 5.0
+    end
+  end
 end

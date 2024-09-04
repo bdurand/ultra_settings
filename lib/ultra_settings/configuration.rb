@@ -33,10 +33,11 @@ module UltraSettings
       # @param yaml_key [String, Symbol] The name of the YAML key to use for the field. By default
       #   this is the name of the field.
       # @return [void]
-      def field(name, type: :string, description: nil, default: nil, default_if: nil, static: nil, runtime_setting: nil, env_var: nil, yaml_key: nil)
+      def field(name, type: :string, description: nil, default: nil, default_if: nil, static: nil, secret: nil, runtime_setting: nil, env_var: nil, yaml_key: nil)
         name = name.to_s
         type = type.to_sym
         static = !!static
+        secret = lambda { fields_secret_by_default? } if secret.nil?
 
         unless name.match?(ALLOWED_NAME_PATTERN)
           raise ArgumentError.new("Invalid name: #{name.inspect}")
@@ -59,7 +60,8 @@ module UltraSettings
           env_var: construct_env_var(name, env_var),
           runtime_setting: (static ? nil : construct_runtime_setting(name, runtime_setting)),
           yaml_key: construct_yaml_key(name, yaml_key),
-          static: static
+          static: static,
+          secret: secret
         )
 
         class_eval <<-RUBY, __FILE__, __LINE__ + 1 # rubocop:disable Security/Eval
@@ -69,7 +71,7 @@ module UltraSettings
         RUBY
 
         if type == :boolean
-          alias_method "#{name}?", name
+          alias_method :"#{name}?", name
         end
       end
 
@@ -306,6 +308,23 @@ module UltraSettings
         get_inheritable_class_attribute(:@yaml_config_env, "development")
       end
 
+      # Sets the default value for the secret property of fields. Individual fields can still
+      # override this value by explicitly setting the secret property. By default, fields are
+      # considered secret.
+      #
+      # @param value [Boolean]
+      # @return [void]
+      def fields_secret_by_default=(value)
+        set_inheritable_class_attribute(:@fields_secret_by_default, !!value)
+      end
+
+      # Check if fields are considered secret by default.
+      #
+      # @return [Boolean]
+      def fields_secret_by_default?
+        get_inheritable_class_attribute(:@fields_secret_by_default, true)
+      end
+
       # Override field values within a block.
       #
       # @param values [Hash<Symbol, Object>]] List of fields with the values they
@@ -450,10 +469,59 @@ module UltraSettings
       end
     end
 
+    # Get the current source for the field.
+    #
+    # @param name [String, Symbol] the name of the field.
+    # @return [Symbol, nil] The source of the value (:env, :settings, :yaml, or :default).
     def __source__(name)
-      field = self.class.send(:defined_fields)[name]
+      field = self.class.send(:defined_fields)[name.to_s]
+      raise ArgumentError.new("Unknown field: #{name.inspect}") unless field
+
       source = field.source(env: ENV, settings: UltraSettings.__runtime_settings__, yaml_config: __yaml_config__)
       source || :default
+    end
+
+    # Get the value of the field from the specified source.
+    #
+    # @param name [String, Symbol] the name of the field.
+    # @param source [Symbol] the source of the value (:env, :settings, :yaml, or :default).
+    # @return [Object] The value of the field.
+    def __value_from_source__(name, source)
+      field = self.class.send(:defined_fields)[name.to_s]
+      raise ArgumentError.new("Unknown field: #{name.inspect}") unless field
+
+      case source
+      when :env
+        field.value(env: ENV)
+      when :settings
+        field.value(settings: UltraSettings.__runtime_settings__)
+      when :yaml
+        field.value(yaml_config: __yaml_config__)
+      when :default
+        field.default
+      else
+        raise ArgumentError.new("Unknown source: #{source.inspect}")
+      end
+    end
+
+    # Output the current state of the configuration as a hash. If the field is marked as a secret,
+    # then the value will be a secure hash of the value instead of the value itself.
+    #
+    # The intent of this method is to provide a serializable value that captures the current state
+    # of the configuration without exposing any secrets. You could, for instance, use the output
+    # to compare the configuration of you application between two different environments.
+    #
+    # @return [Hash]
+    def __to_hash__
+      payload = {}
+      self.class.fields.each do |field|
+        value = self[field.name]
+        if field.secret? && !value.nil?
+          value = "securehash:#{Digest::MD5.hexdigest(Digest::SHA256.hexdigest(value.to_s))}"
+        end
+        payload[field.name] = value
+      end
+      payload
     end
 
     private
@@ -510,7 +578,7 @@ module UltraSettings
     end
 
     def __yaml_config__
-      @yaml_config ||= (self.class.load_yaml_config || {})
+      @yaml_config ||= self.class.load_yaml_config || {}
     end
   end
 end

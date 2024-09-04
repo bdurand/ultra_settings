@@ -34,6 +34,21 @@ describe UltraSettings::Field do
     end
   end
 
+  describe "secret" do
+    it "returns the value specified by the secret option" do
+      field = UltraSettings::Field.new(name: "foo", secret: true)
+      expect(field.secret?).to be true
+    end
+
+    it "returns the value specified by the secret proc" do
+      secret_val = true
+      field = UltraSettings::Field.new(name: "foo", secret: -> { secret_val })
+      expect(field.secret?).to be true
+      secret_val = nil
+      expect(field.secret?).to be false
+    end
+  end
+
   describe "type" do
     describe "string" do
       it "coerces the value to a string" do

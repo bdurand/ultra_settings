@@ -1,0 +1,134 @@
+  <table class="<%= html_escape(table_class.to_s) %>">
+    <thead>
+      <% unless configuration.class.yaml_config_disabled? || configuration.class.configuration_file.nil? %>
+        <tr>
+          <th colspan="6">
+            Configuration File:
+            <span style="font-weight: normal;">
+              <%= html_escape(relative_path(configuration.class.configuration_file)) %>
+              <% unless configuration.class.configuration_file&.exist? %>
+                <em>(File does not exist)</em>
+              <% end %>
+            </span>
+          </th>
+        </tr>
+      <% end %>
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+        <th>Type</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% configuration.class.fields.each do |field| %>
+        <% source = configuration.__source__(field.name) %>
+        <tr>
+          <td>
+            <code><%= html_escape(field.name) %></code>
+          </td>
+
+          <td style="word-wrap: break-word; max-width:30em;">
+            <% if configuration[field.name].nil? %>
+              <em>nil</em>
+            <% elsif field.secret? %>
+              <%= html_escape(secret_value(configuration[field.name])) %>
+            <% else %>
+              <%= html_escape(display_value(configuration[field.name])) %>
+            <% end %>
+          </td>
+
+          <td>
+            <%= html_escape(field.type) %>
+            <%
+              options = []
+              options << 'static' if field.static?
+              options << 'secret' if field.secret?
+            %>
+            <% unless options.empty? %>
+              <div>
+                <em><%= html_escape(options.join(', ')) %></em>
+              </div>
+            <% end %>
+          </td>
+
+          <td>
+            <% unless field.description.to_s.empty? %>
+              <div>
+                <%= html_escape(field.description) %>
+              </div>
+            <% end %>
+
+            <ul style="margin: 0; padding: 0;list-style-type: disc; list-style-position: inside;">
+              <% if field.env_var && !configuration.class.environment_variables_disabled? %>
+                <li>
+                  <% if source == :env %>
+                    <strong>
+                    Currently
+                  <% else %>
+                    Can be
+                  <% end %>
+                  set with the
+                  <code><%= show_defined_value(field.env_var, configuration.__value_from_source__(field.name, :env), field.secret?) %></code>
+                  environment variable.
+                  <% if source == :env %>
+                    </strong>
+                  <% end %>
+                </li>
+              <% end %>
+              <% if field.runtime_setting && !configuration.class.runtime_settings_disabled? %>
+                <li>
+                  <% if source == :settings %>
+                    <strong>
+                    Currently
+                  <% else %>
+                    Can be
+                  <% end %>
+                  set with the
+                  <code><%= show_defined_value(field.runtime_setting, configuration.__value_from_source__(field.name, :settings), field.secret?) %></code>
+                  runtime setting.
+                  <% if source == :settings %>
+                    </strong>
+                  <% end %>
+                </li>
+              <% end %>
+              <% if field.yaml_key && !configuration.class.yaml_config_disabled? %>
+                <li>
+                  <% if source == :yaml %>
+                    <strong>
+                    Currently
+                  <% else %>
+                    Can be
+                  <% end %>
+                  set with the
+                  <code><%= show_defined_value(field.yaml_key, configuration.__value_from_source__(field.name, :yaml), field.secret?) %></code>
+                  key in the configuration file.
+                  <% if source == :yaml %>
+                    </strong>
+                  <% end %>
+                </li>
+              <% end %>
+              <% if field.default.nil? %>
+                <% if source == :default %>
+                  <li>
+                    <strong>Not set</strong>
+                  </li>
+                <% end %>
+              <% else %>
+                <li>
+                  <% if source == :default %>
+                    <strong>
+                      Currently set with the
+                      <%= show_defined_value("default value", field.default, field.secret?) %>.
+                    </strong>
+                  <% else %>
+                    This field has a <%= show_defined_value("default value", field.default, field.secret?) %>.
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>

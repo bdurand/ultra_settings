@@ -13,7 +13,8 @@ class TestConfiguration < UltraSettings::Configuration
   field :bool, type: :boolean
   field :time, type: :datetime
   field :array, type: :array
-  field :string, type: :string
+  field :string, type: :string, secret: false
+  field :secret, secret: true
 
   field :default_int, type: :integer, default: "1"
   field :default_bool, type: :boolean, default: "true"
