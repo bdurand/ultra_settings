@@ -73,7 +73,7 @@ module UltraSettings
 
     def set_via_description(configuration, field)
       if configuration.__source__(field.name) == :env
-        "Currntly set via <strong>environment variable</strong>"
+        "Currently set via <strong>environment variable</strong>"
       elsif configuration.__source__(field.name) == :settings
         "Currently set via <strong>runtime settings</strong>"
       elsif configuration.__source__(field.name) == :yaml
