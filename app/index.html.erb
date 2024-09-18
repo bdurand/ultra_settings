@@ -1,8 +1,8 @@
 <div class="ultra-settings-nav">
   <form onsubmit="return false">
-    <select class="ultra-settings-select" size="1" id="config-selector">
+    <select class="<%= html_escape(select_class) %>" size="1" id="config-selector">
       <% UltraSettings.__configuration_names__.sort.each do |name| %>
-        <option value="config-<%= name %>"><%= name %></option>
+        <option value="config-<%= html_escape(name) %>"><%= html_escape(name) %></option>
       <% end %>
     </select>
   </form>
@@ -11,11 +11,11 @@
 <% UltraSettings.__configuration_names__.sort.each do |name| %>
   <% configuration = UltraSettings.send(name) %>
 
-  <div class="ultra-settings-configuration" id="config-<%= name %>" style="display:none;">
-    <%= UltraSettings::ConfigurationView.new(configuration) %>
+  <div class="ultra-settings-configuration" id="config-<%= html_escape(name) %>" style="display:none;">
+    <%= UltraSettings::ConfigurationView.new(configuration).render(table_class: table_class) %>
   </div>
 <% end %>
 
 <script>
-  <%= @javascript %>
+  <%= javascript %>
 </script>
