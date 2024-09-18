@@ -6,11 +6,9 @@ module UltraSettings
     attr_reader :css
 
     def initialize
-      @index_template = erb_template("index.html.erb")
       @layout_template = erb_template("layout.html.erb")
       @layout_css = read_app_file("layout.css")
       @css = read_app_file("application.css")
-      @javascript = read_app_file("application.js")
     end
 
     def render_settings
@@ -18,7 +16,7 @@ module UltraSettings
     end
 
     def content
-      @index_template.result(binding)
+      UltraSettings::ApplicationView.new.render
     end
 
     private

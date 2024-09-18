@@ -348,15 +348,23 @@ end, at: "/ultra_settings"
 
 #### Embedding the Settings View in Admin Tools
 
-If you prefer to embed the settings view directly into your own admin tools or dashboard, you can use the `UltraSettings::ConfigurationView` class to render the settings interface within your existing views:
+If you prefer to embed the settings view directly into your own admin tools or dashboard, you can use the `UltraSettings::ApplicationView` class to render the settings interface within your existing views:
+
+```erb
+<h1>Configuration</h1>
+
+<%= UltraSettings::ApplicationView.new.render(select_class: "form-control", table_class: "table table-striped") %>
+```
+
+This approach allows for seamless integration of the settings UI into your application's admin interface, leveraging your existing authentication and authorization mechanisms. The settings are rendered in an HTML table with navigation handled by an HTML select element. You can specify the CSS classes for these elements and use your own stylesheets to customize the appearance.
+
+You can also embed the view for individual configurations within your own views using the `UltraSettings::ConfigurationView` class if you want more customization:
 
 ```erb
 <h1>My Service Settings</h1>
 
-<%= UltraSettings::ConfigurationView.new(MyServiceConfiguration.instance).render %>
+<%= UltraSettings::ConfigurationView.new(MyServiceConfiguration.instance).render(table_class: "table table-striped") %>
 ```
-
-This approach allows for seamless integration of the settings UI into your application's admin interface, leveraging your existing authentication and authorization mechanisms. The settings are rendered in an HTML table which you can format with your own CSS.
 
 ### Testing With UltraSettings
 
