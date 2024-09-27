@@ -2,7 +2,7 @@
   <form onsubmit="return false">
     <select class="<%= html_escape(select_class) %>" size="1" id="config-selector">
       <% UltraSettings.__configuration_names__.sort.each do |name| %>
-        <option value="config-<%= html_escape(name) %>"><%= html_escape(name) %></option>
+        <option value="config-<%= html_escape(name) %>"><%= html_escape(UltraSettings.send(name).class.name) %></option>
       <% end %>
     </select>
   </form>

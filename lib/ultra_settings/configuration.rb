@@ -86,12 +86,12 @@ module UltraSettings
       #
       # @param name [Symbol, String] The name of the field.
       # @return [Boolean]
-      def include?(name)
+      def include_field?(name)
         name = name.to_s
         return true if defined_fields.include?(name)
 
         if superclass <= Configuration
-          superclass.include?(name)
+          superclass.include_field?(name)
         else
           false
         end
@@ -442,11 +442,11 @@ module UltraSettings
     end
 
     def [](name)
-      send(name.to_s) if include?(name)
+      send(name.to_s) if include_field?(name)
     end
 
-    def include?(name)
-      self.class.include?(name.to_s)
+    def include_field?(name)
+      self.class.include_field?(name.to_s)
     end
 
     def override!(values, &block)

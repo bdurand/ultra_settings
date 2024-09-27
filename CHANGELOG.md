@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2.0.0
+
+### Fixed
+
+- Fix conflict with overridding the standard `include?` method on configuration classes. These methods are now defined as `UltraSettings.added?` and `UltraSettings::Configuration.include_field?`.
+- Include namespace in autoloaded configuration namess for Rails applications to avoid conflicts on classes in different namespaces.
+
+### Changed
+
+- Use configuration class in in web UI dropdown menu.
+
 ## 1.1.2
 
 ### Added
