@@ -1,5 +1,5 @@
 <div class="ultra-settings-nav">
-  <form onsubmit="return false">
+  <form onsubmit="return false" style="margin-bottom: 0.5rem;">
     <select class="<%= html_escape(select_class) %>" size="1" id="config-selector">
       <% UltraSettings.__configuration_names__.sort.each do |name| %>
         <option value="config-<%= html_escape(name) %>"><%= html_escape(UltraSettings.send(name).class.name) %></option>
