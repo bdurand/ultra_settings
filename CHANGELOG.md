@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Breaking Change** Fix conflict with overridding the standard `include?` method on configuration classes. These methods are now defined as `UltraSettings.added?` and `UltraSettings::Configuration.include_field?`.
+- **Breaking Change:** Fix conflict with overridding the standard `include?` method on configuration classes. These methods are now defined as `UltraSettings.added?` and `UltraSettings::Configuration.include_field?`.
 - Include namespace in autoloaded configuration namess for Rails applications to avoid conflicts on classes in different namespaces.
 
 ### Changed
