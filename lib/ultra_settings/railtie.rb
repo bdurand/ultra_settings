@@ -23,9 +23,12 @@ module UltraSettings
 
         app_config_dir = Rails.root.join(directory)
         app_config_dir.glob("**/*_configuration.rb").each do |file_path|
-          config_name = file_path.basename("_configuration.rb")
-          class_name = file_path.relative_path_from(app_config_dir).to_s.chomp(".rb").classify
-          UltraSettings.add(config_name, class_name)
+          relative_path = file_path.relative_path_from(app_config_dir).to_s
+          class_name = relative_path.chomp(".rb").classify
+          unless UltraSettings.added?(class_name)
+            config_name = class_name.delete_suffix("Configuration").underscore.tr("/", "_")
+            UltraSettings.add(config_name, class_name)
+          end
         end
       end
     end

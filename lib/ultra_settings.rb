@@ -46,7 +46,7 @@ module UltraSettings
     def add(name, klass = nil)
       name = name.to_s
       unless name.match?(VALID_NAME__PATTERN)
-        raise ArgementError.new("Invalid configuration name: #{name.inspect}")
+        raise ArgumentError.new("Invalid configuration name: #{name.inspect}")
       end
 
       class_name = klass&.to_s
@@ -67,7 +67,7 @@ module UltraSettings
     #
     # @param class_name [Class, String] The name of the configuration class.
     # @return [Boolean]
-    def include?(class_name)
+    def added?(class_name)
       @configurations.values.collect(&:to_s).include?(class_name.to_s)
     end
 

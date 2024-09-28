@@ -11,9 +11,9 @@ describe UltraSettings do
 
     it "can detect if a class has been added" do
       UltraSettings.test
-      expect(UltraSettings.include?(TestConfiguration)).to be(true)
-      expect(UltraSettings.include?("TestConfiguration")).to be(true)
-      expect(UltraSettings.include?(Object)).to be(false)
+      expect(UltraSettings.added?(TestConfiguration)).to be(true)
+      expect(UltraSettings.added?("TestConfiguration")).to be(true)
+      expect(UltraSettings.added?(Object)).to be(false)
     end
   end
 
