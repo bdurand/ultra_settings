@@ -64,10 +64,10 @@ describe UltraSettings::Configuration do
 
     it "can reference fields like a hash" do
       expect(configuration[:foo]).to eq "foo value"
-      expect(configuration.include_field?(:foo)).to eq true
+      expect(configuration.include?(:foo)).to eq true
 
       expect(configuration[:not_exist]).to eq nil
-      expect(configuration.include_field?(:not_exist)).to eq false
+      expect(configuration.include?(:not_exist)).to eq false
     end
   end
 
@@ -178,7 +178,7 @@ describe UltraSettings::Configuration do
   describe "subclasses" do
     it "inherits values from the parent class", env: {TEST_FOO: "one", SUBCLASS_FOO: "two"} do
       expect(configuration.foo).to eq "one"
-      expect(subclass_configuration.include_field?(:foo)).to eq true
+      expect(subclass_configuration.include?(:foo)).to eq true
       expect(subclass_configuration.foo).to eq "one"
     end
 

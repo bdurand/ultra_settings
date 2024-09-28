@@ -442,10 +442,10 @@ module UltraSettings
     end
 
     def [](name)
-      send(name.to_s) if include_field?(name)
+      send(name.to_s) if include?(name)
     end
 
-    def include_field?(name)
+    def include?(name)
       self.class.include_field?(name.to_s)
     end
 
