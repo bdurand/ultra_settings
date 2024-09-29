@@ -346,6 +346,12 @@ mount Rack::Builder.new do
 end, at: "/ultra_settings"
 ```
 
+You can specify the color scheme by setting by providing the `color_scheme` option to the `UltraSettings::RackApp` class. The default color scheme is `:light`. You can also set the scheme to `:dark` or `:system`.
+
+```ruby
+UltraSettings::RackApp.new(color_scheme: :dark)
+```
+
 #### Embedding the Settings View in Admin Tools
 
 If you prefer to embed the settings view directly into your own admin tools or dashboard, you can use the `UltraSettings::ApplicationView` class to render the settings interface within your existing views:

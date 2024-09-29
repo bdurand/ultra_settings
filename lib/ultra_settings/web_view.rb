@@ -5,10 +5,13 @@ module UltraSettings
   class WebView
     attr_reader :css
 
-    def initialize
+    # @param color_scheme [Symbol] The color scheme to use in the UI. This can be `:light`,
+    #  `:dark`, or `:system`. The default is `:light`.
+    def initialize(color_scheme: :light)
+      color_scheme = (color_scheme || :light).to_sym
       @layout_template = erb_template("layout.html.erb")
-      @layout_css = read_app_file("layout.css")
-      @css = read_app_file("application.css")
+      @layout_css = layout_css(color_scheme)
+      @css = application_css(color_scheme)
     end
 
     def render_settings
@@ -31,6 +34,18 @@ module UltraSettings
 
     def app_dir
       File.expand_path(File.join("..", "..", "app"), __dir__)
+    end
+
+    def layout_css(color_scheme)
+      vars = erb_template("layout_vars.css.erb").result(binding)
+      css = read_app_file("layout.css")
+      "#{vars}\n#{css}"
+    end
+
+    def application_css(color_scheme)
+      vars = erb_template("application_vars.css.erb").result(binding)
+      css = read_app_file("application.css")
+      "#{vars}\n#{css}"
     end
   end
 end

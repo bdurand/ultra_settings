@@ -5,8 +5,9 @@ module UltraSettings
   # No setting values are displayed, but you should still add some
   # sort of authentication if you want to use this in production.
   class RackApp
-    def initialize
+    def initialize(color_scheme: nil)
       @webview = nil
+      @color_scheme = color_scheme
     end
 
     def call(env)
@@ -19,7 +20,7 @@ module UltraSettings
       if ENV.fetch("RAILS_ENV", ENV.fetch("RACK_ENV", "development")) == "development"
         @webview = nil
       end
-      @webview ||= WebView.new
+      @webview ||= WebView.new(color_scheme: @color_scheme)
     end
   end
 end

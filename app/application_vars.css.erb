@@ -1,0 +1,31 @@
+<% unless color_scheme == :dark %>
+  .ultra-settings-configuration {
+    --table-header-bg-color: #fff;
+    --table-border-color: #dee2e6;
+    --alt-row-color: rgba(0, 0, 0, .05);
+    --form-control-color: #495057;
+    --form-control-bg-color: #fff;
+    --form-control-border-color: #ced4da;
+    --code-color: darkred;
+    --em-color: gray;
+  }
+<% end %>
+
+<% if color_scheme == :system %>
+  @media (prefers-color-scheme: dark) {
+<% end %>
+<% if color_scheme == :system || color_scheme == :dark %>
+  .ultra-settings-configuration {
+    --table-header-bg-color: #333;
+    --table-border-color: #555;
+    --alt-row-color: rgba(0, 0, 0, .30);
+    --form-control-color: #eee;
+    --form-control-bg-color: #666;
+    --form-control-border-color: #555;
+    --code-color: pink;
+    --em-color: #999;
+  }
+<% end %>
+<% if color_scheme == :system %>
+  }
+<% end %>

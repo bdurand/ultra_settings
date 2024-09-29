@@ -26,4 +26,4 @@ UltraSettings.add(:other)
 UltraSettings.add(:namespace, "Test::NamespaceConfiguration")
 UltraSettings.add(:my_service, "MyServiceConfiguration")
 
-run UltraSettings::RackApp.new
+run UltraSettings::RackApp.new(color_scheme: ENV.fetch("COLOR_SCHEME", nil))
