@@ -427,7 +427,6 @@ end
 
 This approach keeps your tests clean and readable while allowing for flexible configuration management during testing.
 
-
 ## Installation
 
 Add this line to your application's Gemfile:
