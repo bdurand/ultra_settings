@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added option to specify the color scheme for the web UI when mounting the rack app to support dark mode.
 
+### Fixed
+
+- Times stored as strings representing the seconds since the epoch are now correctly parsed as Time objects.
+
 ## 2.0.0
 
 ### Fixed
