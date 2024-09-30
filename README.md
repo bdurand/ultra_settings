@@ -452,6 +452,24 @@ Open a pull request on [GitHub](https://github.com/bdurand/ultra_settings).
 
 Please use the [standardrb](https://github.com/testdouble/standard) syntax and lint your code with `standardrb --fix` before submitting.
 
+You can start a local rack server to test the web UI by running
+
+```bash
+bundle exec rackup
+```
+
+You can test with some setting set by setting environment variable used in the test configuration.
+
+```bash
+MY_SERVICE_HOST=host.example.com MY_SERVICE_TOKEN=secret bundle exec rspec
+```
+
+You can test dark mode by setting the `COLOR_SCHEME` environment variable.
+
+```bash
+COLOR_SCHEME=dark bundle exec rackup
+```
+
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
