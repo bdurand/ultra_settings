@@ -427,6 +427,26 @@ end
 
 This approach keeps your tests clean and readable while allowing for flexible configuration management during testing.
 
+### Rollout percentages
+
+A common usage of configuration is to control rollout of new features by specifying a percentage value and then testing if a random number is less than it. If you implement this pattern in your configuration, then you should use something like the [consistent_random](https://github.com/bdurand/consistent_random) gem to ensure you are generating consistent values without your units of work.
+
+```ruby
+class MyServiceConfiguration < UltraSettings::Configuration
+  field :use_http2_percentage,
+    type: :float,
+    default: 0.0,
+    description: "Rollout percentage for using the new HTTP/2 driver"
+
+  # Using ConsistentRandom#rand instead of Kernel#rand to ensure that we
+  # get the same result within a request and don't oscillate back and forth
+  # every time we check if this is enabled.
+  def use_http2?
+    ConsistentRandom.new("MyServiceConfiguration.use_http2").rand < use_http2_percentage
+  end
+end
+```
+
 ## Installation
 
 Add this line to your application's Gemfile:
