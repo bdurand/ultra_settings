@@ -64,7 +64,7 @@ module UltraSettings
           secret: secret
         )
 
-        class_eval <<-RUBY, __FILE__, __LINE__ + 1 # rubocop:disable Security/Eval
+        class_eval <<~RUBY, __FILE__, __LINE__ + 1 # rubocop:disable Security/Eval
           def #{name}
             __get_value__(#{name.inspect})
           end

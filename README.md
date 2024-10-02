@@ -346,6 +346,12 @@ mount Rack::Builder.new do
 end, at: "/ultra_settings"
 ```
 
+You can specify the color scheme by setting by providing the `color_scheme` option to the `UltraSettings::RackApp` class. The default color scheme is `:light`. You can also set the scheme to `:dark` or `:system`.
+
+```ruby
+UltraSettings::RackApp.new(color_scheme: :dark)
+```
+
 #### Embedding the Settings View in Admin Tools
 
 If you prefer to embed the settings view directly into your own admin tools or dashboard, you can use the `UltraSettings::ApplicationView` class to render the settings interface within your existing views:
@@ -421,6 +427,25 @@ end
 
 This approach keeps your tests clean and readable while allowing for flexible configuration management during testing.
 
+### Rollout percentages
+
+A common usage of configuration is to control rollout of new features by specifying a percentage value and then testing if a random number is less than it. If you implement this pattern in your configuration, then you should use something like the [consistent_random](https://github.com/bdurand/consistent_random) gem to ensure you are generating consistent values without your units of work.
+
+```ruby
+class MyServiceConfiguration < UltraSettings::Configuration
+  field :use_http2_percentage,
+    type: :float,
+    default: 0.0,
+    description: "Rollout percentage for using the new HTTP/2 driver"
+
+  # Using ConsistentRandom#rand instead of Kernel#rand to ensure that we
+  # get the same result within a request and don't oscillate back and forth
+  # every time we check if this is enabled.
+  def use_http2?
+    ConsistentRandom.new("MyServiceConfiguration.use_http2").rand < use_http2_percentage
+  end
+end
+```
 
 ## Installation
 
@@ -445,6 +470,24 @@ $ gem install ultra_settings
 Open a pull request on [GitHub](https://github.com/bdurand/ultra_settings).
 
 Please use the [standardrb](https://github.com/testdouble/standard) syntax and lint your code with `standardrb --fix` before submitting.
+
+You can start a local rack server to test the web UI by running
+
+```bash
+bundle exec rackup
+```
+
+You can test with some setting set by setting environment variable used in the test configuration.
+
+```bash
+MY_SERVICE_HOST=host.example.com MY_SERVICE_TOKEN=secret bundle exec rspec
+```
+
+You can test dark mode by setting the `COLOR_SCHEME` environment variable.
+
+```bash
+COLOR_SCHEME=dark bundle exec rackup
+```
 
 ## License
 

@@ -60,4 +60,52 @@ describe UltraSettings::Coerce do
       expect(UltraSettings::Coerce.time("")).to eq nil
     end
   end
+
+  describe "numeric?" do
+    it "should return true for numbers" do
+      expect(UltraSettings::Coerce.numeric?(1)).to eq true
+      expect(UltraSettings::Coerce.numeric?(1.1)).to eq true
+      expect(UltraSettings::Coerce.numeric?("1")).to eq true
+      expect(UltraSettings::Coerce.numeric?("1.1")).to eq true
+    end
+
+    it "should return false for non-numbers" do
+      expect(UltraSettings::Coerce.numeric?("test")).to eq false
+      expect(UltraSettings::Coerce.numeric?(true)).to eq false
+      expect(UltraSettings::Coerce.numeric?(false)).to eq false
+      expect(UltraSettings::Coerce.numeric?(nil)).to eq false
+    end
+  end
+
+  describe "blank?" do
+    it "should return true for nil" do
+      value = nil
+      expect(UltraSettings::Coerce.blank?(value)).to eq true
+      expect(UltraSettings::Coerce.present?(value)).to eq false
+    end
+
+    it "should return true for empty strings" do
+      value = ""
+      expect(UltraSettings::Coerce.blank?(value)).to eq true
+      expect(UltraSettings::Coerce.present?(value)).to eq false
+    end
+
+    it "should return true for empty iterables" do
+      value = []
+      expect(UltraSettings::Coerce.blank?(value)).to eq true
+      expect(UltraSettings::Coerce.present?(value)).to eq false
+    end
+
+    it "should return false for false" do
+      value = false
+      expect(UltraSettings::Coerce.blank?(value)).to eq false
+      expect(UltraSettings::Coerce.present?(value)).to eq true
+    end
+
+    it "should return false for other values" do
+      value = "test"
+      expect(UltraSettings::Coerce.blank?(value)).to eq false
+      expect(UltraSettings::Coerce.present?(value)).to eq true
+    end
+  end
 end

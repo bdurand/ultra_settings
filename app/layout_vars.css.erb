@@ -1,0 +1,19 @@
+<% unless color_scheme != :dark %>
+  :root {
+    --text-color: #212529;
+    --background-color: #ffffff;
+  }
+<% end %>
+
+<% if color_scheme == :system %>
+  @media (prefers-color-scheme: dark) {
+<% end %>
+<% if color_scheme == :system || color_scheme == :dark %>
+  :root {
+    --text-color: #fff;
+    --background-color: #333;
+  }
+<% end %>
+<% if color_scheme == :system %>
+  }
+<% end %>

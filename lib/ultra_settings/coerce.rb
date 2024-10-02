@@ -18,6 +18,8 @@ module UltraSettings
     ]).freeze
     # rubocop:enable Lint/BooleanSymbol
 
+    NUMERIC_REGEX = /\A-?\d+(?:\.\d+)?\z/
+
     class << self
       # Cast a value to a specific type.
       #
@@ -33,13 +35,19 @@ module UltraSettings
         when :float
           value.is_a?(Float) ? value : value.to_s&.to_f
         when :boolean
-          Coerce.boolean(value)
+          boolean(value)
         when :datetime
-          Coerce.time(value)
+          time(value)
         when :array
           Array(value).map(&:to_s)
         when :symbol
           value.to_s.to_sym
+        when :rollout
+          if numeric?(value)
+            value.to_f
+          else
+            boolean(value)
+          end
         else
           value.to_s
         end
@@ -50,13 +58,9 @@ module UltraSettings
       # @param value [Object]
       # @return [Boolean]
       def boolean(value)
-        if value == false
-          false
-        elsif blank?(value)
-          nil
-        else
-          !FALSE_VALUES.include?(value)
-        end
+        return nil if blank?(value)
+
+        !FALSE_VALUES.include?(value)
       end
 
       # Cast a value to a Time object.
@@ -66,8 +70,9 @@ module UltraSettings
       def time(value)
         value = nil if value.nil? || value.to_s.empty?
         return nil if value.nil?
-        time = if value.is_a?(Numeric)
-          Time.at(value)
+
+        time = if numeric?(value)
+          Time.at(value.to_f)
         elsif value.respond_to?(:to_time)
           value.to_time
         else
@@ -79,9 +84,15 @@ module UltraSettings
         time
       end
 
+      # @return [Boolean] true if the value is a numeric type or a string representing a number.
+      def numeric?(value)
+        value.is_a?(Numeric) || (value.is_a?(String) && value.to_s.match?(NUMERIC_REGEX))
+      end
+
       # @return [Boolean] true if the value is nil or empty.
       def blank?(value)
         return true if value.nil?
+
         if value.respond_to?(:empty?)
           value.empty?
         else
