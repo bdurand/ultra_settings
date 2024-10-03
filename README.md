@@ -480,7 +480,7 @@ bundle exec rackup
 You can test with some setting set by setting environment variable used in the test configuration.
 
 ```bash
-MY_SERVICE_HOST=host.example.com MY_SERVICE_TOKEN=secret bundle exec rspec
+MY_SERVICE_HOST=host.example.com MY_SERVICE_TOKEN=secret bundle exec rackup
 ```
 
 You can test dark mode by setting the `COLOR_SCHEME` environment variable.
