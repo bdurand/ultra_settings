@@ -55,7 +55,7 @@ describe UltraSettings::Configuration do
     end
 
     it "defines a static field that cannot change", env: {TEST_STATIC: "original value"} do
-      configuration.instance_variable_get(:@memoized_values).clear
+      configuration.instance_variable_get(:@ultra_settings_memoized_values).clear
       expect(configuration.static).to eq "original value"
       ClimateControl.modify(TEST_STATIC: "new value") do
         expect(configuration.static).to eq "original value"

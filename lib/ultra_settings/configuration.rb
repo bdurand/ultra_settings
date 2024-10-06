@@ -7,6 +7,9 @@ module UltraSettings
     ALLOWED_NAME_PATTERN = /\A[a-z_][a-zA-Z0-9_]*\z/
     ALLOWED_TYPES = [:string, :symbol, :integer, :float, :boolean, :datetime, :array].freeze
 
+    @env_var_prefix = nil
+    @runtime_setting_prefix = nil
+
     class << self
       # Define a field on the configuration. This will create a getter method for the field.
       # The field value will be read from the environment, runtime settings, or a YAML file
@@ -435,10 +438,10 @@ module UltraSettings
     end
 
     def initialize
-      @mutex = Mutex.new
-      @memoized_values = {}
-      @override_values = {}
-      @yaml_config = nil
+      @ultra_settings_mutex = Mutex.new
+      @ultra_settings_memoized_values = {}
+      @ultra_settings_override_values = {}
+      @ultra_settings_yaml_config = nil
     end
 
     def [](name)
@@ -450,7 +453,7 @@ module UltraSettings
     end
 
     def override!(values, &block)
-      save_val = @override_values[Thread.current.object_id]
+      save_val = @ultra_settings_override_values[Thread.current.object_id]
 
       temp_values = (save_val || {}).dup
       values.each do |key, value|
@@ -458,13 +461,13 @@ module UltraSettings
       end
 
       begin
-        @mutex.synchronize do
-          @override_values[Thread.current.object_id] = temp_values
+        @ultra_settings_mutex.synchronize do
+          @ultra_settings_override_values[Thread.current.object_id] = temp_values
         end
         yield
       ensure
-        @mutex.synchronize do
-          @override_values[Thread.current.object_id] = save_val
+        @ultra_settings_mutex.synchronize do
+          @ultra_settings_override_values[Thread.current.object_id] = save_val
         end
       end
     end
@@ -530,12 +533,12 @@ module UltraSettings
       field = self.class.send(:defined_fields)[name]
       return nil unless field
 
-      if field.static? && @memoized_values.include?(name)
-        return @memoized_values[name]
+      if field.static? && @ultra_settings_memoized_values.include?(name)
+        return @ultra_settings_memoized_values[name]
       end
 
-      if @override_values[Thread.current.object_id]&.include?(name)
-        value = field.coerce(@override_values[Thread.current.object_id][name])
+      if @ultra_settings_override_values[Thread.current.object_id]&.include?(name)
+        value = field.coerce(@ultra_settings_override_values[Thread.current.object_id][name])
       else
         env = ENV if field.env_var
         settings = UltraSettings.__runtime_settings__ if field.runtime_setting
@@ -549,11 +552,11 @@ module UltraSettings
       end
 
       if field.static?
-        @mutex.synchronize do
-          if @memoized_values.include?(name)
-            value = @memoized_values[name]
+        @ultra_settings_mutex.synchronize do
+          if @ultra_settings_memoized_values.include?(name)
+            value = @ultra_settings_memoized_values[name]
           else
-            @memoized_values[name] = value
+            @ultra_settings_memoized_values[name] = value
           end
         end
       end
@@ -578,7 +581,7 @@ module UltraSettings
     end
 
     def __yaml_config__
-      @yaml_config ||= self.class.load_yaml_config || {}
+      @ultra_settings_yaml_config ||= self.class.load_yaml_config || {}
     end
   end
 end
