@@ -21,6 +21,7 @@ require_relative "spec/test_configs/my_service_configuration"
 UltraSettings.fields_secret_by_default = false
 UltraSettings.yaml_config_path = File.join(__dir__, "spec", "config")
 UltraSettings.runtime_settings = {"my_service.timeout" => 2.5}
+UltraSettings.runtime_settings_url = ENV.fetch("RUNTIME_SETTINGS_URL", "http://localhost:9494/settings?filter=:name")
 UltraSettings.add(:test)
 UltraSettings.add(:other)
 UltraSettings.add(:namespace, "Test::NamespaceConfiguration")
