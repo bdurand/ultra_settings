@@ -194,7 +194,7 @@ You can customize the behavior of runtime setting names with the following optio
 
 - **Disabling Runtime Settings:** You can disable runtime settings as a default source for fields by setting `runtime_settings_disabled` to `true` in your configuration class. You can disable runtime settings on individual fields by setting `runtime_setting` on the field to `false`.
 
-- **Editing Links** You can specify a URL for editing runtime settings from the web UI by setting `UltraSettings.runtime_settings_url` to the desired URL. This will add links to the runtime settings in the web UI. You can use the placeholder `:name` in the URL which will be replaced with the name of the runtime setting.
+- **Editing Links** You can specify a URL for editing runtime settings from the web UI by setting `UltraSettings.runtime_settings_url` to the desired URL. This will add links to the runtime settings in the web UI. You can use the placeholder `${name}` in the URL which will be replaced with the name of the runtime setting. If you are using the `super_settings` gem for runtime settings, then you can target a setting by adding `#edit=${name}` to the root URL where `super_settings` is mounted.
 
 If a setting value cannot be loaded from the runtime settings, then it's value will attempt to be loaded from a YAML file.
 

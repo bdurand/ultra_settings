@@ -58,8 +58,8 @@ describe UltraSettings do
       expect(UltraSettings.runtime_settings_url("foo")).to be_nil
     end
 
-    it "returns the url with the :name placeholder replaced with the name argument" do
-      UltraSettings.runtime_settings_url = "http://example.com/settings?filter=:name"
+    it "returns the url with the ${name} placeholder replaced with the name argument" do
+      UltraSettings.runtime_settings_url = "http://example.com/settings?filter=${name}"
       expect(UltraSettings.runtime_settings_url("foo bar")).to eq("http://example.com/settings?filter=foo+bar")
     end
   end

@@ -48,7 +48,7 @@ describe UltraSettings::ConfigurationView do
     end
 
     it "renders links for the runtime settings" do
-      UltraSettings.runtime_settings_url = "http://example.com/settings?filter=:name"
+      UltraSettings.runtime_settings_url = "http://example.com/settings?filter=${name}"
       html = UltraSettings::ConfigurationView.new(TestConfiguration.instance).render
       expect(html).to include('<a href="http://example.com/settings?filter=test.string"')
     end

@@ -171,7 +171,7 @@ module UltraSettings
 
     # Set the URL for changing runtime settings. If this is set, then a link to the
     # URL will be displayed in the web view for fields that support runtime settings.
-    # The URL may contain a `:name` placeholder that will be replaced with the name
+    # The URL may contain a `${name}` placeholder that will be replaced with the name
     # of the setting.
     attr_writer :runtime_settings_url
 
@@ -184,7 +184,7 @@ module UltraSettings
       url = @runtime_settings_url.to_s
       return nil if url.empty?
 
-      url.gsub(":name", URI.encode_www_form_component(name))
+      url.gsub("${name}", URI.encode_www_form_component(name))
     end
 
     def fields_secret_by_default=(value)
