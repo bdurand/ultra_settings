@@ -52,14 +52,14 @@
             <% end %>
           </td>
 
-          <td>
+          <td style="word-wrap: break-word;">
             <% unless field.description.to_s.empty? %>
               <div>
                 <%= html_escape(field.description) %>
               </div>
             <% end %>
 
-            <ul style="margin: 0; padding: 0;list-style-type: disc; list-style-position: inside;">
+            <ul style="margin: 0 0 0 1rem; padding: 0; list-style-type: disc; list-style-position: outside;">
               <% if field.env_var && !configuration.class.environment_variables_disabled? %>
                 <li>
                   <% if source == :env %>
@@ -68,9 +68,8 @@
                   <% else %>
                     Can be
                   <% end %>
-                  set with the
+                  set with the environment variable
                   <code><%= show_defined_value(field.env_var, configuration.__value_from_source__(field.name, :env), field.secret?) %></code>
-                  environment variable.
                   <% if source == :env %>
                     </strong>
                   <% end %>
@@ -84,7 +83,7 @@
                   <% else %>
                     Can be
                   <% end %>
-                  set with the
+                  set with the runtime setting
                   <% edit_url = UltraSettings.runtime_settings_url(field.runtime_setting) %>
                   <% if edit_url %>
                     <a href="<%= html_escape(edit_url) %>">
@@ -107,9 +106,8 @@
                   <% else %>
                     Can be
                   <% end %>
-                  set with the
+                  set with the configuration file key
                   <code><%= show_defined_value(field.yaml_key, configuration.__value_from_source__(field.name, :yaml), field.secret?) %></code>
-                  key in the configuration file.
                   <% if source == :yaml %>
                     </strong>
                   <% end %>
