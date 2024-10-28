@@ -84,7 +84,14 @@
                     Can be
                   <% end %>
                   set with the runtime setting
+                  <% edit_url = UltraSettings.runtime_settings_url(field.runtime_setting) %>
+                  <% if edit_url %>
+                    <a href="<%= html_escape(edit_url) %>">
+                  <% end %>
                   <code><%= show_defined_value(field.runtime_setting, configuration.__value_from_source__(field.name, :settings), field.secret?) %></code>
+                  <% if edit_url %>
+                    </a>
+                  <% end %>
                   <% if source == :settings %>
                     </strong>
                   <% end %>

@@ -6,6 +6,7 @@ require "time"
 require "pathname"
 require "singleton"
 require "digest"
+require "uri"
 
 require_relative "ultra_settings/configuration"
 require_relative "ultra_settings/coerce"
@@ -33,6 +34,7 @@ module UltraSettings
   @configurations = {}
   @mutex = Mutex.new
   @runtime_settings = nil
+  @runtime_settings_url = nil
 
   class << self
     # Adds a configuration to the root namespace. The configuration will be
@@ -165,6 +167,24 @@ module UltraSettings
     # @api private
     def __runtime_settings__
       @runtime_settings
+    end
+
+    # Set the URL for changing runtime settings. If this is set, then a link to the
+    # URL will be displayed in the web view for fields that support runtime settings.
+    # The URL may contain a `${name}` placeholder that will be replaced with the name
+    # of the setting.
+    attr_writer :runtime_settings_url
+
+    # Get the URL for changing runtime settings.
+    #
+    # @param name [String] The name of the setting.
+    # @return [String, nil]
+    # @api private
+    def runtime_settings_url(name)
+      url = @runtime_settings_url.to_s
+      return nil if url.empty?
+
+      url.gsub("${name}", URI.encode_www_form_component(name))
     end
 
     def fields_secret_by_default=(value)

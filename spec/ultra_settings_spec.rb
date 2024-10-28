@@ -37,4 +37,30 @@ describe UltraSettings do
       expect(UltraSettings.test.foo).to eq("new test foo")
     end
   end
+
+  describe "runtime_settings_url" do
+    around do |example|
+      save_val = UltraSettings.instance_variable_get(:@runtime_settings_url)
+      begin
+        example.run
+      ensure
+        UltraSettings.runtime_settings_url = save_val
+      end
+    end
+
+    it "returns nil if not set" do
+      UltraSettings.runtime_settings_url = nil
+      expect(UltraSettings.runtime_settings_url("foo")).to be_nil
+    end
+
+    it "return nil if set to empty" do
+      UltraSettings.runtime_settings_url = ""
+      expect(UltraSettings.runtime_settings_url("foo")).to be_nil
+    end
+
+    it "returns the url with the ${name} placeholder replaced with the name argument" do
+      UltraSettings.runtime_settings_url = "http://example.com/settings?filter=${name}"
+      expect(UltraSettings.runtime_settings_url("foo bar")).to eq("http://example.com/settings?filter=foo+bar")
+    end
+  end
 end

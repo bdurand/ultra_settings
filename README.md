@@ -10,6 +10,24 @@ UltraSettings is a Ruby gem designed for managing application settings from vari
 
 UltraSettings emphasizes well-documented configuration. You can include documentation directly in the configuration code. The gem also includes a [web UI](#web-ui) that can be mounted as a Rack app or embedded in other views allowing admin users to easily view configuration settings and documentation.
 
+## Table of Contents
+
+- [Key Features](#key-features)
+- [Usage](#usage)
+  - [Defining Configurations](#defining-configurations)
+  - [Field Options](#field-options)
+  - [Environment Variables](#environment-variables)
+  - [Runtime Settings](#runtime-settings)
+  - [YAML Files](#yaml-files)
+  - [Removing The Hierarchy](#removing-the-hierarchy)
+  - [Accessing Settings](#accessing-settings)
+- [Web UI](#web-ui)
+- [Testing With UltraSettings](#testing-with-ultrasettings)
+- [Rollout Percentages](#rollout-percentages)
+- [Installation](#installation)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Key Features
 
 This gem supports a three-layer hierarchy for defining configuration sources:
@@ -175,6 +193,8 @@ You can customize the behavior of runtime setting names with the following optio
 - **Custom Prefix:** Set `runtime_setting_prefix` on your configuration class to specify a custom prefix for runtime settings, giving you flexibility in naming conventions.
 
 - **Disabling Runtime Settings:** You can disable runtime settings as a default source for fields by setting `runtime_settings_disabled` to `true` in your configuration class. You can disable runtime settings on individual fields by setting `runtime_setting` on the field to `false`.
+
+- **Editing Links** You can specify a URL for editing runtime settings from the web UI by setting `UltraSettings.runtime_settings_url` to the desired URL. This will add links to the runtime settings in the web UI. You can use the placeholder `${name}` in the URL which will be replaced with the name of the runtime setting. If you are using the `super_settings` gem for runtime settings, then you can target a setting by adding `#edit=${name}` to the root URL where `super_settings` is mounted.
 
 If a setting value cannot be loaded from the runtime settings, then it's value will attempt to be loaded from a YAML file.
 

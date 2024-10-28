@@ -30,4 +30,27 @@ describe UltraSettings::ConfigurationView do
     doc = Nokogiri::HTML(html)
     expect(doc.errors).to be_empty
   end
+
+  describe "links to runtime settings" do
+    around do |example|
+      save_val = UltraSettings.instance_variable_get(:@runtime_settings_url)
+      begin
+        example.run
+      ensure
+        UltraSettings.runtime_settings_url = save_val
+      end
+    end
+
+    it "does not render links if the runtime settings URL is not set" do
+      UltraSettings.runtime_settings_url = nil
+      html = UltraSettings::ConfigurationView.new(TestConfiguration.instance).render
+      expect(html).not_to include("<a href=")
+    end
+
+    it "renders links for the runtime settings" do
+      UltraSettings.runtime_settings_url = "http://example.com/settings?filter=${name}"
+      html = UltraSettings::ConfigurationView.new(TestConfiguration.instance).render
+      expect(html).to include('<a href="http://example.com/settings?filter=test.string"')
+    end
+  end
 end
