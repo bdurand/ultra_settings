@@ -60,7 +60,7 @@ module UltraSettings
       def array(value)
         return [] if blank?(value)
         return value if value.is_a?(Array)
-        return value.to_s.split(/,\s*/) if value.is_a?(String)
+        return value.split(/,\s*/) if value.is_a?(String)
 
         Array(value)
       end
