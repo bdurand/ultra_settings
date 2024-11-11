@@ -39,7 +39,7 @@ module UltraSettings
         when :datetime
           time(value)
         when :array
-          Array(value).map(&:to_s)
+          array(value).map(&:to_s)
         when :symbol
           value.to_s.to_sym
         when :rollout
@@ -51,6 +51,18 @@ module UltraSettings
         else
           value.to_s
         end
+      end
+
+      # Cast value of array
+      #
+      # @param value [Object]
+      # @return [Array]
+      def array(value)
+        return [] if blank?(value)
+        return value if value.is_a?(Array)
+        return value.to_s.split(/,\s*/) if value.is_a?(String)
+
+        Array(value)
       end
 
       # Cast variations of booleans (i.e. "true", "false", 1, 0, etc.) to actual boolean objects.

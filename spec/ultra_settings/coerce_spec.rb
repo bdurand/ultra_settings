@@ -108,4 +108,26 @@ describe UltraSettings::Coerce do
       expect(UltraSettings::Coerce.present?(value)).to eq true
     end
   end
+
+  describe "array" do
+    it "should cast array" do
+      array = [1, 2, 3]
+      expect(UltraSettings::Coerce.array(array)).to eq array
+    end
+
+    it "should cast array values when comma separated" do
+      array = "a, b, c"
+      expect(UltraSettings::Coerce.array(array)).to eq %w[a b c]
+    end
+
+    it "should return an empty array when a blank string is passed in" do
+      array = ""
+      expect(UltraSettings::Coerce.array(array)).to eq []
+    end
+
+    it "should return an empty array when nil is passed in" do
+      array = nil
+      expect(UltraSettings::Coerce.array(array)).to eq []
+    end
+  end
 end
