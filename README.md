@@ -106,9 +106,7 @@ You can customize the behavior of each field using various options:
   - `:boolean` (will accept case insensitive strings "true", "false", "1", "0", "t", "f", "yes", "no", "y", "n")
   - `:datetime`
   - `:symbol`
-  - `:array` (of strings)
-
-The array type will return an array of strings. If the raw value is a string (i.e. from an environment variable), it will be iterpreted as a comma separated list of values. You can use double quotes to group values that contain commas and backslashes to escape values. Leading and trailing whitespace will be stripped from each value.
+  - `:array` (of strings)<br><br> The array type will return an array of strings. If the raw value is a string (i.e. from an environment variable), it will be iterpreted as a comma separated list of values. You can use double quotes to group values that contain commas and backslashes to escape values. Leading and trailing whitespace will be stripped from each value.
 
 - `:description` - Provides a description of the field. This is used for documentation purposes.
 
