@@ -108,6 +108,8 @@ You can customize the behavior of each field using various options:
   - `:symbol`
   - `:array` (of strings)
 
+The array type will return an array of strings. If the raw value is a string (i.e. from an environment variable), it will be iterpreted as a comma separated list of values. You can use double quotes to group values that contain commas and backslashes to escape values. Leading and trailing whitespace will be stripped from each value.
+
 - `:description` - Provides a description of the field. This is used for documentation purposes.
 
 - `:default` - Sets a default value for the field. The value will be cast to the specified type.

@@ -138,6 +138,11 @@ describe UltraSettings::Field do
         expect(field.value(yaml_config: {"foo" => [1, 2, 3]})).to eq(["1", "2", "3"])
       end
 
+      it "coerces a comma delimited environment variable to an array of strings" do
+        field = UltraSettings::Field.new(name: "foo", env_var: "foo", type: :array)
+        expect(field.value(env: {"foo" => 'a, b, "c, d"'})).to eq(["a", "b", "c, d"])
+      end
+
       it "returns nil if the value is blank" do
         field = UltraSettings::Field.new(name: "foo", env_var: "foo", type: :array)
         expect(field.value(env: {"foo" => ""})).to be_nil
