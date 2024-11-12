@@ -10,11 +10,8 @@ module UltraSettings
       false, 0,
       "0", :"0",
       "f", :f,
-      "F", :F,
       "false", :false,
-      "FALSE", :FALSE,
-      "off", :off,
-      "OFF", :OFF
+      "off", :off
     ]).freeze
     # rubocop:enable Lint/BooleanSymbol
 
@@ -39,7 +36,7 @@ module UltraSettings
         when :datetime
           time(value)
         when :array
-          Array(value).map(&:to_s)
+          array(value).map(&:to_s)
         when :symbol
           value.to_s.to_sym
         when :rollout
@@ -53,14 +50,26 @@ module UltraSettings
         end
       end
 
+      # Cast value of array
+      #
+      # @param value [Object]
+      # @return [Array]
+      def array(value)
+        return [] if blank?(value)
+        return value.collect(&:to_s) if value.is_a?(Array)
+
+        parse_csv_line(value.to_s)
+      end
+
       # Cast variations of booleans (i.e. "true", "false", 1, 0, etc.) to actual boolean objects.
       #
       # @param value [Object]
       # @return [Boolean]
       def boolean(value)
         return nil if blank?(value)
+        return false if value == false
 
-        !FALSE_VALUES.include?(value)
+        !FALSE_VALUES.include?(value.to_s.downcase)
       end
 
       # Cast a value to a Time object.
@@ -103,6 +112,43 @@ module UltraSettings
       # @return [Boolean] true if the value is not nil and not empty.
       def present?(value)
         !blank?(value)
+      end
+
+      private
+
+      # Parse a line of CSV data to an array of strings. Elements are separated by commas and
+      # characters can be escaped with a backslash.
+      def parse_csv_line(line)
+        values = []
+        current_value = +""
+        in_quotes = false
+
+        i = 0
+        while i < line.length
+          char = line[i]
+
+          if char == "\\"
+            if i + 1 < line.length
+              current_value << line[i + 1]
+              i += 1
+            else
+              current_value << "\\"
+            end
+          elsif char == '"'
+            in_quotes = !in_quotes
+          elsif char == "," && !in_quotes
+            values << current_value.strip
+            current_value = +""
+          else
+            current_value << char
+          end
+
+          i += 1
+        end
+
+        values << current_value.strip unless current_value.empty?
+
+        values
       end
     end
   end

@@ -100,13 +100,13 @@ You can customize the behavior of each field using various options:
 
 - `:type` -  Specifies the type of the field. The value of the setting will be cast to this type. If the value in the data source cannot be cast to the data type, then it will not be used. Supported types are:
 
-  - `:string` (the default)
+  - `:string` - This is the default type.
   - `:integer`
   - `:float`
-  - `:boolean` (will accept case insensitive strings "true", "false", "1", "0", "t", "f", "yes", "no", "y", "n")
-  - `:datetime`
+  - `:boolean` - Will accept case insensitive strings "true", "false", "1", "0", "t", "f", "yes", "no", "y", "n".
+  - `:datetime` - Values should be specified in ISO 8601 format.
   - `:symbol`
-  - `:array` (of strings)
+  - `:array` - The array type will return an array of strings. If the raw value is a string (i.e. from an environment variable), it will be iterpreted as a comma separated list of values. You can use double quotes to group values that contain commas and backslashes to escape values. Leading and trailing whitespace will be stripped from each value.
 
 - `:description` - Provides a description of the field. This is used for documentation purposes.
 

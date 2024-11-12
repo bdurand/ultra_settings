@@ -14,6 +14,7 @@ describe UltraSettings::Coerce do
       expect(UltraSettings::Coerce.boolean(:F)).to eq false
       expect(UltraSettings::Coerce.boolean(0)).to eq false
       expect(UltraSettings::Coerce.boolean("0")).to eq false
+      expect(UltraSettings::Coerce.boolean("False")).to eq false
     end
 
     it "should cast true values" do
@@ -26,6 +27,7 @@ describe UltraSettings::Coerce do
       expect(UltraSettings::Coerce.boolean(:T)).to eq true
       expect(UltraSettings::Coerce.boolean(1)).to eq true
       expect(UltraSettings::Coerce.boolean("1")).to eq true
+      expect(UltraSettings::Coerce.boolean("True")).to eq true
     end
 
     it "should cast blank to nil" do
@@ -106,6 +108,38 @@ describe UltraSettings::Coerce do
       value = "test"
       expect(UltraSettings::Coerce.blank?(value)).to eq false
       expect(UltraSettings::Coerce.present?(value)).to eq true
+    end
+  end
+
+  describe "array" do
+    it "should cast a single value to a string array" do
+      array = 1
+      expect(UltraSettings::Coerce.array(array)).to eq ["1"]
+    end
+
+    it "should cast array values from a comma separated string" do
+      array = "a, b, c"
+      expect(UltraSettings::Coerce.array(array)).to eq ["a", "b", "c"]
+    end
+
+    it "should honor quoted values in comma separated strings" do
+      array = 'a, b, "c, d", "e\\", f"'
+      expect(UltraSettings::Coerce.array(array)).to eq ["a", "b", "c, d", 'e", f']
+    end
+
+    it "should cast values in the array to an array of strings" do
+      array = [1, 2, 3]
+      expect(UltraSettings::Coerce.array(array)).to eq ["1", "2", "3"]
+    end
+
+    it "should return an empty array when a blank string is passed in" do
+      array = ""
+      expect(UltraSettings::Coerce.array(array)).to eq []
+    end
+
+    it "should return an empty array when nil is passed in" do
+      array = nil
+      expect(UltraSettings::Coerce.array(array)).to eq []
     end
   end
 end
