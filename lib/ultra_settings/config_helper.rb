@@ -2,9 +2,10 @@
 
 module UltraSettings
   # Helper module for setting up a class to use the config methods
-  # Usage
+  #
+  # Usage:
   # class TestClass
-  #   extend ConfigHelper
+  #   extend UltraSettings::ConfigHelper
   #   configuration_class TestConfiguration
   # end
   # TestClass.config => TestConfiguration.instance
