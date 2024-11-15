@@ -10,6 +10,7 @@ require "uri"
 
 require_relative "ultra_settings/configuration"
 require_relative "ultra_settings/coerce"
+require_relative "ultra_settings/config_helper"
 require_relative "ultra_settings/field"
 require_relative "ultra_settings/rack_app"
 require_relative "ultra_settings/web_view"
