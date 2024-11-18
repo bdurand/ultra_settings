@@ -324,9 +324,26 @@ end
 Rails.application.settings.my_service.host
 ```
 
-#### Using the Config Helper
-To keep your codebase clean, especially if most configurations are accessed from within a specific class, you can encapsulate the configuration access with the helper method `config`
+#### Using Helper Methods
 
+To streamline configuration access and keep your codebase clean, especially when configurations are frequently accessed within specific classes, you can encapsulate configuration access in a helper method:
+
+```ruby
+class MyService
+  def api_key
+    config.api_key
+  end
+
+  private
+
+  def config
+    MyServiceConfiguration.instance
+  end
+end
+```
+
+Leveraging UltraSettings::ConfigHelper
+For added convenience, you can use the UltraSettings::ConfigHelper module to automatically generate helper methods for accessing configurations at both the class and instance levels:
 
 ```ruby
 class MyService
@@ -334,10 +351,9 @@ class MyService
   extend UltraSettings::ConfigHelper
   configuration_class MyServiceConfiguration
 
-  # This will add two helper methods for config on the class and instance
-  # MyService.config
-  # MyService.new.config
-
+  # Adds these helper methods:
+  # - MyService.config
+  # - MyService.new.config
 end
 ```
 

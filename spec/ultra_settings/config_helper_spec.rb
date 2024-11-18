@@ -9,15 +9,16 @@ describe UltraSettings::ConfigHelper do
       configuration_class TestConfiguration
     end
   end
+
   describe "config" do
     it "should return the configuration" do
-      expect(service_class.config).to be_a(TestConfiguration)
+      expect(service_class.config).to eq(TestConfiguration.instance)
     end
   end
 
   describe "self.config" do
     it "should return the configuration" do
-      expect(service_class.new.config).to be_a(TestConfiguration)
+      expect(service_class.new.config).to eq(TestConfiguration.instance)
     end
   end
 end
