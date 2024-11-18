@@ -342,7 +342,8 @@ class MyService
 end
 ```
 
-Leveraging UltraSettings::ConfigHelper
+#### Leveraging UltraSettings::ConfigHelper
+
 For added convenience, you can use the UltraSettings::ConfigHelper module to automatically generate helper methods for accessing configurations at both the class and instance levels:
 
 ```ruby
