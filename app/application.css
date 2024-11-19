@@ -63,3 +63,7 @@
   -moz-appearance: none;
   appearance: none;
 }
+
+.ultra-settings-dfn {
+  text-decoration: underline dotted;
+}
