@@ -1,5 +1,5 @@
 <% unless color_scheme == :dark %>
-  .ultra-settings-configuration {
+  .ultra-settings {
     --table-header-bg-color: #fff;
     --table-border-color: #dee2e6;
     --alt-row-color: rgba(0, 0, 0, .05);
@@ -15,7 +15,7 @@
   @media (prefers-color-scheme: dark) {
 <% end %>
 <% if color_scheme == :system || color_scheme == :dark %>
-  .ultra-settings-configuration {
+  .ultra-settings {
     --table-header-bg-color: #333;
     --table-border-color: #555;
     --alt-row-color: rgba(0, 0, 0, .30);

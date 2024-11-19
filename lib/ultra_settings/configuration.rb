@@ -533,11 +533,14 @@ module UltraSettings
       field = self.class.send(:defined_fields)[name]
       return nil unless field
 
-      if field.static? && @ultra_settings_memoized_values.include?(name)
+      use_override = @ultra_settings_override_values[Thread.current.object_id]&.include?(name)
+
+      if field.static? && !use_override && @ultra_settings_memoized_values.include?(name)
         return @ultra_settings_memoized_values[name]
       end
 
-      if @ultra_settings_override_values[Thread.current.object_id]&.include?(name)
+      value = nil
+      if use_override
         value = field.coerce(@ultra_settings_override_values[Thread.current.object_id][name])
       else
         env = ENV if field.env_var
@@ -551,7 +554,7 @@ module UltraSettings
         value = field.default
       end
 
-      if field.static?
+      if field.static? && !use_override
         @ultra_settings_mutex.synchronize do
           if @ultra_settings_memoized_values.include?(name)
             value = @ultra_settings_memoized_values[name]
