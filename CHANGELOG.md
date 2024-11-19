@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ignore base configuration classes that don't have any fields defined in the web UI.
 - Allow overriding values on static fields in tests.
-- Changed Web UI CSS variable scope to wrap to apply to all elements.
+- Changed Web UI CSS variable scope to apply to all application elements.
 
 ## 2.4.0
 
