@@ -68,7 +68,7 @@ module UltraSettings
       else
         "Value: #{display_value(value)}"
       end
-      "<dfn class=\"ultra-settings-dfn\" title=\"#{html_escape(title)}\">#{html_escape(label)}</dfn>"
+      "<dfn style=\"text-decoration: underline dotted;\" title=\"#{html_escape(title)}\">#{html_escape(label)}</dfn>"
     end
 
     def secret_value(value)
