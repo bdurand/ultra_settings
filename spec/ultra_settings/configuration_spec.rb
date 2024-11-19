@@ -226,6 +226,14 @@ describe UltraSettings::Configuration do
         expect(configuration.default_int).to eq 1
       end
     end
+
+    it "can override static values" do
+      static_value = configuration.static
+      configuration.override!(static: "new value") do
+        expect(configuration.static).to eq "new value"
+      end
+      expect(configuration.static).to eq static_value
+    end
   end
 
   describe "with hierarchy disabled" do

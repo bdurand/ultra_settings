@@ -1,20 +1,26 @@
-<div class="ultra-settings-nav">
-  <form onsubmit="return false" style="margin-bottom: 0.5rem;">
-    <select class="<%= html_escape(select_class) %>" size="1" id="config-selector">
-      <% UltraSettings.__configuration_names__.sort.each do |name| %>
-        <option value="config-<%= html_escape(name) %>"><%= html_escape(UltraSettings.send(name).class.name) %></option>
-      <% end %>
-    </select>
-  </form>
-</div>
+<div class="ultra-settings">
+  <div class="ultra-settings-nav">
+    <form onsubmit="return false" style="margin-bottom: 0.5rem;">
+      <select class="<%= html_escape(select_class) %>" size="1" id="config-selector">
+        <% UltraSettings.__configuration_names__.sort.each do |name| %>
+          <% configuration = UltraSettings.send(name) %>
+          <% next if configuration.class.fields.empty? %>
 
-<% UltraSettings.__configuration_names__.sort.each do |name| %>
-  <% configuration = UltraSettings.send(name) %>
-
-  <div class="ultra-settings-configuration" id="config-<%= html_escape(name) %>" style="display:none;">
-    <%= UltraSettings::ConfigurationView.new(configuration).render(table_class: table_class) %>
+          <option value="config-<%= html_escape(name) %>"><%= html_escape(UltraSettings.send(name).class.name) %></option>
+        <% end %>
+      </select>
+    </form>
   </div>
-<% end %>
+
+  <% UltraSettings.__configuration_names__.sort.each do |name| %>
+    <% configuration = UltraSettings.send(name) %>
+    <% next if configuration.class.fields.empty? %>
+
+    <div class="ultra-settings-configuration" id="config-<%= html_escape(name) %>" style="display:none;">
+      <%= UltraSettings::ConfigurationView.new(configuration).render(table_class: table_class) %>
+    </div>
+  <% end %>
+</div>
 
 <script>
   <%= javascript %>
