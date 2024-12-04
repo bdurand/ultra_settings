@@ -7,11 +7,11 @@ module UltraSettings
   # `config.ultra_settings.auto_load_directories` option.
   class Railtie < Rails::Railtie
     config.ultra_settings = ActiveSupport::OrderedOptions.new
-    config.ultra_settings.auto_load_directories = [File.join("app", "configurations")]
+    config.ultra_settings.auto_load_directories ||= [File.join("app", "configurations")]
 
     config.before_configuration do
-      UltraSettings.yaml_config_env = Rails.env
-      UltraSettings.yaml_config_path = Rails.root.join("config")
+      UltraSettings::Configuration.yaml_config_env ||= Rails.env
+      UltraSettings::Configuration.yaml_config_path ||= Rails.root.join("config")
     end
 
     # Automatically register any configuration classes in the app/configurations
