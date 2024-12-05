@@ -148,6 +148,7 @@ module UltraSettings
       # @param value [String, Pathname]
       # @return [void]
       def configuration_file=(value)
+        value = nil if value == false
         value = Pathname.new(value) if value.is_a?(String)
         @configuration_file = value
       end
@@ -210,7 +211,7 @@ module UltraSettings
       #
       # @return [Boolean]
       def yaml_config_disabled?
-        get_inheritable_class_attribute(:@yaml_config_disabled, false)
+        get_inheritable_class_attribute(:@yaml_config_disabled, false) || configuration_file.nil?
       end
 
       # Set the environment variable delimiter used to construct the environment
