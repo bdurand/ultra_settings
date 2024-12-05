@@ -1,6 +1,6 @@
   <table class="<%= html_escape(table_class.to_s) %>">
     <thead>
-      <% unless configuration.class.yaml_config_disabled? || configuration.class.configuration_file.nil? %>
+      <% if !configuration.class.yaml_config_disabled? && configuration.class.configuration_file.is_a?(Pathname) %>
         <tr>
           <th colspan="6">
             Configuration File:
