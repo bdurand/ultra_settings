@@ -261,6 +261,16 @@ While for production, the values would be the combination of `production` and `s
 
 In a Rails application, the YAML environment will be set to the Rails environment and YAML files will be assumed to exist in the `config` directory.
 
+If want to use configuration objects in code that is initialized with the Rails application before initializers are run, then you'll need to setup the configuration manually.
+
+For instance, if you want to create a `DatabaseConfiguration` class that is used in the ERB code in `database.yml`, then you'll need to setup the configuration before the Rails application is initialized in `application.rb`.
+
+```ruby
+UltraSettings.yaml_config_env = Rails.env
+UltraSettings.yaml_config_path = __dir__
+require_relative '../app/configurations/database_configuration'
+```
+
 ### Removing The Hierarchy
 
 If you prefer not to use the default hierarchy of environment variables, runtime settings, and YAML files, you can disable it. This allows you to explicitly define which data sources should be used for each field.

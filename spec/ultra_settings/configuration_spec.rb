@@ -173,6 +173,10 @@ describe UltraSettings::Configuration do
     it "can override the file path" do
       expect(OtherConfiguration.configuration_file).to eq config_path.join("other_config.yml")
     end
+
+    it "returns nil if the YAML load path is not set" do
+      expect(SubclassConfiguration.configuration_file).to be_nil
+    end
   end
 
   describe "subclasses" do
