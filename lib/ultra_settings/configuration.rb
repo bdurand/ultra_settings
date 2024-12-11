@@ -158,6 +158,9 @@ module UltraSettings
       # @return [Pathname, nil]
       def configuration_file
         unless defined?(@configuration_file)
+          default_file = default_configuration_file
+          return nil if default_file.nil?
+
           @configuration_file = default_configuration_file
         end
         return nil? unless @configuration_file
@@ -383,6 +386,8 @@ module UltraSettings
       end
 
       def default_configuration_file
+        return nil if yaml_config_path.nil?
+
         path = Pathname.new(yaml_config_path)
         path.join(*"#{root_name}.yml".split("/"))
       end

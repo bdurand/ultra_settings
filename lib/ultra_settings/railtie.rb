@@ -9,6 +9,7 @@ module UltraSettings
     config.ultra_settings = ActiveSupport::OrderedOptions.new
     config.ultra_settings.auto_load_directories ||= [File.join("app", "configurations")]
 
+    # initializer "ultra_settings.before_bootstrap", before: :bootstrap_hook do
     config.before_configuration do
       UltraSettings::Configuration.yaml_config_env ||= Rails.env
       UltraSettings::Configuration.yaml_config_path ||= Rails.root.join("config")
