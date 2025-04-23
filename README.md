@@ -170,6 +170,8 @@ end
 UltraSettings.runtime_settings = RedisRuntimeSettings.new
 ```
 
+The runtime settings implementation may also define an `array` method that takes a single parameter to return an array value. If this method is not implemented, then array values must be returned as single line CSV strings.
+
 #### Using the `super_settings` gem
 
 There is a companion gem [super_settings](https://github.com/bdurand/super_settings) that can be used as a drop in implementation for the runtime settings. You just need to set the runtime settings to the `SuperSettings` object.
