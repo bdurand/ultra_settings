@@ -16,6 +16,7 @@ require_relative "ultra_settings/rack_app"
 require_relative "ultra_settings/web_view"
 require_relative "ultra_settings/application_view"
 require_relative "ultra_settings/configuration_view"
+require_relative "ultra_settings/uninitialized_runtime_settings"
 require_relative "ultra_settings/yaml_config"
 require_relative "ultra_settings/version"
 

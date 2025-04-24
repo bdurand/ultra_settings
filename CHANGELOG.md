@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2.5.0
+
+### Added
+
+- Added mechanism for guarding against using runtime settings during initialization with the `UltraSettings::UninitializedRuntimeSettings` class.
+
+### Changed
+
+- Runtime settings will now try to load arrays from runtime settings using the `array` method if it is defined. This provides for better integration with the `super_settings` gem to avoid coercing values to and from strings.
+
 ## 2.4.5
 
 ### Fixed

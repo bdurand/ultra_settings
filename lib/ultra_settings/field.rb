@@ -99,7 +99,7 @@ module UltraSettings
       value = env[env_var] if env && env_var
       value = nil if value == ""
       if value.nil?
-        value = settings[runtime_setting] if settings && runtime_setting
+        value = runtime_setting_value(settings)
         value = nil if value == ""
         if value.nil?
           value = yaml_value(yaml_config)
@@ -115,6 +115,18 @@ module UltraSettings
       value = coerce(value).freeze
 
       [value, source]
+    end
+
+    def runtime_setting_value(settings)
+      return nil unless settings && runtime_setting
+
+      if type == :array && settings.respond_to?(:array)
+        if settings.method(:array).parameters.count { |ptype, pname| ptype == :req } == 1
+          return settings.array(runtime_setting)
+        end
+      end
+
+      settings[runtime_setting]
     end
 
     def yaml_value(yaml_config)
