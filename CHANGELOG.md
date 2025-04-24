@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 2.5.0
 
+### Added
+
+- Added mechanism for guarding against using runtime settings during initialization with the `UltraSettings::UninitializedRuntimeSettings` class.
+
 ### Changed
 
 - Runtime settings will now try to load arrays from runtime settings using the `array` method if it is defined. This provides for better integration with the `super_settings` gem to avoid coercing values to and from strings.

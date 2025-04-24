@@ -180,6 +180,21 @@ There is a companion gem [super_settings](https://github.com/bdurand/super_setti
 UltraSettings.runtime_settings = SuperSettings
 ```
 
+#### Initialization Issues
+
+Runtime settings should not be used during application initialization. Often the values set during initialization are static so it can be misleading to use runtime settings for them. There can also be race conditions where the runtime settings implementation itself needs to be initialized. You can guard against unintended usage of runtime settings during initialization by using the `UltraSettings::UninitializedRuntimeSettings` class. This class will raise an error if you try to access a setting before the runtime settings have been initialized.
+
+```ruby
+# Set the runtime settings to the uninitialized class to raise errors if anything tries to use
+# reference a runtime setting during initializaton.
+UltraSettings.runtime_settings = UltraSettings::UninitializedRuntimeSettings
+
+# Switch to using the super_settings gem after the ActiveRecord has been initialized.
+ActiveSupport.on_load(:active_record) do
+  UltraSettings.runtime_settings = SuperSettings
+end
+```
+
 #### Customizing Runtime Settings
 
 By default settings will be loaded from runtime settings by constructing a prefix from the configuration class name (i.e. `Configs::MySettingsConfiguration` uses the prefix `configs.my_settings.`) with the field name appended to it (e.g. `configs.my_settings.host`). By default runtime settings will be in all lowercase letters.
