@@ -33,7 +33,7 @@ module UltraSettings
       @configuration = configuration
     end
 
-    def render(table_class: "ultra-settings-table")
+    def render(table_class: "")
       configuration = @configuration
       html = self.class.template.result(binding)
       html = html.html_safe if html.respond_to?(:html_safe)
