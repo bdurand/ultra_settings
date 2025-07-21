@@ -1,13 +1,45 @@
 <% unless color_scheme == :dark %>
   .ultra-settings {
-    --table-header-bg-color: #fff;
-    --table-border-color: #dee2e6;
-    --alt-row-color: rgba(0, 0, 0, .05);
     --form-control-color: #495057;
     --form-control-bg-color: #fff;
     --form-control-border-color: #ced4da;
-    --code-color: darkred;
-    --em-color: gray;
+    --code-color: #d63384;
+
+    /* Card layout colors */
+    --config-file-bg-color: #f8f9fa;
+    --config-file-border-color: #dee2e6;
+    --field-bg-color: #ffffff;
+    --field-border-color: #e9ecef;
+    --field-header-bg-color: #f8f9fa;
+    --value-bg-color: #fdfdfe;
+    --value-text-color: #212529;
+    --value-code-bg-color: #f8f9fa;
+    --value-code-border-color: #e9ecef;
+    --type-color: #6c757d;
+    --description-color: #4a83b5ff;
+    --nil-color: #6c757d;
+    --warning-color: #dc3545;
+
+    /* Source colors */
+    --source-bg-color: #f8f9fa;
+    --source-border-color: #e9ecef;
+    --source-active-bg-color: #e7f3ff;
+    --source-active-border-color: #0d6efd;
+    --source-type-color: #6c757d;
+    --source-value-color: #495057;
+    --source-indicator-color: #0d6efd;
+
+    /* Badge colors */
+    --secret-badge-bg-color: #dc3545;
+    --secret-badge-text-color: #ffffff;
+    --static-badge-bg-color: #6c757d;
+    --static-badge-text-color: #ffffff;
+
+    /* Edit link */
+    --edit-link-color: #0d6efd;
+
+    /* Info icon */
+    --info-icon-svg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234a83b5' viewBox='0 0 16 16'%3e%3cpath d='M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16'/%3e%3cpath d='m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0'/%3e%3c/svg%3e");
   }
 <% end %>
 
@@ -22,8 +54,44 @@
     --form-control-color: #eee;
     --form-control-bg-color: #666;
     --form-control-border-color: #555;
-    --code-color: pink;
-    --em-color: #999;
+    --code-color: #ff6b9d;
+    --em-color: #adb5bd;
+
+    /* Card layout colors */
+    --config-file-bg-color: #2b2b2b;
+    --config-file-border-color: #444;
+    --field-bg-color: #1e1e1e;
+    --field-border-color: #444;
+    --field-header-bg-color: #2b2b2b;
+    --value-bg-color: #252525;
+    --value-text-color: #e9ecef;
+    --value-code-bg-color: #2b2b2b;
+    --value-code-border-color: #444;
+    --type-color: #adb5bd;
+    --description-color: #a9d9f8ff;
+    --nil-color: #cdcecfff;
+    --warning-color: #dc3545;
+
+    /* Source colors */
+    --source-bg-color: #2b2b2b;
+    --source-border-color: #444;
+    --source-active-bg-color: #1a3a52;
+    --source-active-border-color: #0d6efd;
+    --source-type-color: #adb5bd;
+    --source-value-color: #ced4da;
+    --source-indicator-color: #6ea8fe;
+
+    /* Badge colors */
+    --secret-badge-bg-color: #dc3545;
+    --secret-badge-text-color: #ffffff;
+    --static-badge-bg-color: #6c757d;
+    --static-badge-text-color: #ffffff;
+
+    /* Edit link */
+    --edit-link-color: #6ea8fe;
+
+    /* Info icon */
+    --info-icon-svg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23a9d9f8' viewBox='0 0 16 16'%3e%3cpath d='M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16'/%3e%3cpath d='m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0'/%3e%3c/svg%3e");
   }
 <% end %>
 <% if color_scheme == :system %>

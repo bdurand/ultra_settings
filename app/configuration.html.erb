@@ -1,141 +1,109 @@
-  <table class="<%= html_escape(table_class.to_s) %>">
-    <thead>
-      <% if !configuration.class.yaml_config_disabled? && configuration.class.configuration_file.is_a?(Pathname) %>
-        <tr>
-          <th colspan="6">
-            Configuration File:
-            <span style="font-weight: normal;">
-              <%= html_escape(relative_path(configuration.class.configuration_file)) %>
-              <% unless configuration.class.configuration_file&.exist? %>
-                <em>(File does not exist)</em>
-              <% end %>
-            </span>
-          </th>
-        </tr>
+  <% if !configuration.class.yaml_config_disabled? && configuration.class.configuration_file.is_a?(Pathname) %>
+    <div class="ultra-settings-config-file">
+      <span class="ultra-settings-config-file-label">Configuration File:</span>
+      <code class="ultra-settings-config-file-path"><%= html_escape(relative_path(configuration.class.configuration_file)) %></code>
+      <% unless configuration.class.configuration_file&.exist? %>
+        <span class="ultra-settings-file-not-found">(File does not exist)</span>
       <% end %>
-      <tr>
-        <th>Name</th>
-        <th>Value</th>
-        <th>Type</th>
-        <th>Notes</th>
-      </tr>
-    </thead>
-    <tbody translate="no">
-      <% configuration.class.fields.each do |field| %>
-        <% source = configuration.__source__(field.name) %>
-        <tr>
-          <td>
+    </div>
+  <% end %>
+
+  <div class="ultra-settings-fields">
+    <% configuration.class.fields.each do |field| %>
+      <% source = configuration.__source__(field.name) %>
+      <div class="ultra-settings-field">
+        <div class="ultra-settings-field-header">
+          <div class="ultra-settings-field-name">
             <code><%= html_escape(field.name) %></code>
-          </td>
-
-          <td style="word-wrap: break-word; max-width:30em;">
-            <% if configuration[field.name].nil? %>
-              <em>nil</em>
-            <% elsif field.secret? %>
-              <%= html_escape(secret_value(configuration[field.name])) %>
-            <% else %>
-              <%= html_escape(display_value(configuration[field.name])) %>
+            <% if field.secret? %>
+              <span class="ultra-settings-field-badge ultra-settings-badge-secret">secret</span>
             <% end %>
-          </td>
-
-          <td>
+            <% if field.static? %>
+              <span class="ultra-settings-field-badge ultra-settings-badge-static">static</span>
+            <% end %>
+          </div>
+          <div class="ultra-settings-field-type">
             <%= html_escape(field.type) %>
-            <%
-              options = []
-              options << 'static' if field.static?
-              options << 'secret' if field.secret?
-            %>
-            <% unless options.empty? %>
-              <div>
-                <em><%= html_escape(options.join(', ')) %></em>
+          </div>
+        </div>
+
+        <div class="ultra-settings-field-value">
+          <% if configuration[field.name].nil? %>
+            <span class="ultra-settings-nil-value">nil</span>
+          <% elsif field.secret? %>
+            <code><%= html_escape(secret_value(configuration[field.name])) %></code>
+          <% else %>
+            <code><%= html_escape(display_value(configuration[field.name])) %></code>
+          <% end %>
+        </div>
+
+        <% unless field.description.to_s.empty? %>
+          <div class="ultra-settings-field-description">
+            <div class="ultra-settings-info-icon"></div>
+            <div class="ultra-settings-description-text">
+              <%= html_escape(field.description) %>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="ultra-settings-field-sources">
+          <% if field.env_var && !configuration.class.environment_variables_disabled? %>
+            <div class="ultra-settings-source <%= 'ultra-settings-source-active' if source == :env %>">
+              <span class="ultra-settings-source-type">Environment Variable</span>
+              <code class="ultra-settings-source-value"><%= show_defined_value(field.env_var, configuration.__value_from_source__(field.name, :env), field.secret?) %></code>
+              <% if source == :env %>
+                <span class="ultra-settings-source-indicator">Currently active</span>
+              <% end %>
+            </div>
+          <% end %>
+
+          <% if field.runtime_setting && !configuration.class.runtime_settings_disabled? %>
+            <div class="ultra-settings-source <%= 'ultra-settings-source-active' if source == :settings %>">
+              <span class="ultra-settings-source-type">Runtime Setting</span>
+              <code class="ultra-settings-source-value"><%= show_defined_value(field.runtime_setting, configuration.__value_from_source__(field.name, :settings), field.secret?) %></code>
+              <% if source == :settings %>
+                <span class="ultra-settings-source-indicator">Currently active</span>
+              <% end %>
+              <% edit_url = UltraSettings.runtime_settings_url(field.runtime_setting, field.type) %>
+              <% if edit_url %>
+                <a href="<%= html_escape(edit_url) %>" class="ultra-settings-edit-link" title="Edit <%= html_escape(field.runtime_setting) %>">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                  </svg>
+                </a>
+              <% end %>
+            </div>
+          <% end %>
+
+          <% if field.yaml_key && !configuration.class.yaml_config_disabled? %>
+            <div class="ultra-settings-source <%= 'ultra-settings-source-active' if source == :yaml %>">
+              <span class="ultra-settings-source-type">Configuration File</span>
+              <code class="ultra-settings-source-value"><%= show_defined_value(field.yaml_key, configuration.__value_from_source__(field.name, :yaml), field.secret?) %></code>
+              <% if source == :yaml %>
+                <span class="ultra-settings-source-indicator">Currently active</span>
+              <% end %>
+            </div>
+          <% end %>
+
+          <% if field.default.nil? %>
+            <% if source == :default %>
+              <div class="ultra-settings-source ultra-settings-source-active">
+                <span class="ultra-settings-source-type">Default Value</span>
+                <span class="ultra-settings-source-value"><em>Not set</em></span>
+                <span class="ultra-settings-source-indicator">Currently active</span>
               </div>
             <% end %>
-          </td>
-
-          <td style="word-wrap: break-word;">
-            <% unless field.description.to_s.empty? %>
-              <div>
-                <%= html_escape(field.description) %>
-              </div>
-            <% end %>
-
-            <ul style="margin: 0 0 0 1rem; padding: 0; list-style-type: disc; list-style-position: outside;">
-              <% if field.env_var && !configuration.class.environment_variables_disabled? %>
-                <li>
-                  <% if source == :env %>
-                    <strong>
-                    Currently
-                  <% else %>
-                    Can be
-                  <% end %>
-                  set with the environment variable
-                  <code><%= show_defined_value(field.env_var, configuration.__value_from_source__(field.name, :env), field.secret?) %></code>
-                  <% if source == :env %>
-                    </strong>
-                  <% end %>
-                </li>
+          <% else %>
+            <div class="ultra-settings-source <%= 'ultra-settings-source-active' if source == :default %>">
+              <span class="ultra-settings-source-type">Default Value</span>
+              <code class="ultra-settings-source-value"><%= show_defined_value("", field.default, field.secret?) %></code>
+              <% if source == :default %>
+                <span class="ultra-settings-source-indicator">Currently active</span>
               <% end %>
-              <% if field.runtime_setting && !configuration.class.runtime_settings_disabled? %>
-                <li>
-                  <% if source == :settings %>
-                    <strong>
-                    Currently
-                  <% else %>
-                    Can be
-                  <% end %>
-                  set with the runtime setting
-                  <code><%= show_defined_value(field.runtime_setting, configuration.__value_from_source__(field.name, :settings), field.secret?) %></code>
-                  <% if source == :settings %>
-                    </strong>
-                  <% end %>
-
-                  <% edit_url = UltraSettings.runtime_settings_url(field.runtime_setting) %>
-                  <% if edit_url %>
-                    <a href="<%= html_escape(edit_url) %>" title="Edit <%= html_escape(field.runtime_setting) %>" style="text-decoration: none; color: inherit; vertical-align: middle;">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-                      </svg>
-                    </a>
-                  <% end %>
-                </li>
-              <% end %>
-              <% if field.yaml_key && !configuration.class.yaml_config_disabled? %>
-                <li>
-                  <% if source == :yaml %>
-                    <strong>
-                    Currently
-                  <% else %>
-                    Can be
-                  <% end %>
-                  set with the configuration file key
-                  <code><%= show_defined_value(field.yaml_key, configuration.__value_from_source__(field.name, :yaml), field.secret?) %></code>
-                  <% if source == :yaml %>
-                    </strong>
-                  <% end %>
-                </li>
-              <% end %>
-              <% if field.default.nil? %>
-                <% if source == :default %>
-                  <li>
-                    <strong>Not set</strong>
-                  </li>
-                <% end %>
-              <% else %>
-                <li>
-                  <% if source == :default %>
-                    <strong>
-                      Currently set with the
-                      <%= show_defined_value("default value", field.default, field.secret?) %>.
-                    </strong>
-                  <% else %>
-                    This field has a <%= show_defined_value("default value", field.default, field.secret?) %>.
-                  <% end %>
-                </li>
-              <% end %>
-            </ul>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
