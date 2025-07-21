@@ -27,7 +27,9 @@ module UltraSettings
     end
 
     def style_tag
-      "<style type=\"text/css\">\n#{css}\n</style>"
+      tag = "<style type=\"text/css\">\n#{css}\n</style>"
+      tag = tag.html_safe if tag.respond_to?(:html_safe)
+      tag
     end
 
     def to_s

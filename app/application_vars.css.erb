@@ -1,5 +1,5 @@
 <% unless color_scheme == :dark %>
-  .ultra-settings {
+  .ultra-settings, .ultra-settings-block {
     --form-control-color: #484848;
     --form-control-bg-color: #fff;
     --form-control-border-color: #e8e8e8;
@@ -44,7 +44,7 @@
   @media (prefers-color-scheme: dark) {
 <% end %>
 <% if color_scheme == :system || color_scheme == :dark %>
-  .ultra-settings {
+  .ultra-settings, .ultra-settings-block {
     --form-control-color: #eee;
     --form-control-bg-color: #666;
     --form-control-border-color: #555;
