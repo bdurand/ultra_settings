@@ -74,7 +74,7 @@
 
 .ultra-settings-field-type {
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--type-color);
   text-transform: uppercase;
   letter-spacing: 0.025em;
@@ -146,10 +146,7 @@
   height: 16px;
   flex-shrink: 0;
   margin-top: 0.125rem; /* Align with first line of text based on line-height */
-  background-image: var(--info-icon-svg);
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+  color: var(--description-color);
 }
 
 /* Sources section */
@@ -217,10 +214,6 @@
 .ultra-settings-edit-icon {
   width: 16px;
   height: 16px;
-  background-image: var(--edit-icon-svg);
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
 }
 
 .ultra-settings-select {

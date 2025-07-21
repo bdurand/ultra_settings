@@ -8,11 +8,6 @@ describe UltraSettings::WebView do
     expect(app.render_settings).to be_a(String)
   end
 
-  it "renders the configuration CSS" do
-    app = UltraSettings::WebView.new
-    expect(app.css).to be_a(String)
-  end
-
   it "renders the configuration content" do
     app = UltraSettings::WebView.new
     expect(app.content).to be_a(String)
@@ -20,7 +15,9 @@ describe UltraSettings::WebView do
 
   it "renders valid HTML" do
     app = UltraSettings::WebView.new
-    doc = Nokogiri::HTML(app.content)
-    expect(doc.errors).to be_empty
+    docs = parse_with_svg(app.content)
+    docs.each do |doc|
+      expect(doc.errors).to be_empty
+    end
   end
 end

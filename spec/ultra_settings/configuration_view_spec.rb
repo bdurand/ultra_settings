@@ -22,8 +22,10 @@ describe UltraSettings::ConfigurationView do
 
   it "renders valid HTML", env: {TEST_STRING: "<script"} do
     html = UltraSettings::ConfigurationView.new(TestConfiguration.instance).render
-    doc = Nokogiri::HTML(html)
-    expect(doc.errors).to be_empty
+    docs = parse_with_svg(html)
+    docs.each do |doc|
+      expect(doc.errors).to be_empty
+    end
   end
 
   describe "links to runtime settings" do

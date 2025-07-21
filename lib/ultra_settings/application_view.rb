@@ -13,32 +13,21 @@ module UltraSettings
   #  <h1>Application Configuration</h1>
   #  <%= UltraSettings::ApplicationView.new.render(select_class: 'form-control') %>
   class ApplicationView
-    @template = nil
+    attr_reader :css
 
-    class << self
-      def template
-        @template ||= ERB.new(read_app_file("index.html.erb"))
-      end
-
-      def javascript
-        @javascript = read_app_file("application.js")
-      end
-
-      private
-
-      def read_app_file(path)
-        File.read(File.join(app_dir, path))
-      end
-
-      def app_dir
-        File.expand_path(File.join("..", "..", "app"), __dir__)
-      end
+    def initialize(color_scheme: :light)
+      @css = application_css(color_scheme)
+      @css = @css.html_safe if @css.respond_to?(:html_safe)
     end
 
     def render(select_class: "ultra-settings-select", table_class: "")
-      html = self.class.template.result(binding)
+      html = ViewHelper.erb_template("index.html.erb").result(binding)
       html = html.html_safe if html.respond_to?(:html_safe)
       html
+    end
+
+    def style_tag
+      "<style type=\"text/css\">\n#{css}\n</style>"
     end
 
     def to_s
@@ -52,7 +41,13 @@ module UltraSettings
     end
 
     def javascript
-      self.class.javascript
+      ViewHelper.read_app_file("application.js")
+    end
+
+    def application_css(color_scheme)
+      vars = ViewHelper.erb_template("application_vars.css.erb").result(binding).strip
+      css = ViewHelper.read_app_file("application.css").strip
+      "#{vars}\n#{css}"
     end
   end
 end

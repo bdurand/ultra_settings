@@ -71,3 +71,16 @@ RSpec.configure do |config|
     end
   end
 end
+
+def parse_with_svg(html)
+  svgs = []
+  html.gsub!(/<svg[^>]*>(.*?)<\/svg>/m) do |match|
+    svgs << match
+    ""
+  end
+  docs = [Nokogiri::HTML(html)]
+  svgs.each do |svg|
+    docs << Nokogiri::XML(svg)
+  end
+  docs
+end
