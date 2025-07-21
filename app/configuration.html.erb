@@ -39,7 +39,9 @@
 
         <% unless field.description.to_s.empty? %>
           <div class="ultra-settings-field-description">
-            <div class="ultra-settings-info-icon"></div>
+            <svg class="ultra-settings-info-icon" width="16" height="16" fill="currentColor">
+              <use href="#info-icon"/>
+            </svg>
             <div class="ultra-settings-description-text">
               <%= html_escape(field.description) %>
             </div>
@@ -67,7 +69,9 @@
               <% edit_url = UltraSettings.runtime_settings_url(field.runtime_setting, field.type) %>
               <% if edit_url %>
                 <a href="<%= html_escape(edit_url) %>" class="ultra-settings-edit-link" title="Edit <%= html_escape(field.runtime_setting) %>">
-                  <div class="ultra-settings-edit-icon"></div>
+                  <svg class="ultra-settings-edit-icon" width="16" height="16" fill="currentColor">
+                    <use href="#edit-icon"/>
+                  </svg>
                 </a>
               <% end %>
             </div>

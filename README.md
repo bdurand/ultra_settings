@@ -435,6 +435,14 @@ You can also embed the view for individual configurations within your own views 
 <%= UltraSettings::ConfigurationView.new(MyServiceConfiguration.instance).render %>
 ```
 
+You'll also need to include the CSS for the configuration view on your page.
+
+```erb
+<head>
+  <%= UltraSettings::ApplicationView.new.style_tag %>
+</head>
+```
+
 ### Testing With UltraSettings
 
 When writing automated tests, you may need to override configuration settings to test different scenarios. UltraSettings provides the `UltraSettings.override!` method to temporarily change settings within a test block. Below are examples of how to override the `TestConfiguration#foo` value in a test.

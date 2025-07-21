@@ -11,31 +11,13 @@ module UltraSettings
   #  <h1>Service Configuration</h1>
   #  <%= UltraSettings::ConfigurationView.new(ServiceConfiguration.instance).render %>
   class ConfigurationView
-    @template = nil
-
-    class << self
-      def template
-        @template ||= ERB.new(read_app_file("configuration.html.erb"))
-      end
-
-      private
-
-      def read_app_file(path)
-        File.read(File.join(app_dir, path))
-      end
-
-      def app_dir
-        File.expand_path(File.join("..", "..", "app"), __dir__)
-      end
-    end
-
     def initialize(configuration)
       @configuration = configuration
     end
 
     def render(table_class: "")
       configuration = @configuration
-      html = self.class.template.result(binding)
+      html = ViewHelper.erb_template("configuration.html.erb").result(binding)
       html = html.html_safe if html.respond_to?(:html_safe)
       html
     end
