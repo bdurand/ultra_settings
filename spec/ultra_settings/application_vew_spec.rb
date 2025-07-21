@@ -3,10 +3,10 @@
 require_relative "../spec_helper"
 
 describe UltraSettings::ApplicationView do
-  it "renders the confguration as an HTML application" do
+  it "renders the configuration as an HTML application" do
     html = UltraSettings::ApplicationView.new.render
     expect(html.strip).to match(/<select class="ultra-settings-select" size="1" id="config-selector">.*<\/select>/m)
-    expect(html.strip).to match(/<table class="ultra-settings-table">.*<\/table>/m)
+    expect(html.strip).to match(/ultra-settings-fields/m)
     expect(html.strip).to match(/<script>.*<\/script>/m)
   end
 
@@ -15,9 +15,10 @@ describe UltraSettings::ApplicationView do
     expect(html.strip).to match(/<select class="form-control" size="1" id="config-selector">.*<\/select>/m)
   end
 
-  it "can set the table class" do
+  it "maintains backward compatibility with table class parameter" do
     html = UltraSettings::ApplicationView.new.render(table_class: "table table-striped")
-    expect(html.strip).to match(/<table class="table table-striped">.*<\/table>/m)
+    # The table_class parameter is still accepted but doesn't affect the new card layout
+    expect(html.strip).to match(/ultra-settings-fields/m)
   end
 
   it "renders valid HTML", env: {TEST_STRING: "<script"} do

@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2.6.0
+
+### Added
+
+- Added support for passing the type in `UltraSettings.runtime_settings_url` as `${type}` in the URL.
+
+### Changed
+
+- Significantly updated the web UI to improve the layout and usability. The UI is no longer an HTML table and has a cleaner, more modern design.
+
 ## 2.5.0
 
 ### Added

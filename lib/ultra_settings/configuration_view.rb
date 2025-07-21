@@ -1,16 +1,15 @@
 # frozen_string_literal: true
 
 module UltraSettings
-  # This class can render information about a configuration in an HTML table. It is used by the
+  # This class can render information about a configuration in a clean card-based layout. It is used by the
   # bundled web UI, but you can use it to embed the configuration information in your own web pages.
   #
-  # The output will be an HTML table. You can specify the CSS class for the table by passing the
-  # `table_class` option to the `render` method. By default the table will have the class
-  # `ultra-settings-table`.
+  # The output will be HTML with a card-based layout for better readability. The `table_class` option is
+  # still supported for backward compatibility but is no longer used in the new card layout.
   #
   # @example
   #  <h1>Service Configuration</h1>
-  #  <%= UltraSettings::ConfigurationView.new(ServiceConfiguration.instance).render(table_class: "table table-striped") %>
+  #  <%= UltraSettings::ConfigurationView.new(ServiceConfiguration.instance).render %>
   class ConfigurationView
     @template = nil
 
@@ -34,7 +33,7 @@ module UltraSettings
       @configuration = configuration
     end
 
-    def render(table_class: "ultra-settings-table")
+    def render(table_class: "")
       configuration = @configuration
       html = self.class.template.result(binding)
       html = html.html_safe if html.respond_to?(:html_safe)

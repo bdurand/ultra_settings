@@ -4,15 +4,14 @@ module UltraSettings
   # This class can render information about all configurations. It is used by the bundled
   # web UI, but you can use it to embed the configuration information in your own web pages.
   #
-  # The output will be a simple HTML drop down list that can be used to display an HTML table
-  # showing each configuration. You can specify the CSS class for the select element and the tables
-  # by passing the `select_class` and `table_class` option to the `render` method. By default the
-  # select elewment have the class `ultra-settings-select` and the table will have the class
-  # `ultra-settings-table`.
+  # The output will be a simple HTML drop down list that can be used to display an HTML element
+  # showing each configuration. You can specify the CSS class for the select element by passing
+  # the `select_class` option to the `render` method. By default the select element has
+  # the class `ultra-settings-select`.
   #
   # @example
   #  <h1>Application Configuration</h1>
-  #  <%= UltraSettings::ApplicationView.new.render(select_class: 'form-control', table_class: "table table-striped") %>
+  #  <%= UltraSettings::ApplicationView.new.render(select_class: 'form-control') %>
   class ApplicationView
     @template = nil
 
@@ -36,7 +35,7 @@ module UltraSettings
       end
     end
 
-    def render(select_class: "ultra-settings-select", table_class: "ultra-settings-table")
+    def render(select_class: "ultra-settings-select", table_class: "")
       html = self.class.template.result(binding)
       html = html.html_safe if html.respond_to?(:html_safe)
       html

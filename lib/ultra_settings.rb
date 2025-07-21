@@ -182,11 +182,12 @@ module UltraSettings
     # @param name [String] The name of the setting.
     # @return [String, nil]
     # @api private
-    def runtime_settings_url(name)
+    def runtime_settings_url(name, type)
       url = @runtime_settings_url.to_s
       return nil if url.empty?
 
-      url.gsub("${name}", URI.encode_www_form_component(name))
+      url = url.gsub("${name}", URI.encode_www_form_component(name.to_s))
+      url.gsub("${type}", URI.encode_www_form_component(type.to_s))
     end
 
     def fields_secret_by_default=(value)
