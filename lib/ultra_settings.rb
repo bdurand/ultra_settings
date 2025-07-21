@@ -186,9 +186,8 @@ module UltraSettings
       url = @runtime_settings_url.to_s
       return nil if url.empty?
 
-      url = url.gsub("${name}", URI.encode_www_form_component(name))
-      url = url.gsub("${type}", type) if url.include?("${type}")
-      url
+      url = url.gsub("${name}", URI.encode_www_form_component(name.to_s))
+      url.gsub("${type}", URI.encode_www_form_component(type.to_s))
     end
 
     def fields_secret_by_default=(value)

@@ -206,14 +206,21 @@
   margin-left: 0.5rem;
   opacity: 0.7;
   transition: opacity 0.2s ease;
+  display: inline-flex;
+  align-items: center;
 }
 
 .ultra-settings-edit-link:hover {
   opacity: 1;
 }
 
-.ultra-settings-edit-link svg {
-  vertical-align: middle;
+.ultra-settings-edit-icon {
+  width: 16px;
+  height: 16px;
+  background-image: var(--edit-icon-svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .ultra-settings-select {
