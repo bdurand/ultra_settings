@@ -41,7 +41,7 @@ module UltraSettings
       end
     end
 
-    def show_defined_value(label, value, secret)
+    def show_defined_value(value, secret)
       title = if value.nil?
         "Not set"
       elsif secret
@@ -49,7 +49,7 @@ module UltraSettings
       else
         "Value: #{display_value(value)}"
       end
-      "<dfn style=\"text-decoration: underline dotted;\" title=\"#{html_escape(title)}\">#{html_escape(label)}</dfn>"
+      "<dfn style=\"text-decoration: underline dotted;\" title=\"#{html_escape(title)}\">#{info_icon}</dfn>"
     end
 
     def secret_value(value)
@@ -67,6 +67,22 @@ module UltraSettings
         root_path = config_path
       end
       path.relative_path_from(root_path)
+    end
+
+    def info_icon(size = 16)
+      icon("info", size)
+    end
+
+    def edit_icon(size = 16)
+      icon("edit", size)
+    end
+
+    def icon(name, size = 16)
+      <<~HTML
+        <svg class="ultra-settings-#{name}-icon" width="#{size}" height="#{size}" fill="currentColor">
+          <use href="##{name}-icon"/>
+        </svg>
+      HTML
     end
   end
 end
