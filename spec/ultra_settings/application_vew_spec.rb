@@ -28,10 +28,8 @@ describe UltraSettings::ApplicationView do
 
   it "renders valid HTML", env: {TEST_STRING: "<script"} do
     html = UltraSettings::ApplicationView.new.render
-    docs = parse_with_svg(html)
-    docs.each do |doc|
-      expect(doc.errors).to be_empty
-    end
+    doc = Nokogiri::HTML5(html)
+    expect(doc.errors).to be_empty
   end
 
   it "returns a style tag with the CSS" do

@@ -15,9 +15,7 @@ describe UltraSettings::WebView do
 
   it "renders valid HTML" do
     app = UltraSettings::WebView.new
-    docs = parse_with_svg(app.content)
-    docs.each do |doc|
-      expect(doc.errors).to be_empty
-    end
+    doc = Nokogiri::HTML5(app.content)
+    expect(doc.errors).to be_empty
   end
 end

@@ -32,9 +32,9 @@
           <% if configuration[field.name].nil? %>
             <span class="ultra-settings-nil-value">nil</span>
           <% elsif field.secret? %>
-            <code><%= html_escape(secret_value(configuration[field.name])) %></code>
+            <code class="ultra-settings-field-data-value"><%= html_escape(secret_value(configuration[field.name])) %></code>
           <% else %>
-            <code><%= html_escape(display_value(configuration[field.name])) %></code>
+            <code class="ultra-settings-field-data-value"><%= html_escape(display_value(configuration[field.name])) %></code>
           <% end %>
         </div>
 
@@ -50,10 +50,12 @@
         <div class="ultra-settings-field-sources">
           <% if field.env_var && !configuration.class.environment_variables_disabled? %>
             <div class="ultra-settings-source <%= 'ultra-settings-source-active' if source == :env %>">
-              <span class="ultra-settings-source-type">Environment Variable</span>
+              <span class="ultra-settings-source-type">
+                Environment Variable
+              </span>
               <code class="ultra-settings-source-value">
                 <%= field.env_var %>
-                <%= show_defined_value(configuration.__value_from_source__(field.name, :env), field.secret?) %>
+                <%= show_defined_value(field.env_var, configuration.__value_from_source__(field.name, :env), field.secret?) %>
               </code>
               <% if source == :env %>
                 <span class="ultra-settings-source-indicator">Currently active</span>
@@ -66,7 +68,7 @@
               <span class="ultra-settings-source-type">Runtime Setting</span>
               <code class="ultra-settings-source-value">
                 <%= field.runtime_setting %>
-                <%= show_defined_value(configuration.__value_from_source__(field.name, :settings), field.secret?) %>
+                <%= show_defined_value(field.runtime_setting, configuration.__value_from_source__(field.name, :settings), field.secret?) %>
               </code>
               <% if source == :settings %>
                 <span class="ultra-settings-source-indicator">Currently active</span>
@@ -85,7 +87,7 @@
               <span class="ultra-settings-source-type">Configuration File</span>
               <code class="ultra-settings-source-value">
                 <%= field.yaml_key %>
-                <%= show_defined_value(configuration.__value_from_source__(field.name, :yaml), field.secret?) %>
+                <%= show_defined_value(field.yaml_key, configuration.__value_from_source__(field.name, :yaml), field.secret?) %>
               </code>
               <% if source == :yaml %>
                 <span class="ultra-settings-source-indicator">Currently active</span>
@@ -93,19 +95,11 @@
             </div>
           <% end %>
 
-          <% if field.default.nil? %>
-            <% if source == :default %>
-              <div class="ultra-settings-source ultra-settings-source-active">
-                <span class="ultra-settings-source-type">Default Value</span>
-                <span class="ultra-settings-source-value"><em>Not set</em></span>
-                <span class="ultra-settings-source-indicator">Currently active</span>
-              </div>
-            <% end %>
-          <% else %>
+          <% if !field.default.nil? || source == :default %>
             <div class="ultra-settings-source <%= 'ultra-settings-source-active' if source == :default %>">
               <span class="ultra-settings-source-type">Default Value</span>
               <code class="ultra-settings-source-value">
-                <%= show_defined_value(field.default, field.secret?) %>
+                <%= show_defined_value("Default Value", field.default, field.secret?) %>
               </code>
               <% if source == :default %>
                 <span class="ultra-settings-source-indicator">Currently active</span>
@@ -116,4 +110,16 @@
       </div>
     <% end %>
   </div>
+
+  <dialog class="ultra-settings-dialog" closedby="any">
+    <div class="ultra-settings-dialog-header">
+      <div class="ultra-settings-dialog-title"></div>
+      <button class="ultra-settings-dialog-close" onclick="this.closest('.ultra-settings-dialog').close();">
+        <%= close_icon %>
+      </button>
+    </div>
+    <div class="ultra-settings-dialog-body">
+      <code class="ultra-settings-field-data-value ultra-settings-dialog-value"></code>
+    </div>
+  </dialog>
 </div>
