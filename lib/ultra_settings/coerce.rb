@@ -93,11 +93,13 @@ module UltraSettings
         time
       end
 
+      # @param value [Object] The value to check.
       # @return [Boolean] true if the value is a numeric type or a string representing a number.
       def numeric?(value)
         value.is_a?(Numeric) || (value.is_a?(String) && value.to_s.match?(NUMERIC_REGEX))
       end
 
+      # @param value [Object] The value to check.
       # @return [Boolean] true if the value is nil or empty.
       def blank?(value)
         return true if value.nil?
@@ -109,6 +111,7 @@ module UltraSettings
         end
       end
 
+      # @param value [Object] The value to check.
       # @return [Boolean] true if the value is not nil and not empty.
       def present?(value)
         !blank?(value)

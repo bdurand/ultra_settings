@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe UltraSettings::Field do
+RSpec.describe UltraSettings::Field do
   describe "value hierarchy" do
     let(:field) { UltraSettings::Field.new(name: "test", env_var: "foo", runtime_setting: "foo", yaml_key: "foo") }
 

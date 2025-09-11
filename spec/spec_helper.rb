@@ -35,7 +35,11 @@ class TestRuntimeSetings
 end
 
 RSpec.configure do |config|
+  config.warnings = true
+  config.disable_monkey_patching!
+  config.default_formatter = "doc" if config.files_to_run.one?
   config.order = :random
+  Kernel.srand config.seed
 
   config.around do |example|
     if example.metadata[:env].is_a?(Hash)

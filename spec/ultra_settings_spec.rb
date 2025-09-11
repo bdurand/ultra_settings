@@ -2,7 +2,7 @@
 
 require_relative "spec_helper"
 
-describe UltraSettings do
+RSpec.describe UltraSettings do
   describe "adding configurations" do
     it "can add configurations to the root namespace" do
       expect(UltraSettings.test).to be_a(TestConfiguration)

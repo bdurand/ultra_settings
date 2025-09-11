@@ -15,23 +15,37 @@ module UltraSettings
   class ApplicationView
     attr_reader :css
 
+    # Initialize the application view with a color scheme.
+    #
+    # @param color_scheme [Symbol] The color scheme to use (:light, :dark, or :system).
     def initialize(color_scheme: :light)
       @css = application_css(color_scheme)
       @css = @css.html_safe if @css.respond_to?(:html_safe)
     end
 
+    # Render the HTML for the configuration settings UI.
+    #
+    # @param select_class [String] CSS class for the select element.
+    # @param table_class [String] CSS class for the table element (for backwards compatibility).
+    # @return [String] The rendered HTML.
     def render(select_class: "ultra-settings-select", table_class: "")
       html = ViewHelper.erb_template("index.html.erb").result(binding)
       html = html.html_safe if html.respond_to?(:html_safe)
       html
     end
 
+    # Generate an HTML style tag with the CSS for the view.
+    #
+    # @return [String] The HTML style tag with CSS.
     def style_tag
       tag = "<style type=\"text/css\">\n#{css}\n</style>"
       tag = tag.html_safe if tag.respond_to?(:html_safe)
       tag
     end
 
+    # Convert the view to a string by rendering it.
+    #
+    # @return [String] The rendered HTML.
     def to_s
       render
     end

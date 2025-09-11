@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe UltraSettings::Configuration do
+RSpec.describe UltraSettings::Configuration do
   let(:configuration) { TestConfiguration.instance }
   let(:other_configuration) { OtherConfiguration.instance }
   let(:subclass_configuration) { SubclassConfiguration.instance }
@@ -130,6 +130,33 @@ describe UltraSettings::Configuration do
     it "can disable the runtime settings by default", settings: {foo: "foo", bar: "bar"} do
       expect(disabled_configuration.foo).to be_nil
       expect(disabled_configuration.bar).to eq "bar"
+    end
+
+    it "does not use runtime settings for static values" do
+      field = TestConfiguration.fields.detect { |f| f.name == "static" }
+      expect(field.runtime_setting).to be_nil
+    end
+
+    it "can use runtime settings for secret values if the engine is secure" do
+      field = TestConfiguration.fields.detect { |f| f.name == "secret" }
+      expect(field.runtime_setting).to eq "test.secret"
+    end
+
+    it "does not use runtime settings for secret values if the engine is not secure" do
+      UltraSettings.runtime_settings_secure = false
+      begin
+        configuration_class = Class.new(TestConfiguration) do
+          def self.root_name
+            "secrets"
+          end
+
+          field :secret, type: :string, secret: true
+        end
+        field = configuration_class.fields.detect { |f| f.name == "secret" }
+        expect(field.runtime_setting).to be_nil
+      ensure
+        UltraSettings.runtime_settings_secure = true
+      end
     end
   end
 

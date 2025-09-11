@@ -54,6 +54,8 @@ module UltraSettings
           raise ArgumentError.new("default_if must be a Proc or Symbol")
         end
 
+        runtime_setting = false if static || (secret && !UltraSettings.runtime_settings_secure?)
+
         defined_fields[name] = Field.new(
           name: name,
           type: type,
@@ -61,7 +63,7 @@ module UltraSettings
           default: default,
           default_if: default_if,
           env_var: construct_env_var(name, env_var),
-          runtime_setting: (static ? nil : construct_runtime_setting(name, runtime_setting)),
+          runtime_setting: construct_runtime_setting(name, runtime_setting),
           yaml_key: construct_yaml_key(name, yaml_key),
           static: static,
           secret: secret

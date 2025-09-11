@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe UltraSettings::YamlConfig do
+RSpec.describe UltraSettings::YamlConfig do
   it "returns the shared config if there is no environment config" do
     config = {
       "shared" => {

@@ -81,7 +81,6 @@ class MyServiceConfiguration < UltraSettings::Configuration
   field :auth_token,
     type: :string,
     env_var: "MY_SERVICE_TOKEN",
-    runtime_setting: false,
     yaml_key: false,
     description: "Bearer token for accessing the service",
     secret: true
@@ -114,7 +113,7 @@ You can customize the behavior of each field using various options:
 
 - `:default_if` - Provides a condition for when the default should be used. This should be a Proc or the name of a method within the class. Useful for ensuring values meet specific constraints. This can provide protection from misconfiguration that can break the application. In the above example, the default value for `timeout` will be used if the value is less than or equal to 0.
 
-- `:secret` - Marks the field as secret. Secret fields are not displayed in the web UI. By default, all fields are considered secret to avoid accidentally exposing sensitive values. You can change this default behavior by setting `fields_secret_by_default` to `false` either globally or per configuration.
+- `:secret` - Marks the field as secret. Secret fields are not displayed in the web UI. By default, all fields are considered secret to avoid accidentally exposing sensitive values. You can change this default behavior by setting `fields_secret_by_default` to `false` either globally or per configuration. Additionaly, if you set `UltraSettings.runtime_settings_secure` to false, then runtime settings will be disabled on secret fields.
 
 - `:env_var` - Overrides the environment variable name used to populate the field. This is useful if the variable name does not follow the conventional pattern. Set this to `false` to disable loading the field from an environment variable.
 
@@ -171,6 +170,9 @@ UltraSettings.runtime_settings = RedisRuntimeSettings.new
 ```
 
 The runtime settings implementation may also define an `array` method that takes a single parameter to return an array value. If this method is not implemented, then array values must be returned as single line CSV strings.
+
+> [!TIP]
+> If your runtime settings implementation does not securely store values, you should set `UltraSettings.runtime_settings_secure` to `false`. This will disable runtime settings on fields marked as secret to prevent leaking sensitive information.
 
 #### Using the `super_settings` gem
 

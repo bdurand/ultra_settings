@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe UltraSettings::ApplicationView do
+RSpec.describe UltraSettings::ApplicationView do
   it "renders the configuration as an HTML application" do
     html = UltraSettings::ApplicationView.new.render
     expect(html).to match(/<select class="ultra-settings-select" size="1" id="config-selector">.*<\/select>/m)

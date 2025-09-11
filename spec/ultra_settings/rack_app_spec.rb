@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe UltraSettings::RackApp do
+RSpec.describe UltraSettings::RackApp do
   let(:rack_app) { UltraSettings::RackApp.new }
 
   it "renders the configuration page" do

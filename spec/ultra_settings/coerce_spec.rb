@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe UltraSettings::Coerce do
+RSpec.describe UltraSettings::Coerce do
   describe "boolean" do
     it "should translate false values" do
       expect(UltraSettings::Coerce.boolean(false)).to eq false
