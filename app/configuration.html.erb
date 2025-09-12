@@ -73,7 +73,7 @@
               <% if source == :settings %>
                 <span class="ultra-settings-source-indicator">Currently active</span>
               <% end %>
-              <% edit_url = UltraSettings.runtime_settings_url(field.runtime_setting, field.type) %>
+              <% edit_url = UltraSettings.runtime_settings_url(name: field.runtime_setting, type: field.type, description: field.description) %>
               <% if edit_url %>
                 <a href="<%= html_escape(edit_url) %>" class="ultra-settings-edit-link" title="Edit <%= html_escape(field.runtime_setting) %>">
                   <%= edit_icon %>

@@ -15,12 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Show icons on the web UI that open a dialog with the current value for each data source.
+- Added support for passing the field description in `UltraSettings.runtime_settings_url` using the `${description}` placeholder in the URL.
 
 ## 2.6.0
 
 ### Added
 
-- Added support for passing the type in `UltraSettings.runtime_settings_url` as `${type}` in the URL.
+- Added support for passing the type in `UltraSettings.runtime_settings_url` using the `${type}` placeholder in the URL.
 
 ### Changed
 

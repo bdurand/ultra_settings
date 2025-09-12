@@ -190,14 +190,17 @@ module UltraSettings
     # Get the URL for changing runtime settings.
     #
     # @param name [String] The name of the setting.
+    # @param type [String] The type of the setting.
+    # @param description [String] The description of the setting.
     # @return [String, nil]
     # @api private
-    def runtime_settings_url(name, type)
+    def runtime_settings_url(name: nil, type: nil, description: nil)
       url = @runtime_settings_url.to_s
       return nil if url.empty?
 
-      url = url.gsub("${name}", URI.encode_www_form_component(name.to_s))
-      url.gsub("${type}", URI.encode_www_form_component(type.to_s))
+      url.gsub("${name}", URI.encode_www_form_component(name.to_s))
+        .gsub("${type}", URI.encode_www_form_component(type.to_s))
+        .gsub("${description}", URI.encode_www_form_component(description.to_s))
     end
 
     # Set whether or not the runtime settings engine is considered secure. If this is set

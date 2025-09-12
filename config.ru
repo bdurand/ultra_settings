@@ -15,7 +15,7 @@ require_relative "lib/ultra_settings"
 UltraSettings.fields_secret_by_default = false
 UltraSettings.yaml_config_path = File.join(__dir__, "spec", "config")
 UltraSettings.runtime_settings = {"my_service.timeout" => 2.5}
-UltraSettings.runtime_settings_url = ENV.fetch("RUNTIME_SETTINGS_URL", "http://localhost:9494#edit=${name}&type=${type}")
+UltraSettings.runtime_settings_url = ENV.fetch("RUNTIME_SETTINGS_URL", "http://localhost:9494#edit=${name}&type=${type}&description=${description}")
 
 require_relative "spec/test_configs/test_configuration"
 require_relative "spec/test_configs/other_configuration"

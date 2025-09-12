@@ -50,22 +50,27 @@ RSpec.describe UltraSettings do
 
     it "returns nil if not set" do
       UltraSettings.runtime_settings_url = nil
-      expect(UltraSettings.runtime_settings_url("foo", "string")).to be_nil
+      expect(UltraSettings.runtime_settings_url(name: "foo", type: "string", description: "A test setting")).to be_nil
     end
 
     it "return nil if set to empty" do
       UltraSettings.runtime_settings_url = ""
-      expect(UltraSettings.runtime_settings_url("foo", "string")).to be_nil
+      expect(UltraSettings.runtime_settings_url(name: "foo", type: "string", description: "A test setting")).to be_nil
     end
 
     it "returns the url with the ${name} placeholder replaced with the name argument" do
       UltraSettings.runtime_settings_url = "http://example.com/settings?filter=${name}"
-      expect(UltraSettings.runtime_settings_url("foo bar", "string")).to eq("http://example.com/settings?filter=foo+bar")
+      expect(UltraSettings.runtime_settings_url(name: "foo bar", type: "string", description: "A test setting")).to eq("http://example.com/settings?filter=foo+bar")
     end
 
     it "returns the url with the ${type} placeholder replaced with the type argument" do
       UltraSettings.runtime_settings_url = "http://example.com/settings?filter=${type}"
-      expect(UltraSettings.runtime_settings_url("foo bar", "string")).to eq("http://example.com/settings?filter=string")
+      expect(UltraSettings.runtime_settings_url(name: "foo bar", type: "string", description: "A test setting")).to eq("http://example.com/settings?filter=string")
+    end
+
+    it "returns the url with the ${description} placeholder replaced with the description argument" do
+      UltraSettings.runtime_settings_url = "http://example.com/settings?filter=${description}"
+      expect(UltraSettings.runtime_settings_url(name: "foo bar", type: "string", description: "A test setting")).to eq("http://example.com/settings?filter=A+test+setting")
     end
   end
 end
