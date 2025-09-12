@@ -132,31 +132,19 @@ RSpec.describe UltraSettings::Configuration do
       expect(disabled_configuration.bar).to eq "bar"
     end
 
-    it "does not use runtime settings for static values" do
-      field = TestConfiguration.fields.detect { |f| f.name == "static" }
-      expect(field.runtime_setting).to be_nil
+    it "does not use runtime settings for static values", settings: {"test.static" => "test"} do
+      expect(configuration.static).to be_nil
     end
 
-    it "can use runtime settings for secret values if the engine is secure" do
-      field = TestConfiguration.fields.detect { |f| f.name == "secret" }
-      expect(field.runtime_setting).to eq "test.secret"
-    end
-
-    it "does not use runtime settings for secret values if the engine is not secure" do
-      UltraSettings.runtime_settings_secure = false
+    it "can use runtime settings for secret values if the engine is secure", settings: {"test.secret" => "test"} do
+      expect(configuration.secret).to eq "test"
       begin
-        configuration_class = Class.new(TestConfiguration) do
-          def self.root_name
-            "secrets"
-          end
-
-          field :secret, type: :string, secret: true
-        end
-        field = configuration_class.fields.detect { |f| f.name == "secret" }
-        expect(field.runtime_setting).to be_nil
+        UltraSettings.runtime_settings_secure = false
+        expect(configuration.secret).to eq "secret_token" # value from yaml
       ensure
         UltraSettings.runtime_settings_secure = true
       end
+      expect(configuration.secret).to eq "test"
     end
   end
 

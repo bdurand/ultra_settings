@@ -118,6 +118,7 @@ module UltraSettings
     end
 
     def runtime_setting_value(settings)
+      return nil if static? || (secret? && !UltraSettings.runtime_settings_secure?)
       return nil unless settings && runtime_setting
 
       if type == :array && settings.respond_to?(:array)
