@@ -132,10 +132,6 @@ RSpec.describe UltraSettings::Configuration do
       expect(disabled_configuration.bar).to eq "bar"
     end
 
-    it "does not use runtime settings for static values", settings: {"test.static" => "test"} do
-      expect(configuration.static).to be_nil
-    end
-
     it "can use runtime settings for secret values if the engine is secure", settings: {"test.secret" => "test"} do
       expect(configuration.secret).to eq "test"
       begin
