@@ -61,7 +61,7 @@ module UltraSettings
           default: default,
           default_if: default_if,
           env_var: construct_env_var(name, env_var),
-          runtime_setting: (static ? nil : construct_runtime_setting(name, runtime_setting)),
+          runtime_setting: construct_runtime_setting(name, runtime_setting),
           yaml_key: construct_yaml_key(name, yaml_key),
           static: static,
           secret: secret

@@ -5,11 +5,10 @@ on:
     branches:
       - main
       - actions-*
-    tags:
-      - v*
   pull_request:
     branches-ignore:
       - actions-*
+  workflow_dispatch:
 
 env:
   BUNDLE_CLEAN: "true"
@@ -26,6 +25,7 @@ jobs:
         include:
           - ruby: "ruby"
             standardrb: true
+            yard: true
           - ruby: "3.0"
           - ruby: "2.5"
     steps:
@@ -55,4 +55,7 @@ jobs:
       run: bundle exec rake
     - name: standardrb
       if:   matrix.standardrb == true
-      run:  bundle exec rake standard
+      run:  bundle exec standardrb
+    - name: yard
+      if: matrix.yard
+      run:  bundle exec yard --fail-on-warning

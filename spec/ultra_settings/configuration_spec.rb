@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe UltraSettings::Configuration do
+RSpec.describe UltraSettings::Configuration do
   let(:configuration) { TestConfiguration.instance }
   let(:other_configuration) { OtherConfiguration.instance }
   let(:subclass_configuration) { SubclassConfiguration.instance }
@@ -130,6 +130,17 @@ describe UltraSettings::Configuration do
     it "can disable the runtime settings by default", settings: {foo: "foo", bar: "bar"} do
       expect(disabled_configuration.foo).to be_nil
       expect(disabled_configuration.bar).to eq "bar"
+    end
+
+    it "can use runtime settings for secret values if the engine is secure", settings: {"test.secret" => "test"} do
+      expect(configuration.secret).to eq "test"
+      begin
+        UltraSettings.runtime_settings_secure = false
+        expect(configuration.secret).to eq "secret_token" # value from yaml
+      ensure
+        UltraSettings.runtime_settings_secure = true
+      end
+      expect(configuration.secret).to eq "test"
     end
   end
 

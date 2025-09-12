@@ -3,26 +3,31 @@
 module UltraSettings
   # This class is used to represent runtime settings that have not been initialized yet.
   # You can use this to protect your application from accidentally accessing runtime settings
-  # before they are initialized. Doing this can cquse unexpected behavior if the runtime settings
-  # engine has not yet been initialized. For instance, if your runtime settings enging reads from
+  # before they are initialized. Doing this can cause unexpected behavior if the runtime settings
+  # engine has not yet been initialized. For instance, if your runtime settings engine reads from
   # a database it would not be available until the database connection is established.
   #
-  # The intention of this class is to set it a the runtime settings at the beginning of initialization
+  # The intention of this class is to set it as the runtime settings at the beginning of initialization
   # and then set the actual runtime settings engine after the initialization is complete. It will
   # act as a guard to prevent invalid runtime settings backed configurations from being used during
   # initialization.
   #
   # @example
   #
-  # UltraSettings.runtime_settings = UltraSettings::UninitializedRuntimeSettings
-  # ActiveSupport.on_load(:active_record) do
-  #   UltraSettings.runtime_settings = SuperSettings
-  # end
+  #   UltraSettings.runtime_settings = UltraSettings::UninitializedRuntimeSettings
+  #   ActiveSupport.on_load(:active_record) do
+  #     UltraSettings.runtime_settings = SuperSettings
+  #   end
   class UninitializedRuntimeSettings
     class Error < StandardError
     end
 
     class << self
+      # Raises an error when attempting to access runtime settings during initialization.
+      #
+      # @param key [String] The key being accessed.
+      # @return [void]
+      # @raise [Error] Always raises an error to prevent access during initialization.
       def [](key)
         raise Error.new("Attempt to call runtime setting #{key} during initialization")
       end

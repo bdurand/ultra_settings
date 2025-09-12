@@ -4,17 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2.7.0
+
+### Added
+
+- Added new setting to indicate if the runtime settings engine is secure. If the engine is marked as not secure, then runtime settings will be disabled for all fields marked as secret. This protects sensitive information from being exposed in the web UI or through the API. The default value is `true` to maintain backwards compatibility.
+
 ## 2.6.1
 
 ### Added
 
 - Show icons on the web UI that open a dialog with the current value for each data source.
+- Added support for passing the field description in `UltraSettings.runtime_settings_url` using the `${description}` placeholder in the URL.
 
 ## 2.6.0
 
 ### Added
 
-- Added support for passing the type in `UltraSettings.runtime_settings_url` as `${type}` in the URL.
+- Added support for passing the type in `UltraSettings.runtime_settings_url` using the `${type}` placeholder in the URL.
 
 ### Changed
 

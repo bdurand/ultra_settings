@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe UltraSettings::ConfigurationView do
+RSpec.describe UltraSettings::ConfigurationView do
   it "renders the configuration as HTML" do
     html = UltraSettings::ConfigurationView.new(TestConfiguration.instance).render
     expect(html.strip).to match(/\A.*ultra-settings-fields.*\z/m)

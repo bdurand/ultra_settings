@@ -33,11 +33,18 @@ module UltraSettings
   # In addition, the keys are flattened into a one level deep hash with dots
   # separating the keys.
   class YamlConfig
+    # Initialize a YAML configuration loader.
+    #
+    # @param path [String, Pathname] The path to the YAML configuration file.
+    # @param environment [String] The environment section to load from the YAML file.
     def initialize(path, environment)
       yaml = load_yaml(path)
       @config = environment_config(yaml, environment)
     end
 
+    # Convert the loaded configuration to a hash.
+    #
+    # @return [Hash] The flattened configuration hash.
     def to_h
       @config
     end

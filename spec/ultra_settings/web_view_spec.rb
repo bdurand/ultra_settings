@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe UltraSettings::WebView do
+RSpec.describe UltraSettings::WebView do
   it "renders the configuration HTML page" do
     app = UltraSettings::WebView.new
     expect(app.render_settings).to be_a(String)

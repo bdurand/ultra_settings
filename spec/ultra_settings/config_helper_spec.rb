@@ -2,10 +2,11 @@
 
 require_relative "../spec_helper"
 
-describe UltraSettings::ConfigHelper do
+RSpec.describe UltraSettings::ConfigHelper do
   subject(:service_class) do
     Class.new do
       extend UltraSettings::ConfigHelper
+
       configuration_class TestConfiguration
     end
   end

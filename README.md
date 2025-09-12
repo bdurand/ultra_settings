@@ -81,7 +81,6 @@ class MyServiceConfiguration < UltraSettings::Configuration
   field :auth_token,
     type: :string,
     env_var: "MY_SERVICE_TOKEN",
-    runtime_setting: false,
     yaml_key: false,
     description: "Bearer token for accessing the service",
     secret: true
@@ -114,7 +113,7 @@ You can customize the behavior of each field using various options:
 
 - `:default_if` - Provides a condition for when the default should be used. This should be a Proc or the name of a method within the class. Useful for ensuring values meet specific constraints. This can provide protection from misconfiguration that can break the application. In the above example, the default value for `timeout` will be used if the value is less than or equal to 0.
 
-- `:secret` - Marks the field as secret. Secret fields are not displayed in the web UI. By default, all fields are considered secret to avoid accidentally exposing sensitive values. You can change this default behavior by setting `fields_secret_by_default` to `false` either globally or per configuration.
+- `:secret` - Marks the field as secret. Secret fields are not displayed in the web UI. By default, all fields are considered secret to avoid accidentally exposing sensitive values. You can change this default behavior by setting `fields_secret_by_default` to `false` either globally or per configuration. Additionaly, if you set `UltraSettings.runtime_settings_secure` to false, then runtime settings will be disabled on secret fields.
 
 - `:env_var` - Overrides the environment variable name used to populate the field. This is useful if the variable name does not follow the conventional pattern. Set this to `false` to disable loading the field from an environment variable.
 
@@ -172,6 +171,9 @@ UltraSettings.runtime_settings = RedisRuntimeSettings.new
 
 The runtime settings implementation may also define an `array` method that takes a single parameter to return an array value. If this method is not implemented, then array values must be returned as single line CSV strings.
 
+> [!TIP]
+> If your runtime settings implementation does not securely store values, you should set `UltraSettings.runtime_settings_secure` to `false`. This will disable runtime settings on fields marked as secret to prevent leaking sensitive information.
+
 #### Using the `super_settings` gem
 
 There is a companion gem [super_settings](https://github.com/bdurand/super_settings) that can be used as a drop in implementation for the runtime settings. You just need to set the runtime settings to the `SuperSettings` object.
@@ -211,7 +213,7 @@ You can customize the behavior of runtime setting names with the following optio
 
 - **Disabling Runtime Settings:** You can disable runtime settings as a default source for fields by setting `runtime_settings_disabled` to `true` in your configuration class. You can disable runtime settings on individual fields by setting `runtime_setting` on the field to `false`.
 
-- **Editing Links** You can specify a URL for editing runtime settings from the web UI by setting `UltraSettings.runtime_settings_url` to the desired URL. This will add links to the runtime settings in the web UI. You can use the placeholders `${name}` and `${type}` in the URL which will be replaced with the name and type of the runtime setting, respectively. If you are using the `super_settings` gem for runtime settings, then you can target a setting by adding `#edit=${name}&type=${type}` to the root URL where `super_settings` is mounted.
+- **Editing Links** You can specify a URL for editing runtime settings from the web UI by setting `UltraSettings.runtime_settings_url` to the desired URL. This will add links to the runtime settings in the web UI. You can use the placeholders `${name}`, `${type}`, and `${description}` in the URL which will be replaced with the name, type, and description of the field respectively. If you are using the `super_settings` gem for runtime settings, then you can target a setting by adding `#edit=${name}&type=${type}&description=${description}` to the root URL where `super_settings` is mounted.
 
 If a setting value cannot be loaded from the runtime settings, then it's value will attempt to be loaded from a YAML file.
 

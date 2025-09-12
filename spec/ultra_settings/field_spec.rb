@@ -2,7 +2,7 @@
 
 require_relative "../spec_helper"
 
-describe UltraSettings::Field do
+RSpec.describe UltraSettings::Field do
   describe "value hierarchy" do
     let(:field) { UltraSettings::Field.new(name: "test", env_var: "foo", runtime_setting: "foo", yaml_key: "foo") }
 
@@ -14,6 +14,22 @@ describe UltraSettings::Field do
     it "pulls a value from the settings if the env var is not present" do
       expect(field.value(settings: {"foo" => "setting"}, yaml_config: {"foo" => "yaml"})).to eq("setting")
       expect(field.source(settings: {"foo" => "setting"}, yaml_config: {"foo" => "yaml"})).to eq(:settings)
+    end
+
+    it "does not pull a value from settings if the value is static" do
+      field = UltraSettings::Field.new(name: "test", env_var: "foo", runtime_setting: "foo", yaml_key: "foo", static: true)
+      expect(field.value(settings: {"foo" => "setting"}, yaml_config: {"foo" => "yaml"})).to eq("yaml")
+    end
+
+    it "does not pull a value from settings if the value is secret and settings are not secure" do
+      field = UltraSettings::Field.new(name: "test", env_var: "foo", runtime_setting: "foo", yaml_key: "foo", secret: true)
+      expect(field.value(settings: {"foo" => "setting"}, yaml_config: {"foo" => "yaml"})).to eq("setting")
+      begin
+        UltraSettings.runtime_settings_secure = false
+        expect(field.value(settings: {"foo" => "setting"}, yaml_config: {"foo" => "yaml"})).to eq("yaml")
+      ensure
+        UltraSettings.runtime_settings_secure = true
+      end
     end
 
     it "pulls a value from the YAML config if there is no env var or setting" do

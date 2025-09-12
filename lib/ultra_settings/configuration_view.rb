@@ -11,10 +11,17 @@ module UltraSettings
   #  <h1>Service Configuration</h1>
   #  <%= UltraSettings::ConfigurationView.new(ServiceConfiguration.instance).render %>
   class ConfigurationView
+    # Initialize the configuration view with a configuration instance.
+    #
+    # @param configuration [UltraSettings::Configuration] The configuration instance to display.
     def initialize(configuration)
       @configuration = configuration
     end
 
+    # Render the HTML for the configuration view.
+    #
+    # @param table_class [String] CSS class for the table element (maintained for backwards compatibility).
+    # @return [String] The rendered HTML.
     def render(table_class: "")
       configuration = @configuration
       html = ViewHelper.erb_template("configuration.html.erb").result(binding)
@@ -22,6 +29,9 @@ module UltraSettings
       html
     end
 
+    # Convert the view to a string by rendering it.
+    #
+    # @return [String] The rendered HTML.
     def to_s
       render
     end

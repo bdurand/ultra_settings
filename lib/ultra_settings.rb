@@ -38,6 +38,7 @@ module UltraSettings
   @mutex = Mutex.new
   @runtime_settings = nil
   @runtime_settings_url = nil
+  @runtime_settings_secure = true
 
   class << self
     # Adds a configuration to the root namespace. The configuration will be
@@ -111,6 +112,7 @@ module UltraSettings
     # Defaults to "development".
     #
     # @param value [String] The environment name to use.
+    # @return [void]
     def yaml_config_env=(value)
       Configuration.yaml_config_env = value
     end
@@ -128,6 +130,7 @@ module UltraSettings
     # this is a period.
     #
     # @param value [String] The delimiter to use.
+    # @return [void]
     def runtime_setting_delimiter=(value)
       Configuration.runtime_setting_delimiter = value.to_s
     end
@@ -162,6 +165,9 @@ module UltraSettings
     # Set the object to use for runtime settings. This can be any object that
     # responds to the [] method. If you are using the `super_settings` gem,
     # you can set this to `SuperSettings`.
+    #
+    # @param value [#[]] The object to use for runtime settings.
+    # @return [void]
     attr_writer :runtime_settings
 
     # Get the object to use for runtime settings.
@@ -176,21 +182,46 @@ module UltraSettings
     # URL will be displayed in the web view for fields that support runtime settings.
     # The URL may contain a `${name}` placeholder that will be replaced with the name
     # of the setting.
+    #
+    # @param value [String] The URL for changing runtime settings.
+    # @return [void]
     attr_writer :runtime_settings_url
 
     # Get the URL for changing runtime settings.
     #
     # @param name [String] The name of the setting.
+    # @param type [String] The type of the setting.
+    # @param description [String] The description of the setting.
     # @return [String, nil]
     # @api private
-    def runtime_settings_url(name, type)
+    def runtime_settings_url(name: nil, type: nil, description: nil)
       url = @runtime_settings_url.to_s
       return nil if url.empty?
 
-      url = url.gsub("${name}", URI.encode_www_form_component(name.to_s))
-      url.gsub("${type}", URI.encode_www_form_component(type.to_s))
+      url.gsub("${name}", URI.encode_www_form_component(name.to_s))
+        .gsub("${type}", URI.encode_www_form_component(type.to_s))
+        .gsub("${description}", URI.encode_www_form_component(description.to_s))
     end
 
+    # Set whether or not the runtime settings engine is considered secure. If this is set
+    # to false, then runtime settings will be disabled for all fields marked as secret.
+    # The default value is true.
+    #
+    # @param value [Boolean] Whether the runtime settings engine is secure.
+    # @return [void]
+    attr_writer :runtime_settings_secure
+
+    # Check if the runtime settings engine is considered secure.
+    #
+    # @return [Boolean]
+    def runtime_settings_secure?
+      @runtime_settings_secure
+    end
+
+    # Set whether fields should be considered secret by default.
+    #
+    # @param value [Boolean] Whether fields should be secret by default.
+    # @return [void]
     def fields_secret_by_default=(value)
       Configuration.fields_secret_by_default = value
     end
@@ -245,6 +276,7 @@ module UltraSettings
           unless klass < Configuration
             raise TypeError.new("Configuration class #{class_name} does not inherit from UltraSettings::Configuration")
           end
+
           @configurations[name] = klass
         end
       end
