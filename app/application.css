@@ -184,6 +184,11 @@ code.ultra-settings-field-data-value {
   letter-spacing: 0.025em;
 }
 
+.ultra-settings-source-indicator::before {
+  content: "● ";
+  font-size: 1rem;
+}
+
 .ultra-settings-icon-info {
   color: var(--info-color);
   cursor: pointer;
