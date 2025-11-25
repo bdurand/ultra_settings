@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class TestConfiguration < UltraSettings::Configuration
+  description "A test configuration for unit tests that defines all field types."
+
   field :static, static: true
 
   field :foo, description: "An all purpose foo setting"

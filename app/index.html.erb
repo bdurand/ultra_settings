@@ -2,25 +2,33 @@
 
 <div class="ultra-settings">
   <div class="ultra-settings-nav">
-    <form onsubmit="return false" style="margin-bottom: 0.5rem;">
-      <select class="<%= html_escape(select_class) %>" size="1" id="config-selector">
-        <% UltraSettings.__configuration_names__.sort.each do |name| %>
-          <% configuration = UltraSettings.send(name) %>
-          <% next if configuration.class.fields.empty? %>
+    <% configurations = UltraSettings.__configuration_names__.collect do |name|
+        config = UltraSettings.send(name)
+        config unless config.class.fields.empty?
+      end.compact.sort_by { |config| config.class.name.downcase } %>
 
-          <option value="config-<%= html_escape(name) %>"><%= html_escape(UltraSettings.send(name).class.name) %></option>
-        <% end %>
-      </select>
-    </form>
+    <% if configurations.size == 1 %>
+      <h2 class="ultra-settings-title">
+        <%= html_escape(configurations.first.class.name) %>
+      </h2>
+    <% else %>
+      <%= render_partial "select_menu", configurations: configurations %>
+    <% end %>
   </div>
 
-  <% UltraSettings.__configuration_names__.sort.each do |name| %>
-    <% configuration = UltraSettings.send(name) %>
-    <% next if configuration.class.fields.empty? %>
-
-    <div class="ultra-settings-configuration" id="config-<%= html_escape(name) %>" style="display:none;">
-      <%= UltraSettings::ConfigurationView.new(configuration).render(table_class: table_class) %>
-    </div>
+  <% if configurations.size == 1 %>
+    <%= UltraSettings::ConfigurationView.new(configurations.first).render(table_class: table_class) %>
+  <% else %>
+    <%= render_partial "config_list", configurations: configurations %>
+    <% configurations.each do |configuration| %>
+      <div
+        class="ultra-settings-configuration"
+        id="config-<%= html_escape(configuration.class.name) %>"
+        style="display:none;"
+      >
+        <%= UltraSettings::ConfigurationView.new(configuration).render(table_class: table_class) %>
+      </div>
+    <% end %>
   <% end %>
 </div>
 

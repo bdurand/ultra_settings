@@ -424,7 +424,7 @@ If you prefer to embed the settings view directly into your own admin tools or d
 ```erb
 <h1>Configuration</h1>
 
-<%= UltraSettings::ApplicationView.new.render(select_class: "form-select") %>
+<%= UltraSettings::ApplicationView.new.render %>
 ```
 
 This approach allows for seamless integration of the settings UI into your application's admin interface, leveraging your existing authentication and authorization mechanisms. The settings are rendered with navigation handled by an HTML select element. You can specify the CSS classes for the select element to match your own application styles..

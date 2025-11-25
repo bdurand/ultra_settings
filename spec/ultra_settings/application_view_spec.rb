@@ -3,9 +3,9 @@
 require_relative "../spec_helper"
 
 RSpec.describe UltraSettings::ApplicationView do
-  it "renders the configuration as an HTML application" do
+  it "renders the configuration as an HTML application with multiple configurations" do
     html = UltraSettings::ApplicationView.new.render
-    expect(html).to match(/<select class="ultra-settings-select" size="1" id="config-selector">.*<\/select>/m)
+    expect(html).to match(/class="ultra-settings-dropdown"/)
     expect(html).to match(/ultra-settings-fields/m)
     expect(html).to match(/<script>.*<\/script>/m)
   end
@@ -13,11 +13,6 @@ RSpec.describe UltraSettings::ApplicationView do
   it "renders the configuration CSS" do
     html = UltraSettings::ApplicationView.new.render
     expect(html).to match(/<style type="text\/css">.*<\/style>/m)
-  end
-
-  it "can set the select class" do
-    html = UltraSettings::ApplicationView.new.render(select_class: "form-control")
-    expect(html).to match(/<select class="form-control" size="1" id="config-selector">.*<\/select>/m)
   end
 
   it "maintains backward compatibility with table class parameter" do

@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2.8.0
+
+### Added
+
+- Added support for setting a description on configuration classes. The class description can serve to document the purpose of the configuration and will be shown in the web UI.
+- Improved menu for selecting configuration classes in the web UI by adding a search box to filter the list of configurations.
+
 ## 2.7.0
 
 ### Added

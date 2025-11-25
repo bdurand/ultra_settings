@@ -9,8 +9,20 @@ module UltraSettings
 
     @env_var_prefix = nil
     @runtime_setting_prefix = nil
+    @description = nil
 
     class << self
+      # Set a description for the configuration. This is optional. It will be displayed
+      # in the web UI if provided. On large projects with many configurations, this can
+      # help identify the purpose of each configuration.
+      #
+      # @param text [String] The description text.
+      # @return [void]
+      def description(text = nil)
+        @description = text.to_s.strip unless text.nil?
+        @description
+      end
+
       # Define a field on the configuration. This will create a getter method for the field.
       # The field value will be read from the environment, runtime settings, or a YAML file
       # and coerced to the specified type. Empty strings will be converted to nil.

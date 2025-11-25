@@ -1,0 +1,14 @@
+<div class="ultra-settings-configuration-list" style="display:none;">
+  <% configurations.each do |configuration| %>
+    <div class="ultra-settings-configuration-summary">
+      <a
+        href="#<%= html_escape(configuration.class.name) %>"
+        class="ultra-settings-configuration-title"
+      >
+        <%= html_escape(configuration.class.name) %>
+      </a>
+
+      <p><%= html_escape(configuration.class.description) %></p>
+    </div>
+  <% end %>
+</div>

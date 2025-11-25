@@ -1,0 +1,29 @@
+<% has_config_file = !configuration.class.yaml_config_disabled? && configuration.class.configuration_file.is_a?(Pathname) %>
+
+<% if configuration.class.description || has_config_file %>
+  <div class="ultra-settings-description-container">
+    <% if configuration.class.description %>
+      <div class="ultra-settings-description">
+        <%= html_escape(configuration.class.description).gsub("\n", "<br>") %>
+      </div>
+    <% end %>
+
+    <% if has_config_file %>
+      <div class="ultra-settings-description">
+        <span class="ultra-settings-config-file-label">
+          Configuration file:
+        </span>
+
+        <code class="ultra-settings-config-file-path">
+          <%= html_escape(relative_path(configuration.class.configuration_file)) %>
+        </code>
+
+        <% unless configuration.class.configuration_file&.exist? %>
+          <span class="ultra-settings-file-not-found">
+            (file does not exist)
+          </span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
