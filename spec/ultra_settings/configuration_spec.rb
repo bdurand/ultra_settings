@@ -284,6 +284,15 @@ RSpec.describe UltraSettings::Configuration do
     end
   end
 
+  describe "__available_sources__" do
+    it "returns the possible data sources for a field", settings: {"my_service.host" => "host"} do
+      config = MyServiceConfiguration.instance
+      expect(config.__available_sources__(:auth_token)).to match_array [:env]
+      expect(config.__available_sources__(:host)).to match_array [:env, :settings, :yaml]
+      expect(config.__available_sources__(:port)).to match_array [:env, :settings, :yaml, :default]
+    end
+  end
+
   describe "__value_from_source__" do
     it "returns the value from the specified source", env: {MY_SERVICE_PORT: "4000"}, settings: {"my_service.port" => 5000}, yaml: {my_service: {port: 6000}} do
       expect(MyServiceConfiguration.instance.__value_from_source__(:port, :env)).to eq 4000

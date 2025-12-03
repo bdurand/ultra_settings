@@ -1,10 +1,11 @@
-<% has_config_file = !configuration.class.yaml_config_disabled? && configuration.class.configuration_file.is_a?(Pathname) %>
+<% config_class = configuration.class
+  has_config_file = config_class.configuration_file.is_a?(Pathname) && config_class.fields.any?(&:yaml_key) %>
 
-<% if configuration.class.description || has_config_file %>
+<% if config_class.description || has_config_file %>
   <div class="ultra-settings-description-container">
-    <% if configuration.class.description %>
+    <% if config_class.description %>
       <div class="ultra-settings-description">
-        <%= html_escape(configuration.class.description).gsub("\n", "<br>") %>
+        <%= html_escape(config_class.description).gsub("\n", "<br>") %>
       </div>
     <% end %>
 

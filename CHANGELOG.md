@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for setting a description on configuration classes. The class description can serve to document the purpose of the configuration and will be shown in the web UI.
 - Improved menu for selecting configuration classes in the web UI by adding a search box to filter the list of configurations.
 
+### Fixed
+
+- Fixed filtering of data sources for configuration classes in the web UI.
+  - The YAML source will not be shown if the configuration file is set to nil or false.
+  - The runtime settings source will not be shown if the runtime settings engine is not set up.
+  - Fields that override the class default for a data source will now correctly show that source.
+
 ## 2.7.0
 
 ### Added

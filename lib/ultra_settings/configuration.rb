@@ -157,7 +157,7 @@ module UltraSettings
       # directory (i.e. MyServiceConfiguration has a default config path of
       # "my_service.yml").
       #
-      # @param value [String, Pathname]
+      # @param value [String, Pathname, false, nil]
       # @return [void]
       def configuration_file=(value)
         value = nil if value == false
@@ -523,6 +523,22 @@ module UltraSettings
       else
         raise ArgumentError.new("Unknown source: #{source.inspect}")
       end
+    end
+
+    # Returns an array of the available data sources for the field.
+    #
+    # @param name [String, Symbol] the name of the field.
+    # @return [Array<Symbol>] The available sources (:env, :settings, :yaml, :default).
+    def __available_sources__(name)
+      field = self.class.send(:defined_fields)[name.to_s]
+      raise ArgumentError.new("Unknown field: #{name.inspect}") unless field
+
+      sources = []
+      sources << :env if field.env_var
+      sources << :settings if field.runtime_setting && UltraSettings.__runtime_settings__
+      sources << :yaml if field.yaml_key && self.class.configuration_file
+      sources << :default unless field.default.nil?
+      sources
     end
 
     # Output the current state of the configuration as a hash. If the field is marked as a secret,

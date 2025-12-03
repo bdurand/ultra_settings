@@ -53,7 +53,8 @@
         <% end %>
 
         <div class="ultra-settings-field-sources">
-          <% if field.env_var && !configuration.class.environment_variables_disabled? %>
+          <% sources = configuration.__available_sources__(field.name) %>
+          <% if sources.include?(:env) %>
             <div class="ultra-settings-source <%= 'ultra-settings-source-active' if source == :env %>">
               <span class="ultra-settings-source-type">
                 Environment Variable
@@ -72,7 +73,7 @@
             </div>
           <% end %>
 
-          <% if field.runtime_setting && !configuration.class.runtime_settings_disabled? %>
+          <% if sources.include?(:settings) %>
             <div class="ultra-settings-source <%= 'ultra-settings-source-active' if source == :settings %>">
               <span class="ultra-settings-source-type">Runtime Setting</span>
 
@@ -101,7 +102,7 @@
             </div>
           <% end %>
 
-          <% if field.yaml_key && !configuration.class.yaml_config_disabled? %>
+          <% if sources.include?(:yaml) %>
             <div class="ultra-settings-source <%= 'ultra-settings-source-active' if source == :yaml %>">
               <span class="ultra-settings-source-type">Configuration File</span>
 
@@ -118,7 +119,7 @@
             </div>
           <% end %>
 
-          <% if !field.default.nil? || source == :default %>
+          <% if sources.include?(:default) || source == :default %>
             <div class="ultra-settings-source <%= 'ultra-settings-source-active' if source == :default %>">
               <span class="ultra-settings-source-type">Default Value</span>
 

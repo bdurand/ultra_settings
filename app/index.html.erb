@@ -2,10 +2,7 @@
 
 <div class="ultra-settings">
   <div class="ultra-settings-nav">
-    <% configurations = UltraSettings.__configuration_names__.collect do |name|
-        config = UltraSettings.send(name)
-        config unless config.class.fields.empty?
-      end.compact.sort_by { |config| config.class.name.downcase } %>
+    <% configurations = UltraSettings.__configurations__.reject { |config| config.class.fields.empty? }.sort_by { |config| config.class.name.downcase } %>
 
     <% if configurations.size == 1 %>
       <h2 class="ultra-settings-title">
