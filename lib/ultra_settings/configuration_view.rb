@@ -11,6 +11,8 @@ module UltraSettings
   #  <h1>Service Configuration</h1>
   #  <%= UltraSettings::ConfigurationView.new(ServiceConfiguration.instance).render %>
   class ConfigurationView
+    include RenderHelper
+
     # Initialize the configuration view with a configuration instance.
     #
     # @param configuration [UltraSettings::Configuration] The configuration instance to display.
@@ -37,10 +39,6 @@ module UltraSettings
     end
 
     private
-
-    def html_escape(value)
-      ERB::Util.html_escape(value)
-    end
 
     def display_value(value)
       case value
@@ -146,8 +144,6 @@ module UltraSettings
         </svg>
       HTML
     end
-
-    private
 
     def open_dialog_script
       <<~JAVASCRIPT.gsub(/\s+/, " ").tr('"', "'")

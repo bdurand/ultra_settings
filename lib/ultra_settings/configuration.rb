@@ -9,8 +9,20 @@ module UltraSettings
 
     @env_var_prefix = nil
     @runtime_setting_prefix = nil
+    @description = nil
 
     class << self
+      # Set a description for the configuration. This is optional. It will be displayed
+      # in the web UI if provided. On large projects with many configurations, this can
+      # help identify the purpose of each configuration.
+      #
+      # @param text [String] The description text.
+      # @return [void]
+      def description(text = nil)
+        @description = text.to_s.strip unless text.nil?
+        @description
+      end
+
       # Define a field on the configuration. This will create a getter method for the field.
       # The field value will be read from the environment, runtime settings, or a YAML file
       # and coerced to the specified type. Empty strings will be converted to nil.
@@ -150,7 +162,7 @@ module UltraSettings
       # directory (i.e. MyServiceConfiguration has a default config path of
       # "my_service.yml").
       #
-      # @param value [String, Pathname]
+      # @param value [String, Pathname, false, nil]
       # @return [void]
       def configuration_file=(value)
         value = nil if value == false
@@ -516,6 +528,22 @@ module UltraSettings
       else
         raise ArgumentError.new("Unknown source: #{source.inspect}")
       end
+    end
+
+    # Returns an array of the available data sources for the field.
+    #
+    # @param name [String, Symbol] the name of the field.
+    # @return [Array<Symbol>] The available sources (:env, :settings, :yaml, :default).
+    def __available_sources__(name)
+      field = self.class.send(:defined_fields)[name.to_s]
+      raise ArgumentError.new("Unknown field: #{name.inspect}") unless field
+
+      sources = []
+      sources << :env if field.env_var
+      sources << :settings if field.runtime_setting && UltraSettings.__runtime_settings__
+      sources << :yaml if field.yaml_key && self.class.configuration_file
+      sources << :default unless field.default.nil?
+      sources
     end
 
     # Output the current state of the configuration as a hash. If the field is marked as a secret,
