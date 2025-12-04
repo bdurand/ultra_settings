@@ -16,12 +16,12 @@ module UltraSettings
     # @param type [Symbol] The type of the field.
     # @param description [String] The description of the field.
     # @param default [Object] The default value of the field.
-    # @param default_if [Proc] A proc that returns true if the default value should be used.
+    # @param default_if [Proc, Symbol] A proc that returns true if the default value should be used.
     # @param env_var [String, Symbol] The name of the environment variable to use for the field.
     # @param runtime_setting [String, Symbol] The name of the setting to use for the field.
     # @param yaml_key [String, Symbol] The name of the YAML key to use for the field.
     # @param static [Boolean] Whether or not the field is static and cannot be changed at runtime.
-    # @param secret [Boolean] Whether or not the field contains a value that should be kept secret.
+    # @param secret [Boolean, Proc] Whether or not the field contains a value that should be kept secret.
     def initialize(
       name:,
       type: :string,

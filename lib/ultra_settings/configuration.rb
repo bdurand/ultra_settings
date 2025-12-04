@@ -27,14 +27,19 @@ module UltraSettings
       # @param static [Boolean] If true, the field value should never be changed. This is useful for
       #   fields that are used at startup to set static values in the application. Static field cannot
       #   be read from runtime settings.
-      # @param runtime_setting [String, Symbol] The name of the runtime setting to use for the field.
+      # @param secret [Boolean, Proc] If true, the field value will be obscured in the output of
+      #   to_hash. If a proc is provided, it will be called to determine if the field is secret.
+      # @param runtime_setting [String, Symbol, Boolean] The name of the runtime setting to use for the field.
       #   By default this will be the underscored name of the class plus a dot plus the field name
-      #   (i.e. MyServiceConfiguration#foo becomes "my_service.foo").
-      # @param env_var [String, Symbol] The name of the environment variable to use for the field.
+      #   (i.e. MyServiceConfiguration#foo becomes "my_service.foo"). If set to false, runtime settings
+      #   will be ignored for this field. This can be set to true to use the default name.
+      # @param env_var [String, Symbol, Boolean] The name of the environment variable to use for the field.
       #   By default this will be the underscored name of the class plus an underscore plus the field name
-      #   all in uppercase (i.e. MyServiceConfiguration#foo becomes "MY_SERVICE_FOO").
-      # @param yaml_key [String, Symbol] The name of the YAML key to use for the field. By default
-      #   this is the name of the field.
+      #   all in uppercase (i.e. MyServiceConfiguration#foo becomes "MY_SERVICE_FOO"). If set to false,
+      #   environment variables will be ignored for this field. This can be set to true to use the default name.
+      # @param yaml_key [String, Symbol, Boolean] The name of the YAML key to use for the field. By default
+      #   this is the name of the field. If set to false, YAML configuration will be ignored for this field.
+      #   This can be set to true to use the default name.
       # @return [void]
       def field(name, type: :string, description: nil, default: nil, default_if: nil, static: nil, secret: nil, runtime_setting: nil, env_var: nil, yaml_key: nil)
         name = name.to_s
