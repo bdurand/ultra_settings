@@ -55,83 +55,28 @@
         <div class="ultra-settings-field-sources">
           <% sources = configuration.__available_sources__(field.name) %>
           <% if sources.include?(:env) %>
-            <div class="ultra-settings-source <%= 'ultra-settings-source-active' if source == :env %>">
-              <span class="ultra-settings-source-type">
-                Environment Variable
-              </span>
-
-              <code class="ultra-settings-source-value">
-                <%= field.env_var %>
-                <%= show_defined_value(field.env_var, configuration.__value_from_source__(field.name, :env), field.secret?) %>
-              </code>
-
-              <% if source == :env %>
-                <span class="ultra-settings-source-indicator">
-                  Currently active
-                </span>
-              <% end %>
-            </div>
+            <%= render_partial "data_source", configuration: configuration, field: field, source: :env, current_source: source, source_type: "Environment Variable", source_name: field.env_var %>
           <% end %>
 
           <% if sources.include?(:settings) %>
-            <div class="ultra-settings-source <%= 'ultra-settings-source-active' if source == :settings %>">
-              <span class="ultra-settings-source-type">Runtime Setting</span>
-
-              <code class="ultra-settings-source-value">
-                <%= field.runtime_setting %>
-                <%= show_defined_value(field.runtime_setting, configuration.__value_from_source__(field.name, :settings), field.secret?) %>
-              </code>
-
-              <% if source == :settings %>
-                <span class="ultra-settings-source-indicator">
-                  Currently active
-                </span>
-              <% end %>
-
-              <% edit_url = UltraSettings.runtime_settings_url(name: field.runtime_setting, type: field.type, description: field.description) %>
-
-              <% if edit_url %>
-                <a
-                  href="<%= html_escape(edit_url) %>"
-                  class="ultra-settings-edit-link"
-                  title="Edit <%= html_escape(field.runtime_setting) %>"
-                >
-                  <%= edit_icon %>
-                </a>
-              <% end %>
-            </div>
+            <%= render_partial "data_source", configuration: configuration, field: field, source: :settings, current_source: source, source_type: "Runtime Setting", source_name: field.runtime_setting %>
           <% end %>
 
           <% if sources.include?(:yaml) %>
-            <div class="ultra-settings-source <%= 'ultra-settings-source-active' if source == :yaml %>">
-              <span class="ultra-settings-source-type">Configuration File</span>
-
-              <code class="ultra-settings-source-value">
-                <%= field.yaml_key %>
-                <%= show_defined_value(field.yaml_key, configuration.__value_from_source__(field.name, :yaml), field.secret?) %>
-              </code>
-
-              <% if source == :yaml %>
-                <span class="ultra-settings-source-indicator">
-                  Currently active
-                </span>
-              <% end %>
-            </div>
+            <%= render_partial "data_source", configuration: configuration, field: field, source: :yaml, current_source: source, source_type: "Configuration File", source_name: field.yaml_key %>
           <% end %>
 
-          <% if sources.include?(:default) || source == :default %>
-            <div class="ultra-settings-source <%= 'ultra-settings-source-active' if source == :default %>">
-              <span class="ultra-settings-source-type">Default Value</span>
+          <% if sources.include?(:default) %>
+            <%= render_partial "data_source", configuration: configuration, field: field, source: :default, current_source: source, source_type: "Default Value", source_name: nil %>
+          <% end %>
 
-              <code class="ultra-settings-source-value">
-                <%= show_defined_value("Default Value", field.default, field.secret?) %>
-              </code>
+          <% if source == :default && configuration[field.name].nil? %>
+            <div class="ultra-settings-source ultra-settings-source-active">
+              <span class="ultra-settings-source-type">Not Set</span>
 
-              <% if source == :default %>
-                <span class="ultra-settings-source-indicator">
-                  Currently active
-                </span>
-              <% end %>
+              <span class="ultra-settings-source-indicator">
+                Currently active
+              </span>
             </div>
           <% end %>
         </div>

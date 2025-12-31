@@ -132,6 +132,10 @@ code.ultra-settings-field-data-value {
   gap: 0.5rem;
 }
 
+.ultra-settings-field-description svg {
+  margin-top: 0.125rem;
+}
+
 .ultra-settings-description-text {
   flex: 1;
 }
@@ -166,13 +170,19 @@ code.ultra-settings-field-data-value {
   min-width: 120px;
 }
 
+.ultra-settings-source-value-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  margin: 0 0.75rem;
+}
+
 .ultra-settings-source-value {
   font-family: monospace;
   font-size: 0.875rem;
   color: var(--source-value-color);
   font-weight: 550;
-  flex: 1;
-  margin: 0 0.75rem;
   word-break: break-all;
 }
 
@@ -189,19 +199,95 @@ code.ultra-settings-field-data-value {
   font-size: 1rem;
 }
 
+.ultra-settings-source-overridden {
+  background-color: var(--source-overridden-bg-color);
+  border-color: var(--source-overridden-border-color);
+}
+
+.ultra-settings-source-overridden .ultra-settings-source-type {
+  color: var(--source-overridden-type-color);
+}
+
+.ultra-settings-source-overridden .ultra-settings-source-value-container .ultra-settings-source-value {
+  color: var(--source-overridden-value-color);
+}
+
+.ultra-settings-source-override {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--source-overridden-warning-color);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.ultra-settings-source-override svg {
+  flex-shrink: 0;
+}
+
+.ultra-settings-source-override-text {
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
 .ultra-settings-icon-info {
   color: var(--info-color);
   cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ultra-settings-icon-info:hover {
+  background-color: var(--source-bg-color);
+  transform: scale(1.15);
+}
+
+.ultra-settings-icon-info:active {
+  transform: scale(1.05);
 }
 
 .ultra-settings-icon-not-set {
   color: var(--warning-color);
   cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ultra-settings-icon-not-set:hover {
+  background-color: var(--source-bg-color);
+  transform: scale(1.15);
+}
+
+.ultra-settings-icon-not-set:active {
+  transform: scale(1.05);
 }
 
 .ultra-settings-icon-secret {
   color: var(--disabled-color);
   cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ultra-settings-icon-secret:hover {
+  background-color: var(--source-bg-color);
+  transform: scale(1.15);
+}
+
+.ultra-settings-icon-secret:active {
+  transform: scale(1.05);
 }
 
 .ultra-settings-edit-link {
@@ -219,25 +305,54 @@ code.ultra-settings-field-data-value {
 }
 
 .ultra-settings-dialog {
-  min-width: 20rem;
+  min-width: 24rem;
+  max-width: 90vw;
   padding: 0;
-  border: 1px solid var(--field-border-color);
-  border-radius: 0.375rem;
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: ultra-settings-dialog-show 0.2s ease-out;
+}
+
+.ultra-settings-dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: ultra-settings-backdrop-show 0.2s ease-out;
+}
+
+@keyframes ultra-settings-dialog-show {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes ultra-settings-backdrop-show {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .ultra-settings-dialog-header {
-  padding: 0.5rem;
+  padding: 1rem 1.25rem;
   background-color: var(--field-header-bg-color);
   color: var(--field-header-text-color);
   font-size: 1rem;
   display: flex;
-  align-items: top;
+  align-items: center;
+  border-bottom: 1px solid var(--field-border-color);
 }
 
 .ultra-settings-dialog-title {
   flex: 1;
-  text-align: center;
-  font-weight: 550;
+  font-weight: 600;
+  font-size: 1.125rem;
 }
 
 .ultra-settings-dialog-close {
@@ -246,12 +361,37 @@ code.ultra-settings-field-data-value {
   color: var(--field-header-text-color);
   cursor: pointer;
   padding: 0.25rem;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease;
+  margin-left: 0.5rem;
+}
+
+.ultra-settings-dialog-close:hover {
+  background-color: var(--source-bg-color);
+}
+
+.ultra-settings-dialog-close:active {
+  transform: scale(0.95);
 }
 
 .ultra-settings-dialog-body {
-  padding: 1rem;
+  padding: 1.5rem;
   background-color: var(--background-color);
   color: var(--text-color);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.ultra-settings-dialog-body .ultra-settings-field-data-value {
+  display: block;
+  word-break: break-all;
+  white-space: pre-wrap;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  padding: 0.75rem 1rem;
 }
 
 /* Dropdown Styles */
