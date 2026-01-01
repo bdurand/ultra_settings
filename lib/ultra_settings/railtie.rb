@@ -32,5 +32,11 @@ module UltraSettings
         end
       end
     end
+
+    rake_tasks do
+      Dir.glob(File.expand_path("tasks/*.rake", __dir__)).each do |rake_file|
+        load rake_file
+      end
+    end
   end
 end

@@ -10,6 +10,7 @@ module UltraSettings
     @env_var_prefix = nil
     @runtime_setting_prefix = nil
     @description = nil
+    @descendants = []
 
     class << self
       # Set a description for the configuration. This is optional. It will be displayed
@@ -369,7 +370,25 @@ module UltraSettings
         YamlConfig.new(configuration_file, yaml_config_env).to_h
       end
 
+      # Get all descendant configuration classes (subclasses and their subclasses, recursively).
+      #
+      # @return [Array<Class>] All classes that inherit from this class.
+      def descendant_configurations
+        @descendants ||= []
+        @descendants.flat_map { |subclass| [subclass] + subclass.descendant_configurations }
+      end
+
       private
+
+      # Hook called when this class is inherited. Tracks all descendant classes.
+      #
+      # @param subclass [Class] The subclass that is inheriting from this class.
+      # @return [void]
+      def inherited(subclass)
+        super
+        @descendants ||= []
+        @descendants << subclass
+      end
 
       def defined_fields
         unless defined?(@defined_fields)
