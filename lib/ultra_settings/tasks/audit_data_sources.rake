@@ -74,7 +74,7 @@ namespace :ultra_settings do
     env_vars_no_default = UltraSettings::Tasks::AuditDataSources.env_vars_no_default
 
     csv_string = CSV.generate do |csv|
-      csv << ["EnvVar", "Config", "Field"]
+      csv << ["Config", "Field", "EnvVar", "Value"]
       env_vars_no_default.each do |config, field, env_var, value|
         csv << [config, field, env_var, value]
       end
