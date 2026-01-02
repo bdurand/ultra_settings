@@ -8,8 +8,14 @@ namespace :ultra_settings do
   DOC
   task unnecessary_env_vars: :environment do
     require "csv"
+    require "ultra_settings/tasks/audit_data_sources"
 
-    Rails.application.eager_load!
+    if Rails.respond_to?(:autoloaders) && Rails.autoloaders.respond_to?(:main)
+      Rails.autoloaders.main.setup
+      Rails.autoloaders.main.eager_load
+    else
+      Rails.application.eager_load!
+    end
     env_vars_at_default = UltraSettings::Tasks::AuditDataSources.unnecessary_env_vars
 
     csv_string = CSV.generate do |csv|
@@ -28,8 +34,14 @@ namespace :ultra_settings do
   DOC
   task unnecessary_runtime_settings: :environment do
     require "csv"
+    require "ultra_settings/tasks/audit_data_sources"
 
-    Rails.application.eager_load!
+    if Rails.respond_to?(:autoloaders) && Rails.autoloaders.respond_to?(:main)
+      Rails.autoloaders.main.setup
+      Rails.autoloaders.main.eager_load
+    else
+      Rails.application.eager_load!
+    end
     unnecessary_runtime_settings = UltraSettings::Tasks::AuditDataSources.unnecessary_runtime_settings
 
     csv_string = CSV.generate do |csv|
@@ -48,8 +60,14 @@ namespace :ultra_settings do
   DOC
   task env_vars_can_be_runtime_setting: :environment do
     require "csv"
+    require "ultra_settings/tasks/audit_data_sources"
 
-    Rails.application.eager_load!
+    if Rails.respond_to?(:autoloaders) && Rails.autoloaders.respond_to?(:main)
+      Rails.autoloaders.main.setup
+      Rails.autoloaders.main.eager_load
+    else
+      Rails.application.eager_load!
+    end
     env_vars_can_be_runtime = UltraSettings::Tasks::AuditDataSources.env_vars_can_be_runtime_setting
 
     csv_string = CSV.generate do |csv|
@@ -69,8 +87,14 @@ namespace :ultra_settings do
   DOC
   task env_vars_without_default: :environment do
     require "csv"
+    require "ultra_settings/tasks/audit_data_sources"
 
-    Rails.application.eager_load!
+    if Rails.respond_to?(:autoloaders) && Rails.autoloaders.respond_to?(:main)
+      Rails.autoloaders.main.setup
+      Rails.autoloaders.main.eager_load
+    else
+      Rails.application.eager_load!
+    end
     env_vars_without_default = UltraSettings::Tasks::AuditDataSources.env_vars_without_default
 
     csv_string = CSV.generate do |csv|

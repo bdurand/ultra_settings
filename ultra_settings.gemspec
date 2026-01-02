@@ -28,6 +28,7 @@ Gem::Specification.new do |spec|
     bin/
     gemfiles/
     spec/
+    test_app/
   ]
   spec.files = Dir.chdir(File.expand_path("..", __FILE__)) do
     `git ls-files -z`.split("\x0").reject { |f| ignore_files.any? { |path| f.start_with?(path) } }

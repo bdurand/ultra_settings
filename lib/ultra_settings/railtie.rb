@@ -23,6 +23,8 @@ module UltraSettings
 
         app_config_dir = Rails.root.join(directory)
         app_config_dir.glob("**/*_configuration.rb").each do |file_path|
+          next unless file_path.file? && file_path.readable?
+
           relative_path = file_path.relative_path_from(app_config_dir).to_s
           class_name = relative_path.chomp(".rb").classify
           unless UltraSettings.added?(class_name)
