@@ -551,7 +551,7 @@ bundle exec rails ultra_settings:unnecessary_runtime_settings
 # runtime settings instead.
 bundle exec rails ultra_settings:env_vars_can_be_runtime_setting
 
-# Output CSV showing environment variables that are set that could be candidtes for
+# Output CSV showing environment variables that are set that could be candidates for
 # adding default values to the configuration fields.
 bundle exec rails ultra_settings:env_vars_no_default
 ```
