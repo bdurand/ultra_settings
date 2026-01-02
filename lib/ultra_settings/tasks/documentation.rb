@@ -21,7 +21,7 @@ module UltraSettings
           source_fields[path] << field
         end
 
-        sources.to_h do |path, content|
+        sources.collect do |path, content|
           fields = source_fields[path]
 
           # Generate the YARD docs as a separate class definition
@@ -32,7 +32,7 @@ module UltraSettings
 
           # Append the YARD class definition to the end of the file
           [path, content_without_docs.rstrip + "\n\n" + yard_class]
-        end
+        end.to_h
       end
 
       def field_location(field)
