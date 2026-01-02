@@ -536,7 +536,7 @@ This will append YARD comments to your configuration classes based on the field 
 
 #### Auditing Configuration Data Sources
 
-You can audit you configuration data sources with rake tasks to identify potential optimizations with these rake tasks:
+You can audit your configuration data sources with rake tasks to identify potential optimizations with these rake tasks:
 
 ```bash
 # Output CSV showing environment variables that are set, but which do not need to be set
