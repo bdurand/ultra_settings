@@ -85,7 +85,8 @@ module UltraSettings
           secret: secret
         )
 
-        class_eval <<~RUBY, __FILE__, __LINE__ + 1 # rubocop:disable Security/Eval
+        caller_location = caller_locations(1, 1).first
+        class_eval <<~RUBY, caller_location.path, caller_location.lineno # rubocop:disable Security/Eval, Style/EvalWithLocation
           def #{name}
             __get_value__(#{name.inspect})
           end
@@ -393,7 +394,7 @@ module UltraSettings
       def defined_fields
         unless defined?(@defined_fields)
           fields = {}
-          if superclass <= Configuration
+          if superclass < Configuration
             fields = superclass.send(:defined_fields).dup
           end
           @defined_fields = fields
