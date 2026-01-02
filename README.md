@@ -529,7 +529,7 @@ UltraSettings provides rake tasks for auditing and documenting configuration dat
 You can generate YARD comments for your configuration fields by running the following rake task:
 
 ```bash
-bundle exec rails ultra_settings:document_fields
+bundle exec rails ultra_settings:add_yard_docs
 ```
 
 This will append YARD comments to your configuration classes based on the field definitions. This will expose the dynamic methods defined by UltraSettings in your IDE and let AI agents know about the methods.
@@ -553,7 +553,7 @@ bundle exec rails ultra_settings:env_vars_can_be_runtime_setting
 
 # Output CSV showing environment variables that are set that could be candidates for
 # adding default values to the configuration fields.
-bundle exec rails ultra_settings:env_vars_no_default
+bundle exec rails ultra_settings:env_vars_without_default
 ```
 
 ## Installation

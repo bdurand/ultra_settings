@@ -67,15 +67,15 @@ namespace :ultra_settings do
     environment variables. If these changes are made, then the environment variables could be removed.
     It skips any environment variables that are used for secrets.
   DOC
-  task env_vars_no_default: :environment do
+  task env_vars_without_default: :environment do
     require "csv"
 
     Rails.application.eager_load!
-    env_vars_no_default = UltraSettings::Tasks::AuditDataSources.env_vars_no_default
+    env_vars_without_default = UltraSettings::Tasks::AuditDataSources.env_vars_without_default
 
     csv_string = CSV.generate do |csv|
       csv << ["Config", "Field", "EnvVar", "Value"]
-      env_vars_no_default.each do |config, field, env_var, value|
+      env_vars_without_default.each do |config, field, env_var, value|
         csv << [config, field, env_var, value]
       end
     end
