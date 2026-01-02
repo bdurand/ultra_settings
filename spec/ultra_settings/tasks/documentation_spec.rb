@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require_relative "../../spec_helper"
+require "spec_helper"
+
 require_relative "../../../lib/ultra_settings/tasks/documentation"
 
 RSpec.describe UltraSettings::Tasks::Documentation do
@@ -130,7 +131,7 @@ RSpec.describe UltraSettings::Tasks::Documentation do
 
     it "includes the source file for the configuration class" do
       result = documentation.sources_with_yard_docs
-      test_config_path = result.keys.find { |path| path.end_with?("test_configuration.rb") }
+      test_config_path = File.expand_path("../../test_configs/test_configuration.rb", __dir__)
       expect(test_config_path).not_to be_nil
     end
 
@@ -150,7 +151,7 @@ RSpec.describe UltraSettings::Tasks::Documentation do
 
     it "inserts correct return types for all field types" do
       result = documentation.sources_with_yard_docs
-      test_config_path = result.keys.find { |path| path.end_with?("test_configuration.rb") }
+      test_config_path = File.expand_path("../../test_configs/test_configuration.rb", __dir__)
       content = result[test_config_path]
 
       expect(content).to include("# @return [String, nil]")
@@ -164,7 +165,7 @@ RSpec.describe UltraSettings::Tasks::Documentation do
 
     it "includes @!attribute directives for each field" do
       result = documentation.sources_with_yard_docs
-      test_config_path = result.keys.find { |path| path.end_with?("test_configuration.rb") }
+      test_config_path = File.expand_path("../../test_configs/test_configuration.rb", __dir__)
       content = result[test_config_path]
 
       # Check for attribute directives
@@ -175,7 +176,7 @@ RSpec.describe UltraSettings::Tasks::Documentation do
 
     it "handles fields with default values correctly (no nil)" do
       result = documentation.sources_with_yard_docs
-      test_config_path = result.keys.find { |path| path.end_with?("test_configuration.rb") }
+      test_config_path = File.expand_path("../../test_configs/test_configuration.rb", __dir__)
       content = result[test_config_path]
 
       # Fields with defaults should not have nil in return type
@@ -186,7 +187,7 @@ RSpec.describe UltraSettings::Tasks::Documentation do
 
     it "handles multiple fields in the same file" do
       result = documentation.sources_with_yard_docs
-      test_config_path = result.keys.find { |path| path.end_with?("test_configuration.rb") }
+      test_config_path = File.expand_path("../../test_configs/test_configuration.rb", __dir__)
       content = result[test_config_path]
 
       # Count how many YARD attribute directives were inserted
@@ -198,7 +199,7 @@ RSpec.describe UltraSettings::Tasks::Documentation do
 
     it "preserves existing file content structure" do
       result = documentation.sources_with_yard_docs
-      test_config_path = result.keys.find { |path| path.end_with?("test_configuration.rb") }
+      test_config_path = File.expand_path("../../test_configs/test_configuration.rb", __dir__)
       content = result[test_config_path]
 
       # Check that class definition and other content is still there
@@ -213,7 +214,7 @@ RSpec.describe UltraSettings::Tasks::Documentation do
     it "removes existing YARD docs before inserting new ones" do
       # First generate docs
       result1 = documentation.sources_with_yard_docs
-      test_config_path = result1.keys.find { |path| path.end_with?("test_configuration.rb") }
+      test_config_path = File.expand_path("../../test_configs/test_configuration.rb", __dir__)
       content_with_docs = result1[test_config_path]
 
       # Count YARD blocks
@@ -243,7 +244,7 @@ RSpec.describe UltraSettings::Tasks::Documentation do
 
       it "only adds YARD docs for fields defined in the subclass" do
         result = documentation.sources_with_yard_docs
-        subclass_config_path = result.keys.find { |path| path.end_with?("subclass_configuration.rb") }
+        subclass_config_path = File.expand_path("../../test_configs/subclass_configuration.rb", __dir__)
         content = result[subclass_config_path]
 
         # Should have YARD doc class definition
@@ -258,6 +259,98 @@ RSpec.describe UltraSettings::Tasks::Documentation do
         # Should not include documentation for parent class fields that aren't overridden
         expect(content).not_to include("@!attribute [r] foo")
         expect(content).not_to include("@!attribute [r] baz")
+      end
+    end
+  end
+
+  describe "#rbs_sources" do
+    it "returns a hash mapping RBS file paths to their content" do
+      result = documentation.rbs_sources
+      expect(result).to be_a(Hash)
+      expect(result.keys).to all(be_a(String))
+      expect(result.keys).to all(end_with(".rbs"))
+      expect(result.values).to all(be_a(String))
+    end
+
+    it "generates RBS file for the configuration class" do
+      result = documentation.rbs_sources
+      test_config_rbs_path = File.expand_path("../../test_configs/test_configuration.rbs", __dir__)
+    end
+
+    it "generates RBS class definition with type signatures" do
+      result = documentation.rbs_sources
+      test_config_rbs_path = File.expand_path("../../test_configs/test_configuration.rbs", __dir__)
+      content = result[test_config_rbs_path]
+
+      # Check structure
+      expect(content).to include("# Begin autogenerated RBS type signatures")
+      expect(content).to include("class TestConfiguration")
+      expect(content).to include("# End autogenerated RBS type signatures")
+    end
+
+    it "generates correct RBS types for all field types" do
+      result = documentation.rbs_sources
+      test_config_rbs_path = File.expand_path("../../test_configs/test_configuration.rbs", __dir__)
+      content = result[test_config_rbs_path]
+
+      expect(content).to include("def foo: () -> String?")
+      expect(content).to include("def symbol: () -> Symbol?")
+      expect(content).to include("def int: () -> Integer?")
+      expect(content).to include("def float: () -> Float?")
+      expect(content).to include("def bool: () -> bool")
+      expect(content).to include("def time: () -> Time?")
+      expect(content).to include("def array: () -> Array[String]?")
+    end
+
+    it "generates predicate methods for boolean fields" do
+      result = documentation.rbs_sources
+      test_config_rbs_path = File.expand_path("../../test_configs/test_configuration.rbs", __dir__)
+      content = result[test_config_rbs_path]
+
+      expect(content).to include("def bool: () -> bool")
+      expect(content).to include("def bool?: () -> bool")
+    end
+
+    it "handles fields with default values correctly (no nil)" do
+      result = documentation.rbs_sources
+      test_config_rbs_path = File.expand_path("../../test_configs/test_configuration.rbs", __dir__)
+      content = result[test_config_rbs_path]
+
+      # Fields with defaults should not have ? suffix (not nilable)
+      expect(content).to include("def default_int: () -> Integer")
+      expect(content).to include("def default_bool: () -> bool")
+    end
+
+    it "handles fields with default_if correctly (includes nil)" do
+      result = documentation.rbs_sources
+      test_config_rbs_path = File.expand_path("../../test_configs/test_configuration.rbs", __dir__)
+      content = result[test_config_rbs_path]
+
+      # Fields with default_if should have ? suffix (nilable)
+      expect(content).to include("def default_if_proc: () -> Integer?")
+      expect(content).to include("def default_if_method: () -> Integer?")
+    end
+
+    context "with subclass configuration" do
+      let(:documentation) { described_class.new(SubclassConfiguration) }
+
+      it "only generates RBS for fields defined in the subclass" do
+        result = documentation.rbs_sources
+        subclass_rbs_path = File.expand_path("../../test_configs/subclass_configuration.rbs", __dir__)
+        content = result[subclass_rbs_path]
+
+        # Should have RBS class definition
+        expect(content).to include("# Begin autogenerated RBS type signatures")
+        expect(content).to include("class SubclassConfiguration")
+        expect(content).to include("# End autogenerated RBS type signatures")
+
+        # Should have methods for subclass fields only
+        expect(content).to include("def sub: () -> String?")
+        expect(content).to include("def bar: () -> Integer?")
+
+        # Should not include methods for parent class fields that aren't overridden
+        expect(content).not_to include("def foo:")
+        expect(content).not_to include("def baz:")
       end
     end
   end

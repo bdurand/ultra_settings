@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../spec_helper"
+require "spec_helper"
 
 RSpec.describe UltraSettings::ApplicationView do
   it "renders the configuration as an HTML application with multiple configurations" do
