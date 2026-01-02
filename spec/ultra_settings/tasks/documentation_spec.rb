@@ -130,7 +130,7 @@ RSpec.describe UltraSettings::Tasks::Documentation do
     end
 
     it "includes the source file for the configuration class" do
-      result = documentation.sources_with_yard_docs
+      documentation.sources_with_yard_docs
       test_config_path = File.expand_path("../../test_configs/test_configuration.rb", __dir__)
       expect(test_config_path).not_to be_nil
     end
