@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improved web UI indication for which data sources on fields have been overridden by data sources with higher precedence.
 - Added rake tasks for auditing configuration data sources.
-- Added rake tasks for documenting configuration fields and adding type definitions.
+- Added rake tasks for documenting configuration fields with YARD comments.
 
 ## 2.8.0
 
