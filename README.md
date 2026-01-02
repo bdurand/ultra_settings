@@ -520,6 +520,42 @@ class MyServiceConfiguration < UltraSettings::Configuration
 end
 ```
 
+### Rails Tasks
+
+UltraSettings provides rake tasks for auditing and documenting configuration data sources and fields.
+
+#### Documenting Configuration Fields With YARD Comments
+
+You can generate YARD comments for your configuration fields by running the following rake task:
+
+```bash
+bundle exec rails ultra_settings:document_fields
+```
+
+This will append YARD comments to your configuration classes based on the field definitions. This will expose the dynamic methods defined by UltraSettings in your IDE and let AI agents know about the methods.
+
+#### Auditing Configuration Data Sources
+
+You can audit you configuration data sources with rake tasks to identify potential optimizations with these rake tasks:
+
+```bash
+# Output CSV showing environment variables that are set, but which do not need to be set
+# since they match the default values.
+bundle exec rails ultra_settings:unnecessary_env_vars
+
+# Output CSV showing runtime settings that are set, but which do not need to be set
+# since they match the default values.
+bundle exec rails ultra_settings:unnecessary_runtime_settings
+
+# Output CSV showing environment variables that are set but which could be loaded from
+# runtime settings instead.
+bundle exec rails ultra_settings:env_vars_can_be_runtime_setting
+
+# Output CSV showing environment variables that are set that could be candidtes for
+# adding default values to the configuration fields.
+bundle exec rails ultra_settings:env_vars_no_default
+```
+
 ## Installation
 
 Add this line to your application's Gemfile:
