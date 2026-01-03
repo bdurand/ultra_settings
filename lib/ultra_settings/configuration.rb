@@ -112,7 +112,7 @@ module UltraSettings
         name = name.to_s
         return true if defined_fields.include?(name)
 
-        if superclass <= Configuration
+        if superclass < Configuration
           superclass.include_field?(name)
         else
           false
