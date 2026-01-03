@@ -522,20 +522,6 @@ end
 
 ### Rails Tasks
 
-UltraSettings provides rake tasks for auditing and documenting configuration data sources and fields.
-
-#### Documenting Configuration Fields With YARD Comments
-
-You can generate YARD comments for your configuration fields by running the following rake task:
-
-```bash
-bundle exec rails ultra_settings:add_yard_docs
-```
-
-This will append YARD comments to your configuration classes based on the field definitions. This will expose the dynamic methods defined by UltraSettings in your IDE and let AI agents know about the methods.
-
-#### Auditing Configuration Data Sources
-
 You can audit your configuration data sources with rake tasks to identify potential optimizations with these rake tasks:
 
 ```bash
