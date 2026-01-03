@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../spec_helper"
+require "spec_helper"
 
 RSpec.describe UltraSettings::Configuration do
   let(:configuration) { TestConfiguration.instance }
@@ -205,6 +205,36 @@ RSpec.describe UltraSettings::Configuration do
     it "can define new fields" do
       expect(subclass_configuration).to respond_to(:sub)
       expect(configuration).to_not respond_to(:sub)
+    end
+  end
+
+  describe "descendant_configurations" do
+    it "returns all descendant configuration classes" do
+      descendants = UltraSettings::Configuration.descendant_configurations
+
+      # Should include direct subclasses
+      expect(descendants).to include(TestConfiguration)
+      expect(descendants).to include(OtherConfiguration)
+      expect(descendants).to include(DisabledSourcesConfiguration)
+      expect(descendants).to include(MyServiceConfiguration)
+      expect(descendants).to include(ExplicitConfiguration)
+      expect(descendants).to include(Test::NamespaceConfiguration)
+
+      # Should include nested subclasses (SubclassConfiguration is a subclass of TestConfiguration)
+      expect(descendants).to include(SubclassConfiguration)
+    end
+
+    it "returns an empty array when there are no descendants" do
+      # Create a new configuration class with no subclasses
+      test_class = Class.new(UltraSettings::Configuration)
+      expect(test_class.descendant_configurations).to eq([])
+    end
+
+    it "handles multiple levels of inheritance" do
+      # SubclassConfiguration inherits from TestConfiguration
+      # So TestConfiguration.descendant_configurations should include SubclassConfiguration
+      descendants = TestConfiguration.descendant_configurations
+      expect(descendants).to include(SubclassConfiguration)
     end
   end
 

@@ -1,0 +1,10 @@
+source "https://rubygems.org"
+
+gem "rails", "~> 8.1.1"
+
+gem "ultra_settings", path: ".."
+
+group :development, :test do
+  gem "yard"
+  gem "yard-ultra_settings", path: "../yard_plugin"
+end

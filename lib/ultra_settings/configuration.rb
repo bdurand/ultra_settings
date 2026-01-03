@@ -10,6 +10,7 @@ module UltraSettings
     @env_var_prefix = nil
     @runtime_setting_prefix = nil
     @description = nil
+    @descendants = []
 
     class << self
       # Set a description for the configuration. This is optional. It will be displayed
@@ -84,7 +85,8 @@ module UltraSettings
           secret: secret
         )
 
-        class_eval <<~RUBY, __FILE__, __LINE__ + 1 # rubocop:disable Security/Eval
+        caller_location = caller_locations(1, 1).first
+        class_eval <<~RUBY, caller_location.path, caller_location.lineno # rubocop:disable Security/Eval, Style/EvalWithLocation
           def #{name}
             __get_value__(#{name.inspect})
           end
@@ -110,7 +112,7 @@ module UltraSettings
         name = name.to_s
         return true if defined_fields.include?(name)
 
-        if superclass <= Configuration
+        if superclass < Configuration
           superclass.include_field?(name)
         else
           false
@@ -369,12 +371,30 @@ module UltraSettings
         YamlConfig.new(configuration_file, yaml_config_env).to_h
       end
 
+      # Get all descendant configuration classes (subclasses and their subclasses, recursively).
+      #
+      # @return [Array<Class>] All classes that inherit from this class.
+      def descendant_configurations
+        @descendants ||= []
+        @descendants.flat_map { |subclass| [subclass] + subclass.descendant_configurations }
+      end
+
       private
+
+      # Hook called when this class is inherited. Tracks all descendant classes.
+      #
+      # @param subclass [Class] The subclass that is inheriting from this class.
+      # @return [void]
+      def inherited(subclass)
+        super
+        @descendants ||= []
+        @descendants << subclass
+      end
 
       def defined_fields
         unless defined?(@defined_fields)
           fields = {}
-          if superclass <= Configuration
+          if superclass < Configuration
             fields = superclass.send(:defined_fields).dup
           end
           @defined_fields = fields
