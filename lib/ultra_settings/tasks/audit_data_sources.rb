@@ -57,7 +57,7 @@ module UltraSettings
         # Find environment variables being used that don't have default values defined.
         # These configurations require an environment variable to be set.
         #
-        # @return [Array<Array<(String, Symbol, String, nil)>>] An array of tuples containing class name, field name, environment variable name, and nil value
+        # @return [Array<Array<(String, Symbol, String, Object)>>] An array of tuples containing class name, field name, environment variable name, and current value
         def env_vars_without_default
           no_default_env_var_fields = []
           each_configuration do |config|
