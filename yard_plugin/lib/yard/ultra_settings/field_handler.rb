@@ -11,7 +11,7 @@ module UltraSettings
       def process
         method_name = begin
           statement.method_name(true)
-        rescue
+        rescue StandardError
           nil
         end
 
