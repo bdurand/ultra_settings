@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 Gem::Specification.new do |spec|
-  spec.name = "ultra_settings"
+  spec.name = "yard-ultra_settings"
   spec.version = File.read(File.expand_path("../VERSION", __FILE__)).strip
   spec.authors = ["Brian Durand"]
   spec.email = ["bbdurand@gmail.com"]
 
-  spec.summary = "UltraSettings is a Ruby gem that provides a flexible and documented approach to managing application configurations from multiple sources, including environment variables, runtime settings, and YAML files, with an optional web UI for easy documentation."
+  spec.summary = "Automatically generates YARD documentation for UltraSettings field definitions with proper types and descriptions"
 
-  spec.homepage = "https://github.com/bdurand/ultra_settings"
+  spec.homepage = "https://github.com/bdurand/ultra_settings/yard_plugin"
   spec.license = "MIT"
 
   spec.metadata = {
@@ -28,8 +30,6 @@ Gem::Specification.new do |spec|
     bin/
     gemfiles/
     spec/
-    test_app/
-    yard_plugin/
   ]
   spec.files = Dir.chdir(File.expand_path("..", __FILE__)) do
     `git ls-files -z`.split("\x0").reject { |f| ignore_files.any? { |path| f.start_with?(path) } }
@@ -38,6 +38,9 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.required_ruby_version = ">= 2.5"
+
+  spec.add_dependency "yard", ">= 0.9.0"
+  spec.add_dependency "ultra_settings", ">= 2.0.0"
 
   spec.add_development_dependency "bundler"
 end

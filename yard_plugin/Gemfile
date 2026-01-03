@@ -1,10 +1,11 @@
 source "https://rubygems.org"
 
-gem "rails", "~> 8.1.1"
+gemspec
 
 gem "ultra_settings", path: ".."
 
 group :development, :test do
+  gem "rspec", "~> 3.0"
+  gem "standard"
   gem "yard"
-  gem "yard-ultra_settings", path: "../yard_plugin"
 end

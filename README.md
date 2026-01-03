@@ -556,6 +556,52 @@ bundle exec rails ultra_settings:env_vars_can_be_runtime_setting
 bundle exec rails ultra_settings:env_vars_without_default
 ```
 
+## Generating Documentation
+
+### YARD Plugin
+
+For projects using [YARD](https://yardoc.org/) for documentation, there is a companion plugin gem that automatically generates documentation for configuration fields.
+
+Add to your Gemfile:
+
+```ruby
+group :development, :test do
+  gem 'yard-ultra_settings'
+end
+```
+
+Then add the following to your `.yardopts` file:
+
+```
+--plugin ultra_settings
+```
+
+Once configured, the plugin automatically enhances YARD documentation for any classes that inherit from `UltraSettings::Configuration`. Field definitions will automatically generate method documentation with proper types and return values.
+
+See the [yard-ultra_settings](https://github.com/bdurand/ultra_settings/tree/main/yard_plugin) gem for more details.
+
+### Using YARD Macros
+
+If you prefer not to install the plugin gem, you can use YARD's built-in macro feature by adding documentation comments before field definitions:
+
+```ruby
+class MyServiceConfiguration < UltraSettings::Configuration
+  self.fields_secret_by_default = false
+
+  # @!method host
+  #   The hostname for the service
+  #   @return [String, nil]
+  field :host, type: :string
+
+  # @!method port
+  #   The port for the service
+  #   @return [Integer]
+  field :port, type: :integer, default: 80
+end
+```
+
+This approach gives you full control over the documentation but requires more manual effort for each field.
+
 ## Installation
 
 Add this line to your application's Gemfile:
