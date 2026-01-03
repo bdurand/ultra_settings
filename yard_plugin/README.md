@@ -20,14 +20,20 @@ This tells YARD to load the plugin when generating documentation. Once configure
 
 ```ruby
 class MyServiceConfiguration < UltraSettings::Configuration
-  # Maximum number of concurrent connections
-  field :max_connections, type: :integer, default: 5
+  field :max_connections,
+    type: :integer,
+    default: 5,
+    description: "Maximum number of concurrent connections."
 
-  # Timeout for service requests in seconds
-  field :timeout, type: :float, default: 2.0
+  field :timeout,
+    type: :float,
+    default: 2.0,
+    description: "Request timeout in seconds."
 
-  # Enable debug mode
-  field :debug_mode, type: :boolean, default: false
+  field :debug_mode,
+    type: :boolean,
+    default: false,
+    description: "Enable debug mode."
 end
 ```
 
@@ -50,16 +56,6 @@ The plugin automatically maps UltraSettings field types to YARD types:
 - `:array` → `Array<String>, nil`
 
 Fields with default values (and no `default_if` option) are documented as non-nullable.
-
-### Documenting Fields
-
-Add comments directly before field definitions to provide descriptions:
-
-```ruby
-# The API key for external service integration.
-# This value is loaded from the API_KEY environment variable.
-field :api_key, type: :string, secret: true
-```
 
 ## Installation
 
