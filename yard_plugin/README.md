@@ -1,5 +1,9 @@
 # YARD UltraSettings Plugin
 
+[![Continuous Integration](https://github.com/bdurand/ultra_settings/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/bdurand/ultra_settings/actions/workflows/continuous_integration.yml)
+[![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
+[![Gem Version](https://badge.fury.io/rb/yard-ultra_settings.svg)](https://badge.fury.io/rb/yard-ultra_settings)
+
 A YARD plugin that automatically generates documentation for UltraSettings configuration field definitions.
 
 ## Usage
