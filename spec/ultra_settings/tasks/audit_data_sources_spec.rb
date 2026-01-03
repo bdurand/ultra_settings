@@ -180,10 +180,10 @@ RSpec.describe UltraSettings::Tasks::AuditDataSources do
     end
   end
 
-  describe ".env_vars_without_defaults" do
+  describe ".env_vars_without_default" do
     it "returns fields that use environment variables but have no default value" do
       ClimateControl.modify(MY_SERVICE_HOST: "some_value") do
-        result = described_class.env_vars_without_defaults
+        result = described_class.env_vars_without_default
 
         matching = result.find { |item| item[2] == "MY_SERVICE_HOST" }
         # host has no code default and no YAML default in test env
@@ -191,14 +191,14 @@ RSpec.describe UltraSettings::Tasks::AuditDataSources do
           "MyServiceConfiguration",
           "host",
           "MY_SERVICE_HOST",
-          nil
+          "some_value"
         ])
       end
     end
 
     it "does not include fields with code defaults" do
       ClimateControl.modify(MY_SERVICE_PORT: "some_value") do
-        result = described_class.env_vars_without_defaults
+        result = described_class.env_vars_without_default
 
         # port has a code default of 80
         matching = result.find { |item| item[2] == "MY_SERVICE_PORT" }
@@ -208,7 +208,7 @@ RSpec.describe UltraSettings::Tasks::AuditDataSources do
 
     it "does not include fields with YAML defaults" do
       ClimateControl.modify(MY_SERVICE_TIMEOUT: "some_value") do
-        result = described_class.env_vars_without_defaults
+        result = described_class.env_vars_without_default
 
         # timeout has both YAML default (5.0) and code default (1.0)
         matching = result.find { |item| item[2] == "MY_SERVICE_TIMEOUT" }
@@ -218,7 +218,7 @@ RSpec.describe UltraSettings::Tasks::AuditDataSources do
 
     it "does not include secret fields" do
       ClimateControl.modify(MY_SERVICE_TOKEN: "secret_value") do
-        result = described_class.env_vars_without_defaults
+        result = described_class.env_vars_without_default
 
         secret_match = result.find { |item| item[2] == "MY_SERVICE_TOKEN" }
         expect(secret_match).to be_nil

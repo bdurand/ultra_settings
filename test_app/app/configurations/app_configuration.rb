@@ -24,7 +24,7 @@ class AppConfiguration < UltraSettings::Configuration
 
   field :debug_mode,
     type: :boolean,
-    default: true,
+    default: false,
     runtime_setting: false,
     description: "Enable or disable debug mode."
 end

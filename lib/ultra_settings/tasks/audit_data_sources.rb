@@ -58,13 +58,13 @@ module UltraSettings
         # These configurations require an environment variable to be set.
         #
         # @return [Array<Array<(String, Symbol, String, nil)>>] An array of tuples containing class name, field name, environment variable name, and nil value
-        def env_vars_without_defaults
+        def env_vars_without_default
           no_default_env_var_fields = []
           each_configuration do |config|
             each_field_using_source(config, :env) do |field|
               value = default_config_value(config, field)
               if value.nil?
-                no_default_env_var_fields << [config.class.name, field.name, field.env_var, value]
+                no_default_env_var_fields << [config.class.name, field.name, field.env_var, config[field.name]]
               end
             end
           end
