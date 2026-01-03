@@ -2,9 +2,9 @@
 
 require "spec_helper"
 
-require_relative "../../../lib/ultra_settings/tasks/audit_data_sources"
+require_relative "../../lib/ultra_settings/audit_data_sources"
 
-RSpec.describe UltraSettings::Tasks::AuditDataSources do
+RSpec.describe UltraSettings::AuditDataSources do
   let(:runtime_settings) do
     TestRuntimeSetings.new(
       "my_service.port" => 80,
