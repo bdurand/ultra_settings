@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improved web UI indication for which data sources on fields have been overridden by data sources with higher precedence.
 - Added rake tasks for auditing configuration data sources.
-- A companion gem `yard-ultra_settings` is now available to provide YARD integration for documenting UltraSettings configuration classes. See the [yard-ultra_settings](https://github.com/bdurand/ultra_settings/yard_plugin) gem for more information.
+- A companion gem `yard-ultra_settings` is now available to provide YARD integration for documenting UltraSettings configuration classes. See the [yard-ultra_settings](https://github.com/bdurand/ultra_settings/tree/main/yard_plugin) gem for more information.
 
 ## 2.8.0
 
