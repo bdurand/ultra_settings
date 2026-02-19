@@ -1,7 +1,10 @@
-<% unless color_scheme != :dark %>
+<% unless color_scheme == :dark %>
   :root {
-    --text-color: #212529;
-    --background-color: #ffffff;
+    --font-ui: system-ui, -apple-system, sans-serif;
+    --font-mono: "SF Mono", Menlo, Consolas, monospace;
+    --bg-page: #f4f5f7;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
   }
 <% end %>
 
@@ -10,8 +13,11 @@
 <% end %>
 <% if color_scheme == :system || color_scheme == :dark %>
   :root {
-    --text-color: #fff;
-    --background-color: #333;
+    --font-ui: system-ui, -apple-system, sans-serif;
+    --font-mono: "SF Mono", Menlo, Consolas, monospace;
+    --bg-page: #0f1117;
+    --text-primary: #e4e6f0;
+    --text-secondary: #9ba1b5;
   }
 <% end %>
 <% if color_scheme == :system %>

@@ -5,79 +5,87 @@
     <% configuration.class.fields.each do |field| %>
       <% source = configuration.__source__(field.name) %>
 
-      <div class="ultra-settings-field">
+      <%
+        field_search_text = [field.name, field.description, field.env_var, field.runtime_setting, field.yaml_key].compact.join(" ").downcase
+      %>
+      <div class="ultra-settings-field-card" data-field-name="<%= html_escape(field.name) %>" data-field-search="<%= html_escape(field_search_text) %>">
         <div class="ultra-settings-field-header">
-          <div class="ultra-settings-field-name">
-            <code><%= html_escape(field.name) %></code>
+          <span class="ultra-settings-field-name"><%= html_escape(field.name) %></span>
 
-            <% if field.secret? %>
-              <span class="ultra-settings-field-badge ultra-settings-badge-secret">
-                secret
-              </span>
-            <% end %>
+          <span class="ultra-settings-type-indicator">
+            <span class="ultra-settings-type-dot" data-type="<%= html_escape(field.type) %>"></span>
+            <span class="ultra-settings-type-label"><%= html_escape(field.type) %></span>
+          </span>
 
-            <% if field.static? %>
-              <span class="ultra-settings-field-badge ultra-settings-badge-static">
-                static
-              </span>
-            <% end %>
-          </div>
-
-          <div class="ultra-settings-field-type">
-            <%= html_escape(field.type) %>
-          </div>
-        </div>
-
-        <div class="ultra-settings-field-value">
-          <% if configuration[field.name].nil? %>
-            <span class="ultra-settings-nil-value">nil</span>
-          <% elsif field.secret? %>
-            <code class="ultra-settings-field-data-value">
-              <%= html_escape(secret_value(configuration[field.name])) %>
-            </code>
-          <% else %>
-            <code class="ultra-settings-field-data-value">
-              <%= html_escape(display_value(configuration[field.name])) %>
-            </code>
+          <% if field.secret? %>
+            <span class="ultra-settings-badge ultra-settings-badge-secret">
+              <%= lock_icon(10) %> Secret
+            </span>
           <% end %>
+
+          <% if field.static? %>
+            <span class="ultra-settings-badge ultra-settings-badge-static">
+              <%= pin_icon(10) %> Static
+            </span>
+          <% end %>
+
+          <div class="ultra-settings-field-value-wrap">
+            <% if configuration[field.name].nil? %>
+              <code class="ultra-settings-field-value nil"
+                    onclick="<%= html_escape(open_panel_script) %>"
+                    data-name="<%= html_escape(field.name) %>"
+                    data-value="nil"
+                    data-type="<%= html_escape(field.type) %>"
+                    data-secret="false"
+                    title="Click to expand"
+                    tabindex="0"
+                    role="button">nil</code>
+            <% elsif field.secret? %>
+              <code class="ultra-settings-field-value"
+                    onclick="<%= html_escape(open_panel_script) %>"
+                    data-name="<%= html_escape(field.name) %>"
+                    data-value="<%= html_escape(secret_value(configuration[field.name])) %>"
+                    data-type="<%= html_escape(field.type) %>"
+                    data-secret="true"
+                    title="Click to expand"
+                    tabindex="0"
+                    role="button"><%= html_escape(secret_value(configuration[field.name])) %></code>
+            <% else %>
+              <code class="ultra-settings-field-value"
+                    onclick="<%= html_escape(open_panel_script) %>"
+                    data-name="<%= html_escape(field.name) %>"
+                    data-value="<%= html_escape(display_value(configuration[field.name])) %>"
+                    data-type="<%= html_escape(field.type) %>"
+                    data-secret="false"
+                    title="Click to expand"
+                    tabindex="0"
+                    role="button"><%= html_escape(display_value(configuration[field.name])) %></code>
+            <% end %>
+          </div>
         </div>
 
         <% unless field.description.to_s.empty? %>
           <div class="ultra-settings-field-description">
-            <%= info_icon %>
-
-            <div class="ultra-settings-description-text">
-              <%= html_escape(field.description) %>
-            </div>
+            <%= html_escape(field.description) %>
           </div>
         <% end %>
 
         <div class="ultra-settings-field-sources">
           <% sources = configuration.__available_sources__(field.name) %>
           <% if sources.include?(:env) %>
-            <%= render_partial "data_source", configuration: configuration, field: field, source: :env, current_source: source, source_type: "Environment Variable", source_name: field.env_var %>
+            <%= render_partial "data_source", configuration: configuration, field: field, source: :env, current_source: source %>
           <% end %>
 
           <% if sources.include?(:settings) %>
-            <%= render_partial "data_source", configuration: configuration, field: field, source: :settings, current_source: source, source_type: "Runtime Setting", source_name: field.runtime_setting %>
+            <%= render_partial "data_source", configuration: configuration, field: field, source: :settings, current_source: source %>
           <% end %>
 
           <% if sources.include?(:yaml) %>
-            <%= render_partial "data_source", configuration: configuration, field: field, source: :yaml, current_source: source, source_type: "Configuration File", source_name: field.yaml_key %>
+            <%= render_partial "data_source", configuration: configuration, field: field, source: :yaml, current_source: source %>
           <% end %>
 
           <% if sources.include?(:default) %>
-            <%= render_partial "data_source", configuration: configuration, field: field, source: :default, current_source: source, source_type: "Default Value", source_name: nil %>
-          <% end %>
-
-          <% if source == :default && configuration[field.name].nil? %>
-            <div class="ultra-settings-source ultra-settings-source-active">
-              <span class="ultra-settings-source-type">Not Set</span>
-
-              <span class="ultra-settings-source-indicator">
-                Currently active
-              </span>
-            </div>
+            <%= render_partial "data_source", configuration: configuration, field: field, source: :default, current_source: source %>
           <% end %>
         </div>
       </div>
@@ -92,12 +100,12 @@
         class="ultra-settings-dialog-close"
         onclick="this.closest('.ultra-settings-dialog').close();"
       >
-        <%= close_icon %>
+        <%= close_icon(15) %>
       </button>
     </div>
 
     <div class="ultra-settings-dialog-body">
-      <code class="ultra-settings-field-data-value ultra-settings-dialog-value"></code>
+      <code class="ultra-settings-dialog-value"></code>
     </div>
   </dialog>
 </div>

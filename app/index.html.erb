@@ -1,32 +1,81 @@
 <%= style_tag %>
 
+<% configurations = UltraSettings.__configurations__.reject { |config| config.class.fields.empty? }.sort_by { |config| config.class.name.downcase } %>
+
 <div class="ultra-settings">
-  <div class="ultra-settings-nav">
-    <% configurations = UltraSettings.__configurations__.reject { |config| config.class.fields.empty? }.sort_by { |config| config.class.name.downcase } %>
+  <button class="ultra-settings-hamburger" id="ultra-settings-hamburger" aria-label="Open navigation menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="ultra-settings-sidebar-overlay" id="ultra-settings-sidebar-overlay"></div>
 
-    <% if configurations.size == 1 %>
-      <h2 class="ultra-settings-title">
-        <%= html_escape(configurations.first.class.name) %>
-      </h2>
-    <% else %>
-      <%= render_partial "select_menu", configurations: configurations %>
-    <% end %>
-  </div>
+  <aside class="ultra-settings-sidebar" id="ultra-settings-sidebar" role="navigation" aria-label="Configuration list">
+    <div class="ultra-settings-sidebar-brand">
+      <h1 class="ultra-settings-brand-title">UltraSettings</h1>
+      <div class="ultra-settings-brand-subtitle">Configuration Inspector</div>
+    </div>
 
-  <% if configurations.size == 1 %>
-    <%= UltraSettings::ConfigurationView.new(configurations.first).render(table_class: table_class) %>
-  <% else %>
-    <%= render_partial "config_list", configurations: configurations %>
+    <div class="ultra-settings-sidebar-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="ultra-settings-search-input" placeholder="Filter configs &amp; fields&hellip;" autocomplete="off" aria-label="Filter configurations">
+    </div>
+
+    <div class="ultra-settings-section-label">Configurations</div>
+
+    <nav class="ultra-settings-sidebar-nav" id="ultra-settings-sidebar-nav" aria-label="Configuration navigation">
+      <% configurations.each_with_index do |config, index| %>
+        <%
+          config_text = [config.class.name, config.class.description]
+          config.class.fields.each do |field|
+            config_text << field.name
+            config_text << field.description
+            config_text << field.env_var
+            config_text << field.runtime_setting
+          end
+          search_text = config_text.compact.join(" ").downcase
+        %>
+        <div
+          class="ultra-settings-nav-item<%= ' active' if index == 0 %>"
+          data-config-id="section-<%= html_escape(config.class.name) %>"
+          data-search="<%= html_escape(search_text) %>"
+          role="button"
+          tabindex="0"
+        >
+          <span class="ultra-settings-nav-name"><%= html_escape(config.class.name) %></span>
+          <span class="ultra-settings-nav-count"><%= config.class.fields.size %></span>
+        </div>
+      <% end %>
+    </nav>
+  </aside>
+
+  <main class="ultra-settings-main" id="ultra-settings-main" role="main">
     <% configurations.each do |configuration| %>
-      <div
-        class="ultra-settings-configuration"
-        id="config-<%= html_escape(configuration.class.name) %>"
-        style="display:none;"
+      <section
+        class="ultra-settings-config-section"
+        id="section-<%= html_escape(configuration.class.name) %>"
+        data-config-id="section-<%= html_escape(configuration.class.name) %>"
       >
-        <%= UltraSettings::ConfigurationView.new(configuration).render(table_class: table_class) %>
-      </div>
+        <%= UltraSettings::ConfigurationView.new(configuration).render %>
+      </section>
     <% end %>
-  <% end %>
+  </main>
+
+  <!-- Detail Panel -->
+  <div class="ultra-settings-panel-bg" id="ultra-settings-panel-bg"></div>
+  <div class="ultra-settings-detail-panel" id="ultra-settings-detail-panel" role="dialog" aria-label="Field detail">
+    <div class="ultra-settings-dp-header">
+      <h3 id="ultra-settings-dp-title"></h3>
+      <button class="ultra-settings-dp-close" id="ultra-settings-dp-close" aria-label="Close panel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="ultra-settings-dp-body">
+      <div class="ultra-settings-dp-value" id="ultra-settings-dp-value"></div>
+      <div class="ultra-settings-dp-meta" id="ultra-settings-dp-meta"></div>
+    </div>
+  </div>
 </div>
 
 <script>
