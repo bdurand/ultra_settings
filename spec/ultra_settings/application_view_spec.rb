@@ -5,7 +5,7 @@ require "spec_helper"
 RSpec.describe UltraSettings::ApplicationView do
   it "renders the configuration as an HTML application with multiple configurations" do
     html = UltraSettings::ApplicationView.new.render
-    expect(html).to match(/class="ultra-settings-dropdown"/)
+    expect(html).to match(/class="ultra-settings-sidebar"/)
     expect(html).to match(/ultra-settings-fields/m)
     expect(html).to match(/<script>.*<\/script>/m)
   end

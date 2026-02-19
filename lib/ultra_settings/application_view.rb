@@ -25,8 +25,8 @@ module UltraSettings
 
     # Render the HTML for the configuration settings UI.
     #
-    # @param select_class [String] Deprecated; no longer used.
-    # @param table_class [String] Deprecated; no longer used.
+    # @param select_class [String] @deprecated; no longer used.
+    # @param table_class [String] @deprecated; no longer used.
     # @return [String] The rendered HTML.
     def render(select_class: nil, table_class: nil)
       html = ViewHelper.erb_template("index.html.erb").result(binding)

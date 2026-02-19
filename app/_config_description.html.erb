@@ -1,30 +1,27 @@
 <% config_class = configuration.class
   has_config_file = config_class.configuration_file.is_a?(Pathname) && config_class.fields.any?(&:yaml_key) %>
 
-<% if config_class.description || has_config_file %>
-  <div class="ultra-settings-description-container">
-    <% if config_class.description %>
-      <div class="ultra-settings-description">
-        <%= html_escape(config_class.description).gsub("\n", "<br>") %>
-      </div>
-    <% end %>
+<div class="ultra-settings-config-header">
+  <div class="ultra-settings-config-title"><%= html_escape(config_class.name) %></div>
 
-    <% if has_config_file %>
-      <div class="ultra-settings-description">
-        <span class="ultra-settings-config-file-label">
-          Configuration file:
+  <% if config_class.description %>
+    <div class="ultra-settings-config-desc">
+      <%= html_escape(config_class.description).gsub("\n", "<br>") %>
+    </div>
+  <% end %>
+
+  <% if has_config_file %>
+    <div class="ultra-settings-config-file">
+      <% if configuration.class.configuration_file&.exist? %>
+        <%= file_icon %>
+        <code><%= html_escape(relative_path(configuration.class.configuration_file)) %></code>
+      <% else %>
+        <span class="ultra-settings-warn">
+          <%= warning_icon(13) %>
+          <code><%= html_escape(relative_path(configuration.class.configuration_file)) %></code>
+          (not found)
         </span>
-
-        <code class="ultra-settings-config-file-path">
-          <%= html_escape(relative_path(configuration.class.configuration_file)) %>
-        </code>
-
-        <% unless configuration.class.configuration_file&.exist? %>
-          <span class="ultra-settings-file-not-found">
-            (file does not exist)
-          </span>
-        <% end %>
-      </div>
-    <% end %>
-  </div>
-<% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -1,50 +1,87 @@
 <% unless color_scheme == :dark %>
   .ultra-settings, .ultra-settings-block {
-    --form-control-color: #484848;
-    --form-control-bg-color: #fff;
-    --form-control-border-color: #e8e8e8;
-    --code-color: #d63384;
+    --font-ui: system-ui, -apple-system, sans-serif;
+    --font-mono: "SF Mono", Menlo, Consolas, monospace;
 
-    /* Card layout colors */
-    --config-file-bg-color: #f8f8f8;
-    --config-file-border-color: #e8e8e8;
-    --field-bg-color: #ffffff;
-    --field-border-color: #b8b8b8;
-    --field-header-bg-color: #e8e8e8;
-    --field-header-text-color: #212529;
-    --value-bg-color: #fdfdfe;
-    --value-text-color: #212529;
-    --value-code-bg-color: #f8f8f8;
-    --value-code-border-color: #e8e8e8;
-    --type-color: #6c757d;
-    --description-color: #4a83b5;
-    --nil-color: #6c757d;
-    --warning-color: #b9202f;
-    --info-color: #6ea8fe;
-    --disabled-color: #adb5bd;
+    /* Canvas */
+    --bg-page: #f4f5f7;
+    --bg-sidebar: #1e2530;
+    --bg-sidebar-hover: rgba(255,255,255,0.04);
+    --bg-sidebar-active: rgba(255,255,255,0.08);
+    --bg-card: #ffffff;
+    --bg-card-hover: #fafbfc;
+    --bg-code: #f0f2f5;
+    --bg-sticky: #f4f5f7;
+    --bg-overlay: rgba(30, 37, 48, 0.85);
+    --bg-search: rgba(255,255,255,0.07);
 
-    /* Source colors */
-    --source-bg-color: #f8f9fa;
-    --source-border-color: #e9ecef;
-    --source-active-bg-color: #e7f3ff;
-    --source-active-border-color: #0d6efd;
-    --source-overridden-bg-color: #fff3cd;
-    --source-overridden-border-color: #ffc107;
-    --source-overridden-type-color: #4d4d4d;
-    --source-overridden-value-color: #2b2b2b;
-    --source-overridden-warning-color: #996900;
-    --source-type-color: #666666;
-    --source-value-color: #444444;
-    --source-indicator-color: #0d6efd;
+    /* Borders */
+    --border-light: #e2e5ea;
+    --border-card: #dfe2e8;
+    --border-sidebar: rgba(255,255,255,0.06);
+    --border-accent: #0d9488;
 
-    /* Badge colors */
-    --secret-badge-bg-color: #dc3545;
-    --secret-badge-text-color: #ffffff;
-    --static-badge-bg-color: #888888;
-    --static-badge-text-color: #ffffff;
+    /* Text */
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-tertiary: #9ca3af;
+    --text-sidebar: rgba(255,255,255,0.88);
+    --text-sidebar-dim: rgba(255,255,255,0.32);
+    --text-sidebar-active: #ffffff;
 
-    /* Edit link */
-    --edit-link-color: #0d6efd;
+    /* Accent — teal */
+    --accent: #0d9488;
+    --accent-dim: #0f766e;
+    --accent-light: rgba(13, 148, 136, 0.06);
+    --accent-lighter: rgba(13, 148, 136, 0.03);
+    --accent-glow: rgba(13, 148, 136, 0.12);
+
+    /* Source palette */
+    --src-env: #2563eb;
+    --src-env-bg: #eff6ff;
+    --src-env-border: #bfdbfe;
+    --src-setting: #0d9488;
+    --src-setting-bg: #f0fdfa;
+    --src-setting-border: #99f6e4;
+    --src-yaml: #7c3aed;
+    --src-yaml-bg: #f5f3ff;
+    --src-yaml-border: #ddd6fe;
+    --src-default: #6b7280;
+    --src-default-bg: #f3f4f6;
+    --src-default-border: #d1d5db;
+
+    /* Status */
+    --active-color: #059669;
+    --active-bg: rgba(5, 150, 105, 0.05);
+    --overridden-color: #6b7280;
+    --overridden-bg: transparent;
+
+    /* Badges */
+    --badge-secret-bg: #fef2f2;
+    --badge-secret-text: #dc2626;
+    --badge-secret-border: #fecaca;
+    --badge-static-bg: #f0f2f5;
+    --badge-static-text: #4b5563;
+    --badge-static-border: #d1d5db;
+
+    /* Type indicators */
+    --type-string: #7c3aed;
+    --type-integer: #2563eb;
+    --type-float: #0891b2;
+    --type-boolean: #059669;
+    --type-datetime: #6366f1;
+    --type-array: #8b5cf6;
+    --type-symbol: #a855f7;
+
+    /* Shadows */
+    --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+    --shadow-lg: 0 20px 48px rgba(0,0,0,0.12);
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);
+
+    /* Source row divider */
+    --border-source-row: rgba(0,0,0,0.025);
   }
 <% end %>
 
@@ -53,52 +90,88 @@
 <% end %>
 <% if color_scheme == :system || color_scheme == :dark %>
   .ultra-settings, .ultra-settings-block {
-    --form-control-color: #eee;
-    --form-control-bg-color: #666;
-    --form-control-border-color: #555;
-    --code-color: #fd76a3;
-    --em-color: #adb5bd;
+    --font-ui: system-ui, -apple-system, sans-serif;
+    --font-mono: "SF Mono", Menlo, Consolas, monospace;
 
-    /* Card layout colors */
-    --config-file-bg-color: #4b4b4b;
-    --config-file-border-color: #444;
-    --field-bg-color: #1e1e1e;
-    --field-border-color: #444;
-    --field-header-bg-color: #2b2b2b;
-    --field-header-text-color: #ced4da;
-    --value-bg-color: #252525;
-    --value-text-color: #e9ecef;
-    --value-code-bg-color: #2b2b2b;
-    --value-code-border-color: #444;
-    --type-color: #adb5bd;
-    --description-color: #a9d9f8;
-    --nil-color: #cdcecfff;
-    --warning-color: #dc3545;
-    --info-color: #6ea8fe;
-    --disabled-color: #adb5bd;
+    /* Canvas */
+    --bg-page: #0f1117;
+    --bg-sidebar: #161820;
+    --bg-sidebar-hover: rgba(255,255,255,0.06);
+    --bg-sidebar-active: rgba(255,255,255,0.10);
+    --bg-card: #1a1c26;
+    --bg-card-hover: #1e2030;
+    --bg-code: #14161e;
+    --bg-sticky: #0f1117;
+    --bg-overlay: rgba(0, 0, 0, 0.80);
+    --bg-search: rgba(255,255,255,0.06);
 
-    /* Source colors */
-    --source-bg-color: #2b2b2b;
-    --source-border-color: #444444;
-    --source-active-bg-color: #1a3a52;
-    --source-active-border-color: #0d6efd;
-    --source-overridden-bg-color: #3d3416;
-    --source-overridden-border-color: #997404;
-    --source-overridden-type-color: #d4d4d4;
-    --source-overridden-value-color: #e8e8e8;
-    --source-overridden-warning-color: #ffb84d;
-    --source-type-color: #adb5bd;
-    --source-value-color: #ced4da;
-    --source-indicator-color: #6ea8fe;
+    /* Borders */
+    --border-light: #2a2d3a;
+    --border-card: #252836;
+    --border-sidebar: rgba(255,255,255,0.08);
+    --border-accent: #0d9488;
 
-    /* Badge colors */
-    --secret-badge-bg-color: #dc3545;
-    --secret-badge-text-color: #ffffff;
-    --static-badge-bg-color: #6c757d;
-    --static-badge-text-color: #ffffff;
+    /* Text */
+    --text-primary: #e4e6f0;
+    --text-secondary: #9ba1b5;
+    --text-tertiary: #5c6178;
+    --text-sidebar: rgba(255,255,255,0.88);
+    --text-sidebar-dim: rgba(255,255,255,0.32);
+    --text-sidebar-active: #ffffff;
 
-    /* Edit link */
-    --edit-link-color: #a7c6f5;
+    /* Accent — teal */
+    --accent: #14b8a6;
+    --accent-dim: #0d9488;
+    --accent-light: rgba(20, 184, 166, 0.10);
+    --accent-lighter: rgba(20, 184, 166, 0.05);
+    --accent-glow: rgba(20, 184, 166, 0.15);
+
+    /* Source palette */
+    --src-env: #60a5fa;
+    --src-env-bg: rgba(37, 99, 235, 0.12);
+    --src-env-border: rgba(37, 99, 235, 0.25);
+    --src-setting: #2dd4bf;
+    --src-setting-bg: rgba(13, 148, 136, 0.12);
+    --src-setting-border: rgba(13, 148, 136, 0.25);
+    --src-yaml: #a78bfa;
+    --src-yaml-bg: rgba(124, 58, 237, 0.12);
+    --src-yaml-border: rgba(124, 58, 237, 0.25);
+    --src-default: #9ca3af;
+    --src-default-bg: rgba(107, 114, 128, 0.12);
+    --src-default-border: rgba(107, 114, 128, 0.25);
+
+    /* Status */
+    --active-color: #34d399;
+    --active-bg: rgba(52, 211, 153, 0.08);
+    --overridden-color: #6b7280;
+    --overridden-bg: transparent;
+
+    /* Badges */
+    --badge-secret-bg: rgba(220, 38, 38, 0.12);
+    --badge-secret-text: #f87171;
+    --badge-secret-border: rgba(220, 38, 38, 0.25);
+    --badge-static-bg: rgba(107, 114, 128, 0.15);
+    --badge-static-text: #9ca3af;
+    --badge-static-border: rgba(107, 114, 128, 0.25);
+
+    /* Type indicators */
+    --type-string: #a78bfa;
+    --type-integer: #60a5fa;
+    --type-float: #22d3ee;
+    --type-boolean: #34d399;
+    --type-datetime: #818cf8;
+    --type-array: #a78bfa;
+    --type-symbol: #c084fc;
+
+    /* Shadows */
+    --shadow-xs: 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
+    --shadow-lg: 0 20px 48px rgba(0,0,0,0.6);
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.04);
+
+    /* Source row divider */
+    --border-source-row: rgba(255,255,255,0.04);
   }
 <% end %>
 <% if color_scheme == :system %>
