@@ -9,8 +9,21 @@ module UltraSettings
 
     @env_var_prefix = nil
     @runtime_setting_prefix = nil
+    @description = nil
+    @descendants = []
 
     class << self
+      # Set a description for the configuration. This is optional. It will be displayed
+      # in the web UI if provided. On large projects with many configurations, this can
+      # help identify the purpose of each configuration.
+      #
+      # @param text [String] The description text.
+      # @return [void]
+      def description(text = nil)
+        @description = text.to_s.strip unless text.nil?
+        @description
+      end
+
       # Define a field on the configuration. This will create a getter method for the field.
       # The field value will be read from the environment, runtime settings, or a YAML file
       # and coerced to the specified type. Empty strings will be converted to nil.
@@ -27,14 +40,19 @@ module UltraSettings
       # @param static [Boolean] If true, the field value should never be changed. This is useful for
       #   fields that are used at startup to set static values in the application. Static field cannot
       #   be read from runtime settings.
-      # @param runtime_setting [String, Symbol] The name of the runtime setting to use for the field.
+      # @param secret [Boolean, Proc] If true, the field value will be obscured in the output of
+      #   to_hash. If a proc is provided, it will be called to determine if the field is secret.
+      # @param runtime_setting [String, Symbol, Boolean] The name of the runtime setting to use for the field.
       #   By default this will be the underscored name of the class plus a dot plus the field name
-      #   (i.e. MyServiceConfiguration#foo becomes "my_service.foo").
-      # @param env_var [String, Symbol] The name of the environment variable to use for the field.
+      #   (i.e. MyServiceConfiguration#foo becomes "my_service.foo"). If set to false, runtime settings
+      #   will be ignored for this field. This can be set to true to use the default name.
+      # @param env_var [String, Symbol, Boolean] The name of the environment variable to use for the field.
       #   By default this will be the underscored name of the class plus an underscore plus the field name
-      #   all in uppercase (i.e. MyServiceConfiguration#foo becomes "MY_SERVICE_FOO").
-      # @param yaml_key [String, Symbol] The name of the YAML key to use for the field. By default
-      #   this is the name of the field.
+      #   all in uppercase (i.e. MyServiceConfiguration#foo becomes "MY_SERVICE_FOO"). If set to false,
+      #   environment variables will be ignored for this field. This can be set to true to use the default name.
+      # @param yaml_key [String, Symbol, Boolean] The name of the YAML key to use for the field. By default
+      #   this is the name of the field. If set to false, YAML configuration will be ignored for this field.
+      #   This can be set to true to use the default name.
       # @return [void]
       def field(name, type: :string, description: nil, default: nil, default_if: nil, static: nil, secret: nil, runtime_setting: nil, env_var: nil, yaml_key: nil)
         name = name.to_s
@@ -67,7 +85,8 @@ module UltraSettings
           secret: secret
         )
 
-        class_eval <<~RUBY, __FILE__, __LINE__ + 1 # rubocop:disable Security/Eval
+        caller_location = caller_locations(1, 1).first
+        class_eval <<~RUBY, caller_location.path, caller_location.lineno # rubocop:disable Security/Eval, Style/EvalWithLocation
           def #{name}
             __get_value__(#{name.inspect})
           end
@@ -93,7 +112,7 @@ module UltraSettings
         name = name.to_s
         return true if defined_fields.include?(name)
 
-        if superclass <= Configuration
+        if superclass < Configuration
           superclass.include_field?(name)
         else
           false
@@ -145,7 +164,7 @@ module UltraSettings
       # directory (i.e. MyServiceConfiguration has a default config path of
       # "my_service.yml").
       #
-      # @param value [String, Pathname]
+      # @param value [String, Pathname, false, nil]
       # @return [void]
       def configuration_file=(value)
         value = nil if value == false
@@ -352,12 +371,30 @@ module UltraSettings
         YamlConfig.new(configuration_file, yaml_config_env).to_h
       end
 
+      # Get all descendant configuration classes (subclasses and their subclasses, recursively).
+      #
+      # @return [Array<Class>] All classes that inherit from this class.
+      def descendant_configurations
+        @descendants ||= []
+        @descendants.flat_map { |subclass| [subclass] + subclass.descendant_configurations }
+      end
+
       private
+
+      # Hook called when this class is inherited. Tracks all descendant classes.
+      #
+      # @param subclass [Class] The subclass that is inheriting from this class.
+      # @return [void]
+      def inherited(subclass)
+        super
+        @descendants ||= []
+        @descendants << subclass
+      end
 
       def defined_fields
         unless defined?(@defined_fields)
           fields = {}
-          if superclass <= Configuration
+          if superclass < Configuration
             fields = superclass.send(:defined_fields).dup
           end
           @defined_fields = fields
@@ -511,6 +548,22 @@ module UltraSettings
       else
         raise ArgumentError.new("Unknown source: #{source.inspect}")
       end
+    end
+
+    # Returns an array of the available data sources for the field.
+    #
+    # @param name [String, Symbol] the name of the field.
+    # @return [Array<Symbol>] The available sources (:env, :settings, :yaml, :default).
+    def __available_sources__(name)
+      field = self.class.send(:defined_fields)[name.to_s]
+      raise ArgumentError.new("Unknown field: #{name.inspect}") unless field
+
+      sources = []
+      sources << :env if field.env_var
+      sources << :settings if field.runtime_setting && UltraSettings.__runtime_settings__
+      sources << :yaml if field.yaml_key && self.class.configuration_file
+      sources << :default unless field.default.nil?
+      sources
     end
 
     # Output the current state of the configuration as a hash. If the field is marked as a secret,

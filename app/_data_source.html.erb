@@ -1,0 +1,39 @@
+<% source_value = configuration.__value_from_source__(field.name, source) %>
+<% overridden_by = source_overridden_by(source, current_source) %>
+<div class="ultra-settings-source <%= 'ultra-settings-source-active' if current_source == source %> <%= 'ultra-settings-source-overridden' if overridden_by && !source_value.nil? %>">
+  <span class="ultra-settings-source-type">
+    <%= source_type %>
+  </span>
+
+  <div class="ultra-settings-source-value-container">
+    <% if source_name %>
+      <code class="ultra-settings-source-value">
+        <%= source_name %>
+      </code>
+    <% end %>
+
+    <%= show_defined_value(source_name, source_value, field.secret?) %>
+  </div>
+
+  <% if current_source == source %>
+    <span class="ultra-settings-source-indicator">
+      Currently active
+    </span>
+  <% elsif overridden_by && !source_value.nil? %>
+    <%= override_indicator(overridden_by) %>
+  <% end %>
+
+  <% if source == :settings %>
+    <% edit_url = UltraSettings.runtime_settings_url(name: field.runtime_setting, type: field.type, description: field.description) %>
+
+    <% if edit_url %>
+      <a
+        href="<%= html_escape(edit_url) %>"
+        class="ultra-settings-edit-link"
+        title="Edit <%= html_escape(field.runtime_setting) %>"
+      >
+        <%= edit_icon %>
+      </a>
+    <% end %>
+  <% end %>
+</div>

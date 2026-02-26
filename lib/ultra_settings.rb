@@ -14,6 +14,7 @@ require_relative "ultra_settings/config_helper"
 require_relative "ultra_settings/field"
 require_relative "ultra_settings/rack_app"
 require_relative "ultra_settings/view_helper"
+require_relative "ultra_settings/render_helper"
 require_relative "ultra_settings/web_view"
 require_relative "ultra_settings/application_view"
 require_relative "ultra_settings/configuration_view"
@@ -257,6 +258,19 @@ module UltraSettings
     # @api private
     def __configuration_names__
       @configurations.keys
+    end
+
+    # Get an array of all of the configuration instances that have been loaded into memory.
+    #
+    # @return [Array<UltraSettings::Configuration>] The configuration instances.
+    # @api private
+    def __configurations__
+      @configurations.each do |name, class_name|
+        __load_config__(name, class_name)
+      end
+
+      config_classes = ObjectSpace.each_object(Class).select { |klass| klass < Configuration }
+      config_classes.collect(&:instance)
     end
 
     private

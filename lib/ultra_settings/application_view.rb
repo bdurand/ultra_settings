@@ -4,15 +4,15 @@ module UltraSettings
   # This class can render information about all configurations. It is used by the bundled
   # web UI, but you can use it to embed the configuration information in your own web pages.
   #
-  # The output will be a simple HTML drop down list that can be used to display an HTML element
-  # showing each configuration. You can specify the CSS class for the select element by passing
-  # the `select_class` option to the `render` method. By default the select element has
-  # the class `ultra-settings-select`.
+  # The output will be a simple HTML drop down menu that can be used to select the configuration
+  # you want to see.
   #
   # @example
   #  <h1>Application Configuration</h1>
-  #  <%= UltraSettings::ApplicationView.new.render(select_class: 'form-control') %>
+  #  <%= UltraSettings::ApplicationView.new.render %>
   class ApplicationView
+    include RenderHelper
+
     attr_reader :css
 
     # Initialize the application view with a color scheme.
@@ -25,10 +25,10 @@ module UltraSettings
 
     # Render the HTML for the configuration settings UI.
     #
-    # @param select_class [String] CSS class for the select element.
-    # @param table_class [String] CSS class for the table element (for backwards compatibility).
+    # @param select_class [String] Deprecated; no longer used.
+    # @param table_class [String] Deprecated; no longer used.
     # @return [String] The rendered HTML.
-    def render(select_class: "ultra-settings-select", table_class: "")
+    def render(select_class: nil, table_class: nil)
       html = ViewHelper.erb_template("index.html.erb").result(binding)
       html = html.html_safe if html.respond_to?(:html_safe)
       html
@@ -51,10 +51,6 @@ module UltraSettings
     end
 
     private
-
-    def html_escape(value)
-      ERB::Util.html_escape(value)
-    end
 
     def javascript
       ViewHelper.read_app_file("application.js")

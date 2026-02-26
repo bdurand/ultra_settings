@@ -1,0 +1,53 @@
+<div class="ultra-settings-dropdown" id="config-dropdown">
+  <button
+    type="button"
+    class="ultra-settings-dropdown-button"
+    id="config-dropdown-button"
+  >
+    Select Configuration
+  </button>
+
+  <div
+    class="ultra-settings-dropdown-menu"
+    id="config-dropdown-menu"
+    style="display: none;"
+  >
+    <div class="ultra-settings-search-container">
+      <input
+        type="text"
+        id="config-search"
+        placeholder="Search..."
+        autocomplete="off"
+      >
+    </div>
+
+    <ul class="ultra-settings-dropdown-list" id="config-list">
+      <% configurations.each do |config| %>
+        <% config_text = [
+            config.class.name,
+            config.class.description
+          ]
+          config.class.fields.each do |field|
+            config_text << field.name
+            config_text << field.description
+            config_text << field.env_var
+            config_text << field.runtime_setting
+          end
+          search_text = config_text.compact.join(" ").downcase %>
+
+        <li
+          class="ultra-settings-dropdown-item"
+          data-value="config-<%= html_escape(config.class.name) %>"
+          data-label="<%= html_escape(config.class.name) %>"
+          data-search="<%= html_escape(search_text) %>"
+        >
+          <span class="ultra-settings-check-icon"></span>
+
+          <span class="ultra-settings-config-name">
+            <%= html_escape(config.class.name) %>
+          </span>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</div>

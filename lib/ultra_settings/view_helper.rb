@@ -11,6 +11,7 @@ module UltraSettings
       # @param path [String] The path to the template file.
       # @return [ERB] The compiled ERB template.
       def erb_template(path)
+        @cache.clear if development_mode?
         @cache["erb:#{path}"] ||= ERB.new(read_app_file(path))
       end
 
@@ -19,6 +20,7 @@ module UltraSettings
       # @param path [String] The path to the file relative to the app directory.
       # @return [String] The contents of the file.
       def read_app_file(path)
+        @cache.clear if development_mode?
         @cache["file:#{path}"] ||= File.read(File.join(app_dir, path))
       end
 
@@ -27,6 +29,12 @@ module UltraSettings
       # @return [String] The absolute path to the app directory.
       def app_dir
         File.expand_path(File.join("..", "..", "app"), __dir__)
+      end
+
+      private
+
+      def development_mode?
+        ENV.fetch("RACK_ENV", "development") == "development"
       end
     end
   end

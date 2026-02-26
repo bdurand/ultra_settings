@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../spec_helper"
+require "spec_helper"
 
 RSpec.describe UltraSettings::YamlConfig do
   it "returns the shared config if there is no environment config" do

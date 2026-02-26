@@ -19,6 +19,7 @@ Gem::Specification.new do |spec|
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
   ignore_files = %w[
     .
+    AGENTS.md
     Appraisals
     Gemfile
     Gemfile.lock
@@ -28,6 +29,8 @@ Gem::Specification.new do |spec|
     bin/
     gemfiles/
     spec/
+    test_app/
+    yard_plugin/
   ]
   spec.files = Dir.chdir(File.expand_path("..", __FILE__)) do
     `git ls-files -z`.split("\x0").reject { |f| ignore_files.any? { |path| f.start_with?(path) } }
