@@ -251,8 +251,8 @@ RSpec.describe "Web UI", type: :system do
         # The key should be pre-populated
         expect(find("#ultra-settings-ss-key").value).to eq("my_service.timeout")
 
-        # Fill in a new value
-        fill_in "ultra-settings-ss-value", with: "5.0"
+        # Fill in a new value (timeout is a float, so use the float number input)
+        fill_in "ultra-settings-ss-float-value", with: "5.0"
 
         # Fill in a description
         fill_in "ultra-settings-ss-description", with: "Updated timeout"

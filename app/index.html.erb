@@ -128,11 +128,29 @@
             <textarea id="ultra-settings-ss-value" class="ultra-settings-ss-input" rows="3"></textarea>
           </div>
 
+          <div class="ultra-settings-ss-field" id="ultra-settings-ss-integer-field" style="display:none;">
+            <label class="ultra-settings-ss-label" for="ultra-settings-ss-integer-value"><%= t('edit.value_label') %></label>
+            <input type="number" step="1" id="ultra-settings-ss-integer-value" class="ultra-settings-ss-input" placeholder="<%= t('edit.placeholder_integer') %>">
+          </div>
+
+          <div class="ultra-settings-ss-field" id="ultra-settings-ss-float-field" style="display:none;">
+            <label class="ultra-settings-ss-label" for="ultra-settings-ss-float-value"><%= t('edit.value_label') %></label>
+            <input type="number" step="any" id="ultra-settings-ss-float-value" class="ultra-settings-ss-input" placeholder="<%= t('edit.placeholder_float') %>">
+          </div>
+
           <div class="ultra-settings-ss-field" id="ultra-settings-ss-boolean-field" style="display:none;">
             <label class="ultra-settings-ss-label"><%= t('edit.value_label') %></label>
             <label class="ultra-settings-ss-checkbox-label">
               <input type="checkbox" id="ultra-settings-ss-boolean-value"> <%= t('edit.enabled') %>
             </label>
+          </div>
+
+          <div class="ultra-settings-ss-field" id="ultra-settings-ss-datetime-field" style="display:none;">
+            <label class="ultra-settings-ss-label"><%= t('edit.value_label') %></label>
+            <div class="ultra-settings-ss-datetime-row">
+              <input type="datetime-local" step="1" id="ultra-settings-ss-datetime-value" class="ultra-settings-ss-input">
+              <span class="ultra-settings-ss-tz-label" id="ultra-settings-ss-tz-label"></span>
+            </div>
           </div>
 
           <div class="ultra-settings-ss-field">
