@@ -1,6 +1,8 @@
 class MyServiceConfiguration < UltraSettings::Configuration
   self.fields_secret_by_default = false
 
+  description "Configuration for the MyService API."
+
   field :host, type: :string, description: "The hostname for the service"
 
   field :port, type: :integer, default: 80, description: "The port for the service"

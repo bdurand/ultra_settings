@@ -29,7 +29,6 @@ require_relative "spec/test_configs/test_configuration"
 require_relative "spec/test_configs/other_configuration"
 require_relative "spec/test_configs/namespace_configuration"
 require_relative "spec/test_configs/subclass_configuration"
-require_relative "spec/test_configs/explicit_configuration"
 require_relative "spec/test_configs/my_service_configuration"
 
 # This configuration is not valid and should not appear in the UI.
