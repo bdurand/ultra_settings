@@ -15,13 +15,13 @@ module UltraSettings
     #
     # @param config_class [Class] The configuration class to use.
     # @return [void]
-    def configuration_class(config_class)
-      define_singleton_method :config do
+    def configuration_class(config_class, config_alias: :config)
+      define_singleton_method config_alias do
         config_class.instance
       end
 
-      define_method :config do
-        self.class.config
+      define_method config_alias do
+        self.class.send(config_alias)
       end
     end
   end
