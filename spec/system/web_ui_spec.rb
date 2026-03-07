@@ -63,6 +63,19 @@ RSpec.describe "Web UI", type: :system do
   Capybara.default_driver = :cuprite
   Capybara.javascript_driver = :cuprite
 
+  # Disable CSS transitions/animations to avoid flaky click timing in headless tests.
+  def visit(*)
+    super
+    page.execute_script <<~JS
+      if (!document.getElementById('ultra-settings-no-transitions')) {
+        var s = document.createElement('style');
+        s.id = 'ultra-settings-no-transitions';
+        s.textContent = '*, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; }';
+        document.head.appendChild(s);
+      }
+    JS
+  end
+
   describe "filtering configurations" do
     it "filters configurations in the sidebar by typing in the search box" do
       visit "/"
@@ -156,8 +169,8 @@ RSpec.describe "Web UI", type: :system do
       end
 
       # The detail panel should slide open
+      expect(page).to have_css("#ultra-settings-detail-panel.open", wait: 5)
       detail_panel = find("#ultra-settings-detail-panel")
-      expect(detail_panel[:class]).to include("open")
       expect(detail_panel).to have_text("port")
       expect(detail_panel).to have_text("80")
       expect(detail_panel).to have_text("INTEGER")
@@ -171,12 +184,11 @@ RSpec.describe "Web UI", type: :system do
         find(".ultra-settings-field-card[data-field-name='port'] .ultra-settings-field-value").click
       end
 
-      detail_panel = find("#ultra-settings-detail-panel")
-      expect(detail_panel[:class]).to include("open")
+      expect(page).to have_css("#ultra-settings-detail-panel.open", wait: 5)
 
       find("#ultra-settings-dp-close").click
 
-      expect(page).not_to have_css("#ultra-settings-detail-panel.open", wait: 5)
+      expect(page).not_to have_css("#ultra-settings-detail-panel.open")
     end
 
     it "shows field descriptions" do
