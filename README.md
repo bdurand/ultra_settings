@@ -457,7 +457,7 @@ UltraSettings.super_settings_editing = true
 
 This will automatically set `SuperSettings` as the runtime settings store and expose API endpoints for fetching and saving settings.
 
-##### Restricting Access with a Lambda
+##### Restricting access
 
 For added security, you can pass a lambda (or any callable) instead of a boolean. The lambda receives the current `Rack::Request` object and should return a boolean indicating whether editing is allowed. This lets you restrict editing access based on the current user, IP address, or any other request attribute.
 
@@ -476,6 +476,9 @@ UltraSettings.super_settings_editing = ->(request) {
 ```
 
 When using a lambda, the editing permission is evaluated on every request. The SuperSettings runtime settings store is still set up automatically when the callable is assigned.
+
+> [!IMPORTANT]
+> Enabling editing of SuperSettings from the web UI can pose security risks if not properly restricted. Always ensure that access to the editing features is limited to trusted users and that your application has appropriate authentication and authorization mechanisms in place.
 
 ##### Embedding with Edit Support
 
