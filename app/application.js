@@ -16,6 +16,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const dpValue = document.getElementById("ultra-settings-dp-value");
   const dpMeta = document.getElementById("ultra-settings-dp-meta");
   const dpClose = document.getElementById("ultra-settings-dp-close");
+  const languageMenu = document.getElementById("ultra-settings-language-menu");
+  const languageOptions = document.querySelectorAll(".ultra-settings-language-option");
+
+  const closeLanguageMenu = () => {
+    if (languageMenu) languageMenu.removeAttribute("open");
+  };
 
   if (!sidebar || !mainContent) return;
 
@@ -60,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeSidebar = () => {
     if (sidebar) sidebar.classList.remove("open");
     if (sidebarOverlay) sidebarOverlay.classList.remove("open");
+    closeLanguageMenu();
   };
 
   if (hamburger) hamburger.addEventListener("click", () => {
@@ -146,6 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ── Keyboard Shortcuts ──
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
+      closeLanguageMenu();
       closePanel();
       // Close SuperSettings edit panel if open
       const ssBg = document.getElementById("ultra-settings-ss-panel-bg");
@@ -523,19 +531,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ── Language Picker ──
-  const localePicker = document.getElementById("ultra-settings-locale-select");
-  if (localePicker) {
-    localePicker.addEventListener("change", () => {
-      const locale = localePicker.value;
-      // Persist the choice in a cookie (accessible server-side)
-      document.cookie = "ultra_settings_locale=" + encodeURIComponent(locale) + ";path=/;max-age=31536000;SameSite=Lax";
-      // Also store in localStorage for client-side persistence
-      try { localStorage.setItem("ultra_settings_locale", locale); } catch(e) {}
-      // Reload with lang query param so server picks it up immediately
-      const url = new URL(window.location.href);
-      url.searchParams.set("lang", locale);
-      window.location.href = url.toString();
+  // ── Language Menu ──
+  if (languageMenu && languageOptions.length > 0) {
+    languageOptions.forEach((option) => {
+      option.addEventListener("click", () => {
+        const locale = option.dataset.locale;
+        if (!locale) return;
+
+        closeLanguageMenu();
+
+        // Persist the choice in a cookie (accessible server-side)
+        document.cookie = "ultra_settings_locale=" + encodeURIComponent(locale) + ";path=/;max-age=31536000;SameSite=Lax";
+
+        // Also store in localStorage for client-side persistence
+        try { localStorage.setItem("ultra_settings_locale", locale); } catch(e) {}
+
+        // Reload with lang query param so server picks it up immediately
+        const url = new URL(window.location.href);
+        url.searchParams.set("lang", locale);
+        window.location.href = url.toString();
+      });
+    });
+
+    document.addEventListener("click", (e) => {
+      if (languageMenu.hasAttribute("open") && !e.target.closest("#ultra-settings-language-menu")) {
+        closeLanguageMenu();
+      }
     });
   }
 });
