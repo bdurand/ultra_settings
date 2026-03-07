@@ -26,8 +26,11 @@ jobs:
           - ruby: "ruby"
             standardrb: true
             yard: true
+          - ruby: "ruby"
+            appraisal: "without_super_settings"
           - ruby: "3.0"
           - ruby: "2.5"
+            appraisal: "without_super_settings"
     steps:
     - uses: actions/checkout@v4
     - name: Set up Ruby ${{ matrix.ruby }}
@@ -37,7 +40,6 @@ jobs:
     - name: Install packages
       run: |
         sudo apt-get update
-        sudo apt-get install libsqlite3-dev
     - name: Setup bundler
       if: matrix.bundler != ''
       run: |

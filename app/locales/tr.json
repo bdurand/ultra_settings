@@ -1,0 +1,68 @@
+{
+  "page.title": "Uygulama yapılandırması",
+  "page.brand_title": "UltraSettings",
+  "page.brand_subtitle": "Yapılandırma denetleyicisi",
+
+  "sidebar.open_nav_menu": "Gezinme menüsünü aç",
+  "sidebar.config_list": "Yapılandırma listesi",
+  "sidebar.filter_placeholder": "Yapılandırmaları ve alanları filtrele…",
+  "sidebar.filter_aria_label": "Yapılandırmaları filtrele",
+  "sidebar.configurations_label": "Yapılandırmalar",
+  "sidebar.config_nav": "Yapılandırma gezinmesi",
+
+  "field.secret": "Gizli",
+  "field.static": "Statik",
+  "field.nil": "nil",
+  "field.click_to_expand": "Genişletmek için tıklayın",
+  "field.not_set": "ayarlanmamış",
+
+  "source.env": "ENV",
+  "source.setting": "AYAR",
+  "source.yaml": "YAML",
+  "source.default": "VARSAYILAN",
+  "source.active": "● Etkin",
+  "source.overridden": "Geçersiz kılındı",
+
+  "detail.field_detail": "Alan ayrıntısı",
+  "detail.close_panel": "Paneli kapat",
+  "detail.type_label": "Tür:",
+  "detail.secret_badge": "GİZLİ",
+  "detail.secret_value": "•••••••• (gizli)",
+
+  "config.file_not_found": "(bulunamadı)",
+  "config.edit_tooltip": "${name} öğesini düzenle",
+
+  "edit.title": "Çalışma zamanı ayarını düzenle",
+  "edit.open_dashboard": "Ayarlar panosunda aç ↗",
+  "edit.loading": "Ayar yükleniyor…",
+  "edit.close_panel": "Paneli kapat",
+  "edit.edit_setting": "Çalışma zamanı ayarını düzenle",
+
+  "edit.key_label": "Anahtar",
+  "edit.value_type_label": "Değer türü",
+  "edit.value_label": "Değer",
+  "edit.description_label": "Açıklama",
+
+  "edit.type_string": "dize",
+  "edit.type_integer": "tam sayı",
+  "edit.type_float": "ondalık sayı",
+  "edit.type_boolean": "mantıksal",
+  "edit.type_datetime": "tarih ve saat",
+  "edit.type_array": "dizi",
+
+  "edit.enabled": "Etkin",
+  "edit.cancel": "İptal",
+  "edit.save": "Kaydet",
+  "edit.saving": "Kaydediliyor…",
+
+  "edit.placeholder_array": "Her satıra bir giriş",
+  "edit.placeholder_integer": "Bir tam sayı girin",
+  "edit.placeholder_float": "Bir sayı girin",
+  "edit.placeholder_datetime": "Bir tarih ve saat girin (örn. 2025-01-15T10:30:00Z)",
+  "edit.save_error": "Ayar kaydedilemedi.",
+
+  "language.label": "Dil",
+  "language.name": "Türkçe",
+
+  "dir": "ltr"
+}

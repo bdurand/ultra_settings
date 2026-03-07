@@ -19,7 +19,7 @@
         <span class="ultra-settings-warn">
           <%= warning_icon(13) %>
           <code><%= html_escape(relative_path(configuration.class.configuration_file)) %></code>
-          (not found)
+          <%= t('config.file_not_found') %>
         </span>
       <% end %>
     </div>

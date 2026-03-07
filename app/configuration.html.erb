@@ -19,13 +19,13 @@
 
           <% if field.secret? %>
             <span class="ultra-settings-badge ultra-settings-badge-secret">
-              <%= lock_icon(10) %> Secret
+              <%= lock_icon(10) %> <%= t('field.secret') %>
             </span>
           <% end %>
 
           <% if field.static? %>
             <span class="ultra-settings-badge ultra-settings-badge-static">
-              <%= pin_icon(10) %> Static
+              <%= pin_icon(10) %> <%= t('field.static') %>
             </span>
           <% end %>
 
@@ -34,12 +34,12 @@
               <code class="ultra-settings-field-value nil"
                     onclick="<%= html_escape(open_panel_script) %>"
                     data-name="<%= html_escape(field.name) %>"
-                    data-value="nil"
+                    data-value="<%= t('field.nil') %>"
                     data-type="<%= html_escape(field.type) %>"
                     data-secret="false"
-                    title="Click to expand"
+                    title="<%= t('field.click_to_expand') %>"
                     tabindex="0"
-                    role="button">nil</code>
+                    role="button"><%= t('field.nil') %></code>
             <% elsif field.secret? %>
               <code class="ultra-settings-field-value"
                     onclick="<%= html_escape(open_panel_script) %>"
@@ -47,7 +47,7 @@
                     data-value="<%= html_escape(secret_value(configuration[field.name])) %>"
                     data-type="<%= html_escape(field.type) %>"
                     data-secret="true"
-                    title="Click to expand"
+                    title="<%= t('field.click_to_expand') %>"
                     tabindex="0"
                     role="button"><%= html_escape(secret_value(configuration[field.name])) %></code>
             <% else %>
@@ -57,7 +57,7 @@
                     data-value="<%= html_escape(display_value(configuration[field.name])) %>"
                     data-type="<%= html_escape(field.type) %>"
                     data-secret="false"
-                    title="Click to expand"
+                    title="<%= t('field.click_to_expand') %>"
                     tabindex="0"
                     role="button"><%= html_escape(display_value(configuration[field.name])) %></code>
             <% end %>
@@ -73,19 +73,19 @@
         <div class="ultra-settings-field-sources">
           <% sources = configuration.__available_sources__(field.name) %>
           <% if sources.include?(:env) %>
-            <%= render_partial "data_source", configuration: configuration, field: field, source: :env, current_source: source %>
+            <%= render_partial "data_source", configuration: configuration, field: field, source: :env, current_source: source, can_edit_super_settings: can_edit_super_settings %>
           <% end %>
 
           <% if sources.include?(:settings) %>
-            <%= render_partial "data_source", configuration: configuration, field: field, source: :settings, current_source: source %>
+            <%= render_partial "data_source", configuration: configuration, field: field, source: :settings, current_source: source, can_edit_super_settings: can_edit_super_settings %>
           <% end %>
 
           <% if sources.include?(:yaml) %>
-            <%= render_partial "data_source", configuration: configuration, field: field, source: :yaml, current_source: source %>
+            <%= render_partial "data_source", configuration: configuration, field: field, source: :yaml, current_source: source, can_edit_super_settings: can_edit_super_settings %>
           <% end %>
 
           <% if sources.include?(:default) %>
-            <%= render_partial "data_source", configuration: configuration, field: field, source: :default, current_source: source %>
+            <%= render_partial "data_source", configuration: configuration, field: field, source: :default, current_source: source, can_edit_super_settings: can_edit_super_settings %>
           <% end %>
         </div>
       </div>

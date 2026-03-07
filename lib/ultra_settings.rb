@@ -12,6 +12,7 @@ require_relative "ultra_settings/configuration"
 require_relative "ultra_settings/coerce"
 require_relative "ultra_settings/config_helper"
 require_relative "ultra_settings/field"
+require_relative "ultra_settings/i18n"
 require_relative "ultra_settings/rack_app"
 require_relative "ultra_settings/view_helper"
 require_relative "ultra_settings/render_helper"
@@ -40,6 +41,7 @@ module UltraSettings
   @runtime_settings = nil
   @runtime_settings_url = nil
   @runtime_settings_secure = true
+  @super_settings_editing = false
 
   class << self
     # Adds a configuration to the root namespace. The configuration will be
@@ -217,6 +219,48 @@ module UltraSettings
     # @return [Boolean]
     def runtime_settings_secure?
       @runtime_settings_secure
+    end
+
+    # Enable inline editing of runtime settings using the super_settings gem.
+    # When this is set to true (or to a callable), the web UI will show edit dialogs
+    # for runtime settings that allow creating or updating settings directly through
+    # the SuperSettings API. This requires the super_settings gem to be loaded and
+    # set as the runtime settings store.
+    #
+    # You can pass a boolean to enable or disable editing globally, or a lambda/proc
+    # that accepts a Rack::Request and returns a boolean. This allows you to control
+    # access based on the current request (e.g. checking user permissions).
+    #
+    # @param value [Boolean, Proc] Whether to enable super_settings editing, or a
+    #   callable that receives a Rack::Request and returns a boolean.
+    # @return [void]
+    def super_settings_editing=(value)
+      raise "super_settings gem is required for super_settings editing" unless defined?(::SuperSettings)
+
+      if value.respond_to?(:call)
+        @super_settings_editing = value
+        self.runtime_settings = ::SuperSettings
+      else
+        @super_settings_editing = !!value
+        self.runtime_settings = ::SuperSettings if @super_settings_editing
+      end
+    end
+
+    # Check if super_settings editing is allowed for the given request.
+    #
+    # If `super_settings_editing` was set to a callable (e.g. a lambda), it will be
+    # invoked with the request to determine access. Otherwise, the boolean value is returned.
+    #
+    # @param request [Rack::Request, nil] The current Rack request (required when using a callable).
+    # @return [Boolean]
+    def can_edit_super_settings?(request = nil)
+      return false unless defined?(::SuperSettings) && !@runtime_settings.nil?
+
+      if @super_settings_editing.respond_to?(:call)
+        !!@super_settings_editing.call(request)
+      else
+        !!@super_settings_editing
+      end
     end
 
     # Set whether fields should be considered secret by default.

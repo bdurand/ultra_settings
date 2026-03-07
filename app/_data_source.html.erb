@@ -11,29 +11,42 @@
   <% end %>
 
   <% if source_value.nil? %>
-    <span class="ultra-settings-source-val not-set">not set</span>
+    <span class="ultra-settings-source-val not-set"><%= t('field.not_set') %></span>
   <% elsif field.secret? %>
     <span class="ultra-settings-source-val secret"><%= html_escape(secret_value(source_value)) %></span>
   <% else %>
     <span class="ultra-settings-source-val"><%= html_escape(display_value(source_value)) %></span>
   <% end %>
 
-  <% if current_source == source %>
-    <span class="ultra-settings-source-badge ultra-settings-sb-active">&#x25CF; Active</span>
-  <% elsif source_overridden_by(source, current_source) && !source_value.nil? %>
-    <span class="ultra-settings-source-badge ultra-settings-sb-overridden">Overridden</span>
-  <% end %>
-
   <% if source == :settings %>
-    <% edit_url = UltraSettings.runtime_settings_url(name: field.runtime_setting, type: field.type, description: field.description) %>
-    <% if edit_url %>
-      <a
-        href="<%= html_escape(edit_url) %>"
-        class="ultra-settings-edit-link"
-        title="Edit <%= html_escape(field.runtime_setting) %>"
+    <% if can_edit_super_settings %>
+      <button
+        type="button"
+        class="ultra-settings-edit-link ultra-settings-ss-edit-btn"
+        title="<%= html_escape(t('config.edit_tooltip').gsub('${name}', field.runtime_setting)) %>"
+        data-ss-key="<%= html_escape(field.runtime_setting) %>"
+        data-ss-default-type="<%= html_escape(super_settings_value_type(field.type)) %>"
+        data-ss-default-description="<%= html_escape(field.description) %>"
       >
         <%= edit_icon(13) %>
-      </a>
+      </button>
+    <% else %>
+      <% edit_url = UltraSettings.runtime_settings_url(name: field.runtime_setting, type: field.type, description: field.description) %>
+      <% if edit_url %>
+        <a
+          href="<%= html_escape(edit_url) %>"
+          class="ultra-settings-edit-link"
+          title="<%= html_escape(t('config.edit_tooltip').gsub('${name}', field.runtime_setting)) %>"
+        >
+          <%= edit_icon(13) %>
+        </a>
+      <% end %>
     <% end %>
+  <% end %>
+
+  <% if current_source == source %>
+    <span class="ultra-settings-source-badge ultra-settings-sb-active"><%= t('source.active') %></span>
+  <% elsif source_overridden_by(source, current_source) && !source_value.nil? %>
+    <span class="ultra-settings-source-badge ultra-settings-sb-overridden"><%= t('source.overridden') %></span>
   <% end %>
 </div>

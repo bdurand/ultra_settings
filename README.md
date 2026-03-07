@@ -445,6 +445,49 @@ You'll also need to include the CSS for the configuration view on your page.
 </head>
 ```
 
+#### Inline Editing with SuperSettings
+
+If you are using the [super_settings](https://github.com/bdurand/super_settings) gem for runtime settings, you can enable inline editing of runtime settings directly in the web UI. This adds edit buttons next to runtime settings fields that open a panel for creating or updating settings through the SuperSettings API.
+
+To enable editing globally, set `super_settings_editing` to `true`:
+
+```ruby
+UltraSettings.super_settings_editing = true
+```
+
+This will automatically set `SuperSettings` as the runtime settings store and expose API endpoints for fetching and saving settings.
+
+##### Restricting access
+
+For added security, you can pass a lambda (or any callable) instead of a boolean. The lambda receives the current `Rack::Request` object and should return a boolean indicating whether editing is allowed. This lets you restrict editing access based on the current user, IP address, or any other request attribute.
+
+```ruby
+UltraSettings.super_settings_editing = ->(request) {
+  # Only allow editing for admin users
+  request.env["warden"]&.user&.admin?
+}
+```
+
+```ruby
+UltraSettings.super_settings_editing = ->(request) {
+  # Only allow editing from specific IP addresses
+  %w[127.0.0.1 ::1].include?(request.ip)
+}
+```
+
+When using a lambda, the editing permission is evaluated on every request. The SuperSettings runtime settings store is still set up automatically when the callable is assigned.
+
+> [!IMPORTANT]
+> Enabling editing of SuperSettings from the web UI can pose security risks if not properly restricted. Always ensure that access to the editing features is limited to trusted users and that your application has appropriate authentication and authorization mechanisms in place.
+
+##### Embedding with Edit Support
+
+When embedding the settings view using `UltraSettings::ApplicationView`, you can pass the `can_edit_super_settings` option to enable the inline editing UI:
+
+```erb
+<%= UltraSettings::ApplicationView.new(can_edit_super_settings: current_user.admin?).render %>
+```
+
 ### Testing With UltraSettings
 
 When writing automated tests, you may need to override configuration settings to test different scenarios. UltraSettings provides the `UltraSettings.override!` method to temporarily change settings within a test block. Below are examples of how to override the `TestConfiguration#foo` value in a test.
