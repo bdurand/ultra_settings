@@ -1,17 +1,19 @@
 <%= style_tag %>
 
 <% configurations = UltraSettings.__configurations__.reject { |config| config.class.fields.empty? }.sort_by { |config| config.class.name.downcase } %>
+<% locales = UltraSettings::I18n.available_locales %>
+<% current_locale_name = UltraSettings::I18n.t("language.name", locale: locale) %>
 
 <div class="ultra-settings"<% if can_edit_super_settings %> data-ss-editing="true"<% end %><% raw_url = UltraSettings.instance_variable_get(:@runtime_settings_url).to_s %><% unless raw_url.empty? %> data-runtime-settings-url="<%= html_escape(raw_url) %>"<% end %>>
-  <button class="ultra-settings-hamburger" id="ultra-settings-hamburger" aria-label="Open navigation menu">
+  <button class="ultra-settings-hamburger" id="ultra-settings-hamburger" aria-label="<%= t('sidebar.open_nav_menu') %>">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
   <div class="ultra-settings-sidebar-overlay" id="ultra-settings-sidebar-overlay"></div>
 
-  <aside class="ultra-settings-sidebar" id="ultra-settings-sidebar" role="navigation" aria-label="Configuration list">
+  <aside class="ultra-settings-sidebar" id="ultra-settings-sidebar" role="navigation" aria-label="<%= t('sidebar.config_list') %>">
     <div class="ultra-settings-sidebar-brand">
-      <h1 class="ultra-settings-brand-title">UltraSettings</h1>
-      <div class="ultra-settings-brand-subtitle">Configuration Inspector</div>
+      <h1 class="ultra-settings-brand-title"><%= t('page.brand_title') %></h1>
+      <div class="ultra-settings-brand-subtitle"><%= t('page.brand_subtitle') %></div>
     </div>
 
     <div class="ultra-settings-sidebar-search">
@@ -19,12 +21,12 @@
         <circle cx="11" cy="11" r="8"/>
         <line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
-      <input type="text" id="ultra-settings-search-input" placeholder="Filter configs &amp; fields&hellip;" autocomplete="off" aria-label="Filter configurations">
+      <input type="text" id="ultra-settings-search-input" placeholder="<%= html_escape(t('sidebar.filter_placeholder')) %>" autocomplete="off" aria-label="<%= t('sidebar.filter_aria_label') %>">
     </div>
 
-    <div class="ultra-settings-section-label">Configurations</div>
+    <div class="ultra-settings-section-label"><%= t('sidebar.configurations_label') %></div>
 
-    <nav class="ultra-settings-sidebar-nav" id="ultra-settings-sidebar-nav" aria-label="Configuration navigation">
+    <nav class="ultra-settings-sidebar-nav" id="ultra-settings-sidebar-nav" aria-label="<%= t('sidebar.config_nav') %>">
       <% configurations.each_with_index do |config, index| %>
         <%
           config_text = [config.class.name, config.class.description]
@@ -48,6 +50,53 @@
         </div>
       <% end %>
     </nav>
+
+    <% if locales.size > 1 %>
+      <div class="ultra-settings-sidebar-footer">
+        <details class="ultra-settings-language-menu" id="ultra-settings-language-menu">
+          <summary class="ultra-settings-language-trigger" aria-label="<%= t('language.label') %>" aria-haspopup="menu">
+            <span class="ultra-settings-language-trigger-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M3.6 9h16.8"></path>
+                <path d="M3.6 15h16.8"></path>
+                <path d="M12 3a14 14 0 0 1 0 18"></path>
+                <path d="M12 3a14 14 0 0 0 0 18"></path>
+              </svg>
+            </span>
+            <span class="ultra-settings-language-trigger-current"><%= html_escape(current_locale_name) %></span>
+            <span class="ultra-settings-language-trigger-caret" aria-hidden="true">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m4 6 4 4 4-4"></path>
+              </svg>
+            </span>
+          </summary>
+
+          <menu class="ultra-settings-language-popup" role="menu" aria-label="<%= t('language.label') %>">
+            <% locales.each do |loc| %>
+              <% language_name = UltraSettings::I18n.t('language.name', locale: loc) %>
+              <% active = loc == locale %>
+              <li>
+                <button
+                  type="button"
+                  class="ultra-settings-language-option<%= ' is-active' if active %>"
+                  role="menuitemradio"
+                  aria-checked="<%= active %>"
+                  data-locale="<%= html_escape(loc) %>"
+                >
+                  <span class="ultra-settings-language-option-name"><%= html_escape(language_name) %></span>
+                  <span class="ultra-settings-language-option-check" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m3.5 8 3 3 6-6"></path>
+                    </svg>
+                  </span>
+                </button>
+              </li>
+            <% end %>
+          </menu>
+        </details>
+      </div>
+    <% end %>
   </aside>
 
   <main class="ultra-settings-main" id="ultra-settings-main" role="main">
@@ -57,17 +106,17 @@
         id="section-<%= html_escape(configuration.class.name) %>"
         data-config-id="section-<%= html_escape(configuration.class.name) %>"
       >
-        <%= UltraSettings::ConfigurationView.new(configuration, can_edit_super_settings: can_edit_super_settings).render %>
+        <%= UltraSettings::ConfigurationView.new(configuration, can_edit_super_settings: can_edit_super_settings, locale: locale).render %>
       </section>
     <% end %>
   </main>
 
   <!-- Detail Panel -->
   <div class="ultra-settings-panel-bg" id="ultra-settings-panel-bg"></div>
-  <div class="ultra-settings-detail-panel" id="ultra-settings-detail-panel" role="dialog" aria-label="Field detail">
+  <div class="ultra-settings-detail-panel" id="ultra-settings-detail-panel" role="dialog" aria-label="<%= t('detail.field_detail') %>">
     <div class="ultra-settings-dp-header">
       <h3 id="ultra-settings-dp-title"></h3>
-      <button class="ultra-settings-dp-close" id="ultra-settings-dp-close" aria-label="Close panel">
+      <button class="ultra-settings-dp-close" id="ultra-settings-dp-close" aria-label="<%= t('detail.close_panel') %>">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
@@ -80,61 +129,79 @@
   <% if can_edit_super_settings %>
     <!-- SuperSettings Edit Panel (slide-out) -->
     <div class="ultra-settings-ss-panel-bg" id="ultra-settings-ss-panel-bg"></div>
-    <div class="ultra-settings-ss-panel" id="ultra-settings-ss-panel" role="dialog" aria-label="Edit runtime setting">
+    <div class="ultra-settings-ss-panel" id="ultra-settings-ss-panel" role="dialog" aria-label="<%= t('edit.edit_setting') %>">
       <div class="ultra-settings-dp-header">
         <div>
-          <h3 id="ultra-settings-ss-title">Edit Runtime Setting</h3>
-          <a id="ultra-settings-ss-external-link" class="ultra-settings-ss-external-link" href="#" target="_blank" rel="noopener" style="display:none;">Open in settings dashboard &#x2197;</a>
+          <h3 id="ultra-settings-ss-title"><%= t('edit.title') %></h3>
+          <a id="ultra-settings-ss-external-link" class="ultra-settings-ss-external-link" href="#" target="_blank" rel="noopener" style="display:none;"><%= t('edit.open_dashboard') %></a>
         </div>
-        <button class="ultra-settings-dp-close" id="ultra-settings-ss-panel-close" aria-label="Close panel">
+        <button class="ultra-settings-dp-close" id="ultra-settings-ss-panel-close" aria-label="<%= t('edit.close_panel') %>">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
       <div class="ultra-settings-dp-body">
         <div class="ultra-settings-ss-loading" id="ultra-settings-ss-loading">
-          Loading setting&hellip;
+          <%= t('edit.loading') %>
         </div>
 
         <form id="ultra-settings-ss-form" class="ultra-settings-ss-form" style="display:none;" onsubmit="return false;">
           <div class="ultra-settings-ss-field">
-            <label class="ultra-settings-ss-label">Key</label>
+            <label class="ultra-settings-ss-label"><%= t('edit.key_label') %></label>
             <input type="text" id="ultra-settings-ss-key" class="ultra-settings-ss-input" readonly>
           </div>
 
           <div class="ultra-settings-ss-field">
-            <label class="ultra-settings-ss-label" for="ultra-settings-ss-value-type">Value Type</label>
+            <label class="ultra-settings-ss-label" for="ultra-settings-ss-value-type"><%= t('edit.value_type_label') %></label>
             <select id="ultra-settings-ss-value-type" class="ultra-settings-ss-input">
-              <option value="string">string</option>
-              <option value="integer">integer</option>
-              <option value="float">float</option>
-              <option value="boolean">boolean</option>
-              <option value="datetime">datetime</option>
-              <option value="array">array</option>
+              <option value="string"><%= t('edit.type_string') %></option>
+              <option value="integer"><%= t('edit.type_integer') %></option>
+              <option value="float"><%= t('edit.type_float') %></option>
+              <option value="boolean"><%= t('edit.type_boolean') %></option>
+              <option value="datetime"><%= t('edit.type_datetime') %></option>
+              <option value="array"><%= t('edit.type_array') %></option>
             </select>
           </div>
 
           <div class="ultra-settings-ss-field" id="ultra-settings-ss-value-field">
-            <label class="ultra-settings-ss-label" for="ultra-settings-ss-value">Value</label>
+            <label class="ultra-settings-ss-label" for="ultra-settings-ss-value"><%= t('edit.value_label') %></label>
             <textarea id="ultra-settings-ss-value" class="ultra-settings-ss-input" rows="3"></textarea>
           </div>
 
+          <div class="ultra-settings-ss-field" id="ultra-settings-ss-integer-field" style="display:none;">
+            <label class="ultra-settings-ss-label" for="ultra-settings-ss-integer-value"><%= t('edit.value_label') %></label>
+            <input type="number" step="1" id="ultra-settings-ss-integer-value" class="ultra-settings-ss-input" placeholder="<%= t('edit.placeholder_integer') %>">
+          </div>
+
+          <div class="ultra-settings-ss-field" id="ultra-settings-ss-float-field" style="display:none;">
+            <label class="ultra-settings-ss-label" for="ultra-settings-ss-float-value"><%= t('edit.value_label') %></label>
+            <input type="number" step="any" id="ultra-settings-ss-float-value" class="ultra-settings-ss-input" placeholder="<%= t('edit.placeholder_float') %>">
+          </div>
+
           <div class="ultra-settings-ss-field" id="ultra-settings-ss-boolean-field" style="display:none;">
-            <label class="ultra-settings-ss-label">Value</label>
+            <label class="ultra-settings-ss-label"><%= t('edit.value_label') %></label>
             <label class="ultra-settings-ss-checkbox-label">
-              <input type="checkbox" id="ultra-settings-ss-boolean-value"> Enabled
+              <input type="checkbox" id="ultra-settings-ss-boolean-value"> <%= t('edit.enabled') %>
             </label>
           </div>
 
+          <div class="ultra-settings-ss-field" id="ultra-settings-ss-datetime-field" style="display:none;">
+            <label class="ultra-settings-ss-label"><%= t('edit.value_label') %></label>
+            <div class="ultra-settings-ss-datetime-row">
+              <input type="datetime-local" step="1" id="ultra-settings-ss-datetime-value" class="ultra-settings-ss-input">
+              <span class="ultra-settings-ss-tz-label" id="ultra-settings-ss-tz-label"></span>
+            </div>
+          </div>
+
           <div class="ultra-settings-ss-field">
-            <label class="ultra-settings-ss-label" for="ultra-settings-ss-description">Description</label>
+            <label class="ultra-settings-ss-label" for="ultra-settings-ss-description"><%= t('edit.description_label') %></label>
             <textarea id="ultra-settings-ss-description" class="ultra-settings-ss-input" rows="2"></textarea>
           </div>
 
           <div class="ultra-settings-ss-errors" id="ultra-settings-ss-errors" style="display:none;"></div>
 
           <div class="ultra-settings-ss-actions">
-            <button type="button" class="ultra-settings-ss-btn ultra-settings-ss-btn-cancel" id="ultra-settings-ss-cancel">Cancel</button>
-            <button type="button" class="ultra-settings-ss-btn ultra-settings-ss-btn-save" id="ultra-settings-ss-save">Save</button>
+            <button type="button" class="ultra-settings-ss-btn ultra-settings-ss-btn-cancel" id="ultra-settings-ss-cancel"><%= t('edit.cancel') %></button>
+            <button type="button" class="ultra-settings-ss-btn ultra-settings-ss-btn-save" id="ultra-settings-ss-save"><%= t('edit.save') %></button>
           </div>
         </form>
       </div>
@@ -142,6 +209,7 @@
   <% end %>
 </div>
 
+<script>window.__ultraSettingsI18n = <%= translations_json %>;window.__ultraSettingsDir = "<%= UltraSettings::I18n.text_direction(locale) %>";</script>
 <script>
   <%= javascript %>
 </script>

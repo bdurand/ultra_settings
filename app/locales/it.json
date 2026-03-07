@@ -1,0 +1,68 @@
+{
+  "page.title": "Configurazione dell’applicazione",
+  "page.brand_title": "UltraSettings",
+  "page.brand_subtitle": "Ispettore della configurazione",
+
+  "sidebar.open_nav_menu": "Apri menu di navigazione",
+  "sidebar.config_list": "Elenco configurazioni",
+  "sidebar.filter_placeholder": "Filtra configurazioni e campi…",
+  "sidebar.filter_aria_label": "Filtra configurazioni",
+  "sidebar.configurations_label": "Configurazioni",
+  "sidebar.config_nav": "Navigazione configurazioni",
+
+  "field.secret": "Segreto",
+  "field.static": "Statico",
+  "field.nil": "nil",
+  "field.click_to_expand": "Fai clic per espandere",
+  "field.not_set": "non impostato",
+
+  "source.env": "ENV",
+  "source.setting": "IMPOSTAZIONE",
+  "source.yaml": "YAML",
+  "source.default": "PREDEFINITO",
+  "source.active": "● Attivo",
+  "source.overridden": "Sovrascritto",
+
+  "detail.field_detail": "Dettaglio campo",
+  "detail.close_panel": "Chiudi pannello",
+  "detail.type_label": "Tipo:",
+  "detail.secret_badge": "SEGRETO",
+  "detail.secret_value": "•••••••• (segreto)",
+
+  "config.file_not_found": "(non trovato)",
+  "config.edit_tooltip": "Modifica ${name}",
+
+  "edit.title": "Modifica impostazione di runtime",
+  "edit.open_dashboard": "Apri nel pannello delle impostazioni ↗",
+  "edit.loading": "Caricamento impostazione…",
+  "edit.close_panel": "Chiudi pannello",
+  "edit.edit_setting": "Modifica impostazione di runtime",
+
+  "edit.key_label": "Chiave",
+  "edit.value_type_label": "Tipo di valore",
+  "edit.value_label": "Valore",
+  "edit.description_label": "Descrizione",
+
+  "edit.type_string": "stringa",
+  "edit.type_integer": "intero",
+  "edit.type_float": "decimale",
+  "edit.type_boolean": "booleano",
+  "edit.type_datetime": "data e ora",
+  "edit.type_array": "array",
+
+  "edit.enabled": "Abilitato",
+  "edit.cancel": "Annulla",
+  "edit.save": "Salva",
+  "edit.saving": "Salvataggio…",
+
+  "edit.placeholder_array": "Una voce per riga",
+  "edit.placeholder_integer": "Inserisci un intero",
+  "edit.placeholder_float": "Inserisci un numero",
+  "edit.placeholder_datetime": "Inserisci data e ora (ad es. 2025-01-15T10:30:00Z)",
+  "edit.save_error": "Impossibile salvare l’impostazione.",
+
+  "language.label": "Lingua",
+  "language.name": "Italiano",
+
+  "dir": "ltr"
+}

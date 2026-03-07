@@ -76,6 +76,33 @@ RSpec.describe "Web UI", type: :system do
     JS
   end
 
+  describe "HTML direction attribute" do
+    it "sets dir='ltr' on the html element for English locale" do
+      visit "/"
+      expect(page.find("html")["dir"]).to eq("ltr")
+    end
+  end
+
+  describe "language menu" do
+    it "switches locales from the sidebar footer popup" do
+      visit "/?lang=en"
+
+      expect(page).to have_css("html[lang='en'][dir='ltr']")
+      expect(page).to have_css(".ultra-settings-sidebar-footer .ultra-settings-language-trigger-current", text: "English")
+      expect(page).to have_no_css("#ultra-settings-locale-select")
+
+      find(".ultra-settings-language-trigger").click
+
+      within ".ultra-settings-language-popup" do
+        find(".ultra-settings-language-option", text: "Français").click
+      end
+
+      expect(page).to have_css("html[lang='fr'][dir='ltr']")
+      expect(page).to have_css(".ultra-settings-sidebar-footer .ultra-settings-language-trigger-current", text: "Français")
+      expect(page).to have_css(".ultra-settings-brand-subtitle", text: /inspecteur de configuration/i)
+    end
+  end
+
   describe "filtering configurations" do
     it "filters configurations in the sidebar by typing in the search box" do
       visit "/"
@@ -244,8 +271,8 @@ RSpec.describe "Web UI", type: :system do
         # The key should be pre-populated
         expect(find("#ultra-settings-ss-key").value).to eq("my_service.timeout")
 
-        # Fill in a new value
-        fill_in "ultra-settings-ss-value", with: "5.0"
+        # Fill in a new value (timeout is a float, so use the float number input)
+        fill_in "ultra-settings-ss-float-value", with: "5.0"
 
         # Fill in a description
         fill_in "ultra-settings-ss-description", with: "Updated timeout"
