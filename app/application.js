@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     activeConfigId = id;
     navItems.forEach(el => el.classList.toggle("active", el.dataset.configId === id));
     const section = document.getElementById(id);
-    if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (section) section.scrollIntoView({ block: "start" });
     if (window.innerWidth <= 768) closeSidebar();
   };
 
@@ -141,7 +141,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ── Keyboard Shortcuts ──
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { closePanel(); }
+    if (e.key === "Escape") {
+      closePanel();
+      // Close SuperSettings edit panel if open
+      const ssBg = document.getElementById("ultra-settings-ss-panel-bg");
+      const ssP = document.getElementById("ultra-settings-ss-panel");
+      if (ssBg) ssBg.classList.remove("open");
+      if (ssP) ssP.classList.remove("open");
+    }
   });
 
   // ── Hash-based navigation ──
@@ -170,4 +177,259 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   equalizeChipWidths();
+
+  // ── Restore scroll & flash after setting save ──
+  const savedScroll = sessionStorage.getItem("ultra-settings-scroll");
+  const changedKey = sessionStorage.getItem("ultra-settings-changed-key");
+  if (savedScroll != null) {
+    mainContent.scrollTop = parseInt(savedScroll, 10);
+    sessionStorage.removeItem("ultra-settings-scroll");
+  }
+  if (changedKey) {
+    sessionStorage.removeItem("ultra-settings-changed-key");
+    // Find the edit button with the matching key and highlight its field card
+    const editBtn = document.querySelector('.ultra-settings-ss-edit-btn[data-ss-key="' + CSS.escape(changedKey) + '"]');
+    if (editBtn) {
+      const card = editBtn.closest(".ultra-settings-field-card");
+      if (card) {
+        card.classList.add("ultra-settings-changed");
+        card.addEventListener("animationend", () => card.classList.remove("ultra-settings-changed"), { once: true });
+      }
+    }
+  }
+
+  // ══════════════════════════════════════════
+  // SuperSettings Inline Editing
+  // ══════════════════════════════════════════
+  const ssContainer = document.querySelector(".ultra-settings[data-ss-editing]");
+  if (ssContainer) {
+    const ssPanel = document.getElementById("ultra-settings-ss-panel");
+    const ssPanelBg = document.getElementById("ultra-settings-ss-panel-bg");
+    const ssForm = document.getElementById("ultra-settings-ss-form");
+    const ssLoading = document.getElementById("ultra-settings-ss-loading");
+    const ssErrors = document.getElementById("ultra-settings-ss-errors");
+    const ssKeyInput = document.getElementById("ultra-settings-ss-key");
+    const ssTitle = document.getElementById("ultra-settings-ss-title");
+    const ssValueTypeSelect = document.getElementById("ultra-settings-ss-value-type");
+    const ssValueTextarea = document.getElementById("ultra-settings-ss-value");
+    const ssValueField = document.getElementById("ultra-settings-ss-value-field");
+    const ssBooleanField = document.getElementById("ultra-settings-ss-boolean-field");
+    const ssBooleanCheckbox = document.getElementById("ultra-settings-ss-boolean-value");
+    const ssDescriptionInput = document.getElementById("ultra-settings-ss-description");
+    const ssSaveBtn = document.getElementById("ultra-settings-ss-save");
+    const ssCancelBtn = document.getElementById("ultra-settings-ss-cancel");
+    const ssCloseBtn = document.getElementById("ultra-settings-ss-panel-close");
+    const ssExternalLink = document.getElementById("ultra-settings-ss-external-link");
+    const ssRuntimeUrlTemplate = ssContainer.dataset.runtimeSettingsUrl || "";
+
+    // Determine API base URL from current page
+    const getApiBase = () => {
+      let base = window.location.pathname.replace(/\/+$/, "");
+      return base;
+    };
+
+    // Fetch a setting from the SuperSettings API
+    const fetchSetting = (key, callback) => {
+      const url = getApiBase() + "/super_settings/setting?key=" + encodeURIComponent(key);
+      fetch(url, {credentials: "same-origin"})
+        .then(resp => {
+          if (resp.ok) return resp.json();
+          if (resp.status === 404) return null;
+          throw new Error(resp.status + " " + resp.statusText);
+        })
+        .then(callback)
+        .catch(err => {
+          console.error("Error fetching setting:", err);
+          callback(null);
+        });
+    };
+
+    // Save a setting via the SuperSettings API
+    const saveSetting = (params, callback) => {
+      const url = getApiBase() + "/super_settings/setting";
+      fetch(url, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {"Content-Type": "application/json", "Accept": "application/json"},
+        body: JSON.stringify({settings: [params]})
+      })
+        .then(resp => resp.json().then(data => ({status: resp.status, data})))
+        .then(callback)
+        .catch(err => {
+          console.error("Error saving setting:", err);
+          callback({status: 500, data: {error: err.message}});
+        });
+    };
+
+    // Show/hide value fields based on type
+    const updateValueField = (type) => {
+      if (type === "boolean") {
+        ssValueField.style.display = "none";
+        ssBooleanField.style.display = "";
+      } else {
+        ssValueField.style.display = "";
+        ssBooleanField.style.display = "none";
+        if (type === "array") {
+          ssValueTextarea.rows = 6;
+          ssValueTextarea.placeholder = "One entry per line";
+        } else if (type === "integer") {
+          ssValueTextarea.rows = 1;
+          ssValueTextarea.placeholder = "Enter an integer";
+        } else if (type === "float") {
+          ssValueTextarea.rows = 1;
+          ssValueTextarea.placeholder = "Enter a number";
+        } else if (type === "datetime") {
+          ssValueTextarea.rows = 1;
+          ssValueTextarea.placeholder = "Enter a datetime (e.g. 2025-01-15T10:30:00Z)";
+        } else {
+          ssValueTextarea.rows = 3;
+          ssValueTextarea.placeholder = "";
+        }
+      }
+    };
+
+    ssValueTypeSelect.addEventListener("change", () => {
+      updateValueField(ssValueTypeSelect.value);
+    });
+
+    // Get the current value from the form
+    const getFormValue = () => {
+      if (ssValueTypeSelect.value === "boolean") {
+        return ssBooleanCheckbox.checked ? "true" : "false";
+      }
+      return ssValueTextarea.value;
+    };
+
+    // Open the edit panel
+    const openSsPanel = (key, defaultType, defaultDescription) => {
+      if (!ssPanel) return;
+
+      // Close the detail panel if open
+      closePanel();
+
+      // Reset form
+      ssKeyInput.value = key;
+      if (ssTitle) ssTitle.textContent = key;
+      ssValueTextarea.value = "";
+      ssBooleanCheckbox.checked = false;
+      ssDescriptionInput.value = defaultDescription || "";
+      ssValueTypeSelect.value = defaultType || "string";
+      updateValueField(ssValueTypeSelect.value);
+      ssErrors.style.display = "none";
+      ssErrors.textContent = "";
+      ssForm.style.display = "none";
+      ssLoading.style.display = "";
+      ssSaveBtn.disabled = false;
+      ssSaveBtn.textContent = "Save";
+
+      // Build and show external link if runtime_settings_url is configured
+      if (ssExternalLink && ssRuntimeUrlTemplate) {
+        const externalUrl = ssRuntimeUrlTemplate
+          .replace("${name}", encodeURIComponent(key))
+          .replace("${type}", encodeURIComponent(defaultType || ""))
+          .replace("${description}", encodeURIComponent(defaultDescription || ""));
+        ssExternalLink.href = externalUrl;
+        ssExternalLink.style.display = "";
+      } else if (ssExternalLink) {
+        ssExternalLink.style.display = "none";
+      }
+
+      ssPanelBg.classList.add("open");
+      ssPanel.classList.add("open");
+
+      // Fetch existing setting
+      fetchSetting(key, (setting) => {
+        if (setting && !setting.error) {
+          // Existing setting — populate form with current values
+          ssValueTypeSelect.value = setting.value_type || defaultType || "string";
+          updateValueField(ssValueTypeSelect.value);
+
+          if (setting.value_type === "boolean") {
+            ssBooleanCheckbox.checked = (setting.value === true || setting.value === "true");
+          } else if (setting.value_type === "array" && Array.isArray(setting.value)) {
+            ssValueTextarea.value = setting.value.join("\n");
+          } else {
+            ssValueTextarea.value = (setting.value != null) ? String(setting.value) : "";
+          }
+
+          if (setting.description) {
+            ssDescriptionInput.value = setting.description;
+          }
+        }
+        // If not found, defaults already applied
+
+        ssLoading.style.display = "none";
+        ssForm.style.display = "";
+      });
+    };
+
+    const closeSsPanel = () => {
+      if (ssPanelBg) ssPanelBg.classList.remove("open");
+      if (ssPanel) ssPanel.classList.remove("open");
+    };
+
+    // Handle save
+    ssSaveBtn.addEventListener("click", () => {
+      const params = {
+        key: ssKeyInput.value,
+        value: getFormValue(),
+        value_type: ssValueTypeSelect.value,
+        description: ssDescriptionInput.value
+      };
+
+      ssSaveBtn.disabled = true;
+      ssSaveBtn.textContent = "Saving\u2026";
+      ssErrors.style.display = "none";
+
+      saveSetting(params, (result) => {
+        if (result.status === 200 && result.data.success) {
+          closeSsPanel();
+          // Preserve scroll position and flash the changed row after reload
+          if (mainContent) {
+            sessionStorage.setItem("ultra-settings-scroll", mainContent.scrollTop);
+          }
+          sessionStorage.setItem("ultra-settings-changed-key", params.key);
+          window.location.reload();
+        } else {
+          ssSaveBtn.disabled = false;
+          ssSaveBtn.textContent = "Save";
+
+          let errorMsg = "Failed to save setting.";
+          if (result.data && result.data.errors) {
+            const msgs = [];
+            Object.entries(result.data.errors).forEach(([field, errs]) => {
+              if (Array.isArray(errs)) {
+                errs.forEach(e => msgs.push(e));
+              } else {
+                msgs.push(String(errs));
+              }
+            });
+            if (msgs.length > 0) errorMsg = msgs.join("; ");
+          } else if (result.data && result.data.error) {
+            errorMsg = result.data.error;
+          }
+          ssErrors.textContent = errorMsg;
+          ssErrors.style.display = "";
+        }
+      });
+    });
+
+    // Handle cancel / close
+    ssCancelBtn.addEventListener("click", closeSsPanel);
+    ssCloseBtn.addEventListener("click", closeSsPanel);
+    if (ssPanelBg) ssPanelBg.addEventListener("click", closeSsPanel);
+
+    // Delegate clicks on edit buttons
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest(".ultra-settings-ss-edit-btn");
+      if (btn) {
+        e.preventDefault();
+        openSsPanel(
+          btn.dataset.ssKey || "",
+          btn.dataset.ssDefaultType || "string",
+          btn.dataset.ssDefaultDescription || ""
+        );
+      }
+    });
+  }
 });

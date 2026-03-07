@@ -16,8 +16,10 @@ module UltraSettings
     # Initialize the configuration view with a configuration instance.
     #
     # @param configuration [UltraSettings::Configuration] The configuration instance to display.
-    def initialize(configuration)
+    # @param can_edit_super_settings [Boolean] Whether SuperSettings inline editing is enabled.
+    def initialize(configuration, can_edit_super_settings: false)
       @configuration = configuration
+      @can_edit_super_settings = can_edit_super_settings
     end
 
     # Render the HTML for the configuration view.
@@ -26,6 +28,7 @@ module UltraSettings
     # @return [String] The rendered HTML.
     def render(table_class: "")
       configuration = @configuration
+      can_edit_super_settings = @can_edit_super_settings
       html = ViewHelper.erb_template("configuration.html.erb").result(binding)
       html = html.html_safe if html.respond_to?(:html_safe)
       html
@@ -39,6 +42,17 @@ module UltraSettings
     end
 
     private
+
+    # Map an UltraSettings field type to a SuperSettings value type.
+    #
+    # @param type [Symbol] The UltraSettings field type.
+    # @return [String] The corresponding SuperSettings value type.
+    def super_settings_value_type(type)
+      case type.to_sym
+      when :symbol then "string"
+      else type.to_s
+      end
+    end
 
     def display_value(value)
       case value

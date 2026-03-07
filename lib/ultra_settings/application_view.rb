@@ -18,9 +18,11 @@ module UltraSettings
     # Initialize the application view with a color scheme.
     #
     # @param color_scheme [Symbol] The color scheme to use (:light, :dark, or :system).
-    def initialize(color_scheme: :light)
+    # @param can_edit_super_settings [Boolean] Whether SuperSettings inline editing is enabled.
+    def initialize(color_scheme: :light, can_edit_super_settings: false)
       @css = application_css(color_scheme)
       @css = @css.html_safe if @css.respond_to?(:html_safe)
+      @can_edit_super_settings = can_edit_super_settings
     end
 
     # Render the HTML for the configuration settings UI.
@@ -29,6 +31,7 @@ module UltraSettings
     # @param table_class [String] @deprecated; no longer used.
     # @return [String] The rendered HTML.
     def render(select_class: nil, table_class: nil)
+      can_edit_super_settings = @can_edit_super_settings
       html = ViewHelper.erb_template("index.html.erb").result(binding)
       html = html.html_safe if html.respond_to?(:html_safe)
       html

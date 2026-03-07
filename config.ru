@@ -12,9 +12,17 @@ Bundler.setup(:default)
 
 require_relative "lib/ultra_settings"
 
+if ENV.fetch("USE_SUPER_SETTINGS", "true") == "true"
+  require "super_settings"
+  require "super_settings/storage/test_storage"
+  SuperSettings::Setting.storage = SuperSettings::Storage::TestStorage
+  UltraSettings.super_settings_editing = lambda { |req| ENV.fetch("SUPER_SETTINGS_EDITING", "true") == "true" }
+else
+  UltraSettings.runtime_settings = {"my_service.timeout" => 2.5}
+end
+
 UltraSettings.fields_secret_by_default = false
 UltraSettings.yaml_config_path = File.join(__dir__, "spec", "config")
-UltraSettings.runtime_settings = {"my_service.timeout" => 2.5}
 UltraSettings.runtime_settings_url = ENV.fetch("RUNTIME_SETTINGS_URL", "http://localhost:9494#edit=${name}&type=${type}&description=${description}")
 
 require_relative "spec/test_configs/test_configuration"

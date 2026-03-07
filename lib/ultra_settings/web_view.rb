@@ -17,8 +17,10 @@ module UltraSettings
 
     # Render the complete settings page HTML.
     #
+    # @param request [Rack::Request, nil] The current Rack request for access control.
     # @return [String] The rendered HTML page.
-    def render_settings
+    def render_settings(request = nil)
+      @request = request
       @layout_template.result(binding)
     end
 
@@ -26,7 +28,10 @@ module UltraSettings
     #
     # @return [String] The HTML content for the settings.
     def content
-      UltraSettings::ApplicationView.new(color_scheme: @color_scheme).render
+      UltraSettings::ApplicationView.new(
+        color_scheme: @color_scheme,
+        can_edit_super_settings: UltraSettings.can_edit_super_settings?(@request)
+      ).render
     end
 
     private

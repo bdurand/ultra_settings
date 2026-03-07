@@ -2,7 +2,7 @@
 
 <% configurations = UltraSettings.__configurations__.reject { |config| config.class.fields.empty? }.sort_by { |config| config.class.name.downcase } %>
 
-<div class="ultra-settings">
+<div class="ultra-settings"<% if can_edit_super_settings %> data-ss-editing="true"<% end %><% raw_url = UltraSettings.instance_variable_get(:@runtime_settings_url).to_s %><% unless raw_url.empty? %> data-runtime-settings-url="<%= html_escape(raw_url) %>"<% end %>>
   <button class="ultra-settings-hamburger" id="ultra-settings-hamburger" aria-label="Open navigation menu">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
@@ -57,7 +57,7 @@
         id="section-<%= html_escape(configuration.class.name) %>"
         data-config-id="section-<%= html_escape(configuration.class.name) %>"
       >
-        <%= UltraSettings::ConfigurationView.new(configuration).render %>
+        <%= UltraSettings::ConfigurationView.new(configuration, can_edit_super_settings: can_edit_super_settings).render %>
       </section>
     <% end %>
   </main>
@@ -76,6 +76,70 @@
       <div class="ultra-settings-dp-meta" id="ultra-settings-dp-meta"></div>
     </div>
   </div>
+
+  <% if can_edit_super_settings %>
+    <!-- SuperSettings Edit Panel (slide-out) -->
+    <div class="ultra-settings-ss-panel-bg" id="ultra-settings-ss-panel-bg"></div>
+    <div class="ultra-settings-ss-panel" id="ultra-settings-ss-panel" role="dialog" aria-label="Edit runtime setting">
+      <div class="ultra-settings-dp-header">
+        <div>
+          <h3 id="ultra-settings-ss-title">Edit Runtime Setting</h3>
+          <a id="ultra-settings-ss-external-link" class="ultra-settings-ss-external-link" href="#" target="_blank" rel="noopener" style="display:none;">Open in settings dashboard &#x2197;</a>
+        </div>
+        <button class="ultra-settings-dp-close" id="ultra-settings-ss-panel-close" aria-label="Close panel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="ultra-settings-dp-body">
+        <div class="ultra-settings-ss-loading" id="ultra-settings-ss-loading">
+          Loading setting&hellip;
+        </div>
+
+        <form id="ultra-settings-ss-form" class="ultra-settings-ss-form" style="display:none;" onsubmit="return false;">
+          <div class="ultra-settings-ss-field">
+            <label class="ultra-settings-ss-label">Key</label>
+            <input type="text" id="ultra-settings-ss-key" class="ultra-settings-ss-input" readonly>
+          </div>
+
+          <div class="ultra-settings-ss-field">
+            <label class="ultra-settings-ss-label" for="ultra-settings-ss-value-type">Value Type</label>
+            <select id="ultra-settings-ss-value-type" class="ultra-settings-ss-input">
+              <option value="string">string</option>
+              <option value="integer">integer</option>
+              <option value="float">float</option>
+              <option value="boolean">boolean</option>
+              <option value="datetime">datetime</option>
+              <option value="array">array</option>
+            </select>
+          </div>
+
+          <div class="ultra-settings-ss-field" id="ultra-settings-ss-value-field">
+            <label class="ultra-settings-ss-label" for="ultra-settings-ss-value">Value</label>
+            <textarea id="ultra-settings-ss-value" class="ultra-settings-ss-input" rows="3"></textarea>
+          </div>
+
+          <div class="ultra-settings-ss-field" id="ultra-settings-ss-boolean-field" style="display:none;">
+            <label class="ultra-settings-ss-label">Value</label>
+            <label class="ultra-settings-ss-checkbox-label">
+              <input type="checkbox" id="ultra-settings-ss-boolean-value"> Enabled
+            </label>
+          </div>
+
+          <div class="ultra-settings-ss-field">
+            <label class="ultra-settings-ss-label" for="ultra-settings-ss-description">Description</label>
+            <textarea id="ultra-settings-ss-description" class="ultra-settings-ss-input" rows="2"></textarea>
+          </div>
+
+          <div class="ultra-settings-ss-errors" id="ultra-settings-ss-errors" style="display:none;"></div>
+
+          <div class="ultra-settings-ss-actions">
+            <button type="button" class="ultra-settings-ss-btn ultra-settings-ss-btn-cancel" id="ultra-settings-ss-cancel">Cancel</button>
+            <button type="button" class="ultra-settings-ss-btn ultra-settings-ss-btn-save" id="ultra-settings-ss-save">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  <% end %>
 </div>
 
 <script>

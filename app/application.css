@@ -690,3 +690,207 @@
   white-space: pre-wrap;
   line-height: 1.7;
 }
+
+
+/* ══════════════════════════════════════════
+   SUPER SETTINGS EDIT PANEL (slide-out)
+   ══════════════════════════════════════════ */
+.ultra-settings-ss-edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  color: var(--accent);
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.ultra-settings-ss-edit-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.ultra-settings-ss-panel-bg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  z-index: 100;
+}
+.ultra-settings-ss-panel-bg.open { display: block; }
+
+.ultra-settings-ss-panel {
+  position: fixed;
+  right: 0; top: 0; bottom: 0;
+  width: 480px;
+  max-width: 94vw;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-lg);
+  z-index: 101;
+  transform: translateX(100%);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border-light);
+}
+
+.ultra-settings-ss-panel-bg.open ~ .ultra-settings-ss-panel,
+.ultra-settings-ss-panel.open { transform: translateX(0); }
+
+/* ── Highlight animation after saving a setting ── */
+@keyframes ultra-settings-border-highlight {
+  0%   { box-shadow: 0 0 0 2px var(--accent); }
+  100% { box-shadow: 0 0 0 2px transparent; }
+}
+
+.ultra-settings-changed {
+  animation: ultra-settings-border-highlight 2s ease-out;
+}
+
+.ultra-settings-ss-external-link {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--accent);
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.ultra-settings-ss-external-link:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
+.ultra-settings-ss-loading {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.ultra-settings-ss-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ultra-settings-ss-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ultra-settings-ss-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.ultra-settings-ss-input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 0.8125rem;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  background: var(--bg-code);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+
+.ultra-settings-ss-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.ultra-settings-ss-input[readonly] {
+  opacity: 0.7;
+  cursor: default;
+}
+
+select.ultra-settings-ss-input {
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+textarea.ultra-settings-ss-input {
+  resize: vertical;
+  min-height: 36px;
+}
+
+.ultra-settings-ss-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.ultra-settings-ss-checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+}
+
+.ultra-settings-ss-errors {
+  padding: 10px 12px;
+  background: rgba(220,53,69,0.1);
+  border: 1px solid rgba(220,53,69,0.3);
+  border-radius: 6px;
+  color: #dc3545;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.ultra-settings-ss-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.ultra-settings-ss-btn {
+  padding: 8px 20px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  font-family: var(--font-ui);
+}
+
+.ultra-settings-ss-btn-cancel {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.ultra-settings-ss-btn-cancel:hover {
+  background: var(--bg-hover);
+}
+
+.ultra-settings-ss-btn-save {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.ultra-settings-ss-btn-save:hover {
+  filter: brightness(1.1);
+}
+
+.ultra-settings-ss-btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
