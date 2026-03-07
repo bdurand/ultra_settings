@@ -35,7 +35,8 @@ module UltraSettings
         end
       end
 
-      [200, {"content-type" => "text/html; charset=utf8"}, [webview.render_settings(request)]]
+      locale = resolve_locale(request)
+      [200, {"content-type" => "text/html; charset=utf8"}, [webview.render_settings(request, locale: locale)]]
     end
 
     private
@@ -94,6 +95,54 @@ module UltraSettings
 
       JSON.parse(body)
     rescue JSON::ParserError
+      nil
+    end
+
+    # Determine the locale for a request. Precedence:
+    # 1. ?lang= query parameter
+    # 2. ultra_settings_locale cookie (set by the language picker)
+    # 3. Accept-Language header
+    # 4. Default locale
+    def resolve_locale(request)
+      available = UltraSettings::I18n.available_locales
+
+      # 1. Explicit query parameter
+      lang = request.params["lang"] if request.respond_to?(:params)
+      return lang if lang && available.include?(lang)
+
+      # 2. Cookie
+      cookie = request.cookies["ultra_settings_locale"] if request.respond_to?(:cookies)
+      return cookie if cookie && available.include?(cookie)
+
+      # 3. Accept-Language header
+      accept = request.env["HTTP_ACCEPT_LANGUAGE"] if request.respond_to?(:env)
+      locale_from_accept_language(accept.to_s, available) || UltraSettings::I18n::DEFAULT_LOCALE
+    end
+
+    # Parse the Accept-Language header and return the best matching locale.
+    def locale_from_accept_language(header, available)
+      return nil if header.nil? || header.empty?
+
+      # Parse tags with optional quality values, e.g. "en-US,en;q=0.9,fr;q=0.8"
+      tags = header.split(",").map { |entry|
+        parts = entry.strip.split(";")
+        tag = parts[0].to_s.strip.downcase.tr("_", "-")
+        q = 1.0
+        parts[1..-1].each do |p|
+          if p.strip.start_with?("q=")
+            q = p.strip.sub("q=", "").to_f
+          end
+        end
+        [tag, q]
+      }.sort_by { |_, q| -q }
+
+      tags.each do |tag, _|
+        return tag if available.include?(tag)
+        # Try language subtag
+        lang = tag.split("-").first
+        return lang if available.include?(lang)
+      end
+
       nil
     end
   end

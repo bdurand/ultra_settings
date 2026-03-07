@@ -1,4 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // ── i18n helper ──
+  const _i18n = window.__ultraSettingsI18n || {};
+  const t = (key) => _i18n[key] || key;
+
   const sidebar = document.getElementById("ultra-settings-sidebar");
   const sidebarOverlay = document.getElementById("ultra-settings-sidebar-overlay");
   const hamburger = document.getElementById("ultra-settings-hamburger");
@@ -96,8 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // ── Detail Panel ──
   const openPanel = (name, value, type, isSecret) => {
     if (dpTitle) dpTitle.textContent = name;
-    if (dpValue) dpValue.textContent = isSecret === "true" ? "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022 (secret)" : value;
-    if (dpMeta) dpMeta.innerHTML = "Type: <span>" + escapeHtml(type.toUpperCase()) + "</span>" + (isSecret === "true" ? ' \u00B7 <span style="color:var(--badge-secret-text)">SECRET</span>' : "");
+    if (dpValue) dpValue.textContent = isSecret === "true" ? t("detail.secret_value") : value;
+    if (dpMeta) dpMeta.innerHTML = t("detail.type_label") + " <span>" + escapeHtml(type.toUpperCase()) + "</span>" + (isSecret === "true" ? ' \u00B7 <span style="color:var(--badge-secret-text)">' + t("detail.secret_badge") + "</span>" : "");
     if (panelBg) panelBg.classList.add("open");
     if (detailPanel) detailPanel.classList.add("open");
   };
@@ -271,16 +275,16 @@ document.addEventListener("DOMContentLoaded", () => {
         ssBooleanField.style.display = "none";
         if (type === "array") {
           ssValueTextarea.rows = 6;
-          ssValueTextarea.placeholder = "One entry per line";
+          ssValueTextarea.placeholder = t("edit.placeholder_array");
         } else if (type === "integer") {
           ssValueTextarea.rows = 1;
-          ssValueTextarea.placeholder = "Enter an integer";
+          ssValueTextarea.placeholder = t("edit.placeholder_integer");
         } else if (type === "float") {
           ssValueTextarea.rows = 1;
-          ssValueTextarea.placeholder = "Enter a number";
+          ssValueTextarea.placeholder = t("edit.placeholder_float");
         } else if (type === "datetime") {
           ssValueTextarea.rows = 1;
-          ssValueTextarea.placeholder = "Enter a datetime (e.g. 2025-01-15T10:30:00Z)";
+          ssValueTextarea.placeholder = t("edit.placeholder_datetime");
         } else {
           ssValueTextarea.rows = 3;
           ssValueTextarea.placeholder = "";
@@ -320,7 +324,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ssForm.style.display = "none";
       ssLoading.style.display = "";
       ssSaveBtn.disabled = false;
-      ssSaveBtn.textContent = "Save";
+      ssSaveBtn.textContent = t("edit.save");
 
       // Build and show external link if runtime_settings_url is configured
       if (ssExternalLink && ssRuntimeUrlTemplate) {
@@ -378,7 +382,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       ssSaveBtn.disabled = true;
-      ssSaveBtn.textContent = "Saving\u2026";
+      ssSaveBtn.textContent = t("edit.saving");
       ssErrors.style.display = "none";
 
       saveSetting(params, (result) => {
@@ -392,9 +396,9 @@ document.addEventListener("DOMContentLoaded", () => {
           window.location.reload();
         } else {
           ssSaveBtn.disabled = false;
-          ssSaveBtn.textContent = "Save";
+          ssSaveBtn.textContent = t("edit.save");
 
-          let errorMsg = "Failed to save setting.";
+          let errorMsg = t("edit.save_error");
           if (result.data && result.data.errors) {
             const msgs = [];
             Object.entries(result.data.errors).forEach(([field, errs]) => {
@@ -430,6 +434,22 @@ document.addEventListener("DOMContentLoaded", () => {
           btn.dataset.ssDefaultDescription || ""
         );
       }
+    });
+  }
+
+  // ── Language Picker ──
+  const localePicker = document.getElementById("ultra-settings-locale-select");
+  if (localePicker) {
+    localePicker.addEventListener("change", () => {
+      const locale = localePicker.value;
+      // Persist the choice in a cookie (accessible server-side)
+      document.cookie = "ultra_settings_locale=" + encodeURIComponent(locale) + ";path=/;max-age=31536000;SameSite=Lax";
+      // Also store in localStorage for client-side persistence
+      try { localStorage.setItem("ultra_settings_locale", locale); } catch(e) {}
+      // Reload with lang query param so server picks it up immediately
+      const url = new URL(window.location.href);
+      url.searchParams.set("lang", locale);
+      window.location.href = url.toString();
     });
   }
 });

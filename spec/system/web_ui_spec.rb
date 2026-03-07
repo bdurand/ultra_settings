@@ -76,6 +76,13 @@ RSpec.describe "Web UI", type: :system do
     JS
   end
 
+  describe "HTML direction attribute" do
+    it "sets dir='ltr' on the html element for English locale" do
+      visit "/"
+      expect(page.find("html")["dir"]).to eq("ltr")
+    end
+  end
+
   describe "filtering configurations" do
     it "filters configurations in the sidebar by typing in the search box" do
       visit "/"

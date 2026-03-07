@@ -73,6 +73,40 @@
   margin-top: 4px;
 }
 
+/* Language Picker */
+.ultra-settings-locale-picker {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ultra-settings-locale-label {
+  font-size: 0.625rem;
+  color: var(--text-sidebar-dim);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ultra-settings-locale-select {
+  font-size: 0.6875rem;
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-input, var(--bg-card));
+  color: var(--text-sidebar);
+  cursor: pointer;
+  font-weight: 600;
+  min-width: 0;
+}
+
+.ultra-settings-locale-select:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
 /* Sidebar Search */
 .ultra-settings-sidebar-search {
   padding: 14px 16px 10px;
@@ -81,7 +115,7 @@
 
 .ultra-settings-sidebar-search svg {
   position: absolute;
-  left: 28px;
+  inset-inline-start: 28px;
   top: 50%;
   transform: translateY(-50%);
   width: 14px;
@@ -92,7 +126,8 @@
 
 .ultra-settings-sidebar-search input {
   width: 100%;
-  padding: 8px 12px 8px 34px;
+  padding: 8px 12px;
+  padding-inline-start: 34px;
   background: var(--bg-search);
   border: 1px solid transparent;
   border-radius: 6px;
@@ -185,7 +220,7 @@
 .ultra-settings-hamburger {
   display: none;
   position: fixed;
-  top: 14px; left: 14px;
+  top: 14px; inset-inline-start: 14px;
   z-index: 30;
   width: 40px; height: 40px;
   border-radius: 8px;
@@ -207,7 +242,7 @@
 
 @media (max-width: 768px) {
   .ultra-settings-hamburger { display: flex; }
-  .ultra-settings-sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); }
+  .ultra-settings-sidebar { position: fixed; inset-inline-start: 0; top: 0; bottom: 0; transform: translateX(-100%); }
   .ultra-settings-sidebar.open { transform: translateX(0); }
 }
 
@@ -386,7 +421,7 @@
 }
 
 .ultra-settings-field-value-wrap {
-  margin-left: auto;
+  margin-inline-start: auto;
   flex-shrink: 0;
   max-width: 50%;
 }
@@ -493,7 +528,7 @@
 .ultra-settings-source-val.secret { color: var(--text-tertiary); letter-spacing: 2px; }
 
 .ultra-settings-source-badge {
-  margin-left: auto;
+  margin-inline-start: auto;
   font-size: 0.6875rem;
   font-weight: 600;
   white-space: nowrap;
@@ -506,7 +541,7 @@
 .ultra-settings-edit-link {
   color: var(--accent);
   text-decoration: none;
-  margin-left: 0.5rem;
+  margin-inline-start: 0.5rem;
   opacity: 0.7;
   transition: opacity 0.2s ease;
   display: inline-flex;
@@ -533,7 +568,7 @@
 
 .ultra-settings-detail-panel {
   position: fixed;
-  right: 0; top: 0; bottom: 0;
+  inset-inline-end: 0; top: 0; bottom: 0;
   width: 480px;
   max-width: 94vw;
   background: var(--bg-card);
@@ -543,7 +578,7 @@
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  border-left: 1px solid var(--border-light);
+  border-inline-start: 1px solid var(--border-light);
 }
 
 .ultra-settings-panel-bg.open ~ .ultra-settings-detail-panel,
@@ -723,7 +758,7 @@
 
 .ultra-settings-ss-panel {
   position: fixed;
-  right: 0; top: 0; bottom: 0;
+  inset-inline-end: 0; top: 0; bottom: 0;
   width: 480px;
   max-width: 94vw;
   background: var(--bg-card);
@@ -733,7 +768,7 @@
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  border-left: 1px solid var(--border-light);
+  border-inline-start: 1px solid var(--border-light);
 }
 
 .ultra-settings-ss-panel-bg.open ~ .ultra-settings-ss-panel,
@@ -817,7 +852,7 @@ select.ultra-settings-ss-input {
   cursor: pointer;
   -webkit-appearance: none;
   appearance: none;
-  padding-right: 28px;
+  padding-inline-end: 28px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
@@ -894,3 +929,31 @@ textarea.ultra-settings-ss-input {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* ══════════════════════════════════════════
+   RTL OVERRIDES
+   ══════════════════════════════════════════
+   CSS logical properties handle most LTR↔RTL
+   mirroring automatically. The rules below cover
+   transform and background-position values that
+   logical properties cannot express.
+   ══════════════════════════════════════════ */
+
+/* Mobile sidebar: slides in from the inline-start edge */
+@media (max-width: 768px) {
+  [dir="rtl"] .ultra-settings-sidebar { transform: translateX(100%); }
+  [dir="rtl"] .ultra-settings-sidebar.open { transform: translateX(0); }
+}
+
+/* Detail panel: slides in from the inline-end edge */
+[dir="rtl"] .ultra-settings-detail-panel { transform: translateX(-100%); }
+[dir="rtl"] .ultra-settings-panel-bg.open ~ .ultra-settings-detail-panel,
+[dir="rtl"] .ultra-settings-detail-panel.open { transform: translateX(0); }
+
+/* SuperSettings panel: slides in from the inline-end edge */
+[dir="rtl"] .ultra-settings-ss-panel { transform: translateX(-100%); }
+[dir="rtl"] .ultra-settings-ss-panel-bg.open ~ .ultra-settings-ss-panel,
+[dir="rtl"] .ultra-settings-ss-panel.open { transform: translateX(0); }
+
+/* Select dropdown arrow */
+[dir="rtl"] select.ultra-settings-ss-input { background-position: left 10px center; }

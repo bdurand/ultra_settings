@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Significant rewrite of the web UI.
 - Added support for direct integration of editing SuperSettings settings from the web UI when `super_settings_editing` is enabled.
+- Internationalized the web UI with support for multiple languages.
 
 ## 2.8.1
 
