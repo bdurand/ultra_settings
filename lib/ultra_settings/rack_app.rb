@@ -55,7 +55,7 @@ module UltraSettings
 
       setting = ::SuperSettings::RestAPI.show(key)
       if setting
-        json_response(200, setting)
+        json_response(200, normalize_setting(setting))
       else
         json_response(404, {error: "Setting not found"})
       end
@@ -82,6 +82,15 @@ module UltraSettings
 
     def json_response(status, body)
       [status, {"content-type" => "application/json; charset=utf-8", "cache-control" => "no-cache"}, [body.to_json]]
+    end
+
+    # Ensure Time values are serialized as ISO 8601 strings.
+    def normalize_setting(setting)
+      return setting unless setting.is_a?(Hash)
+
+      setting.each_with_object({}) do |(k, v), hash|
+        hash[k] = v.is_a?(Time) ? v.utc.iso8601 : v
+      end
     end
 
     def parse_query(query_string)

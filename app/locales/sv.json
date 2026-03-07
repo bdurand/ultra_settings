@@ -1,0 +1,68 @@
+{
+  "page.title": "Programkonfiguration",
+  "page.brand_title": "UltraSettings",
+  "page.brand_subtitle": "Konfigurationsinspektör",
+
+  "sidebar.open_nav_menu": "Öppna navigeringsmeny",
+  "sidebar.config_list": "Konfigurationslista",
+  "sidebar.filter_placeholder": "Filtrera konfigurationer och fält…",
+  "sidebar.filter_aria_label": "Filtrera konfigurationer",
+  "sidebar.configurations_label": "Konfigurationer",
+  "sidebar.config_nav": "Konfigurationsnavigering",
+
+  "field.secret": "Hemlig",
+  "field.static": "Statisk",
+  "field.nil": "nil",
+  "field.click_to_expand": "Klicka för att expandera",
+  "field.not_set": "inte angivet",
+
+  "source.env": "ENV",
+  "source.setting": "INSTÄLLNING",
+  "source.yaml": "YAML",
+  "source.default": "STANDARD",
+  "source.active": "● Aktiv",
+  "source.overridden": "Åsidosatt",
+
+  "detail.field_detail": "Fältdetaljer",
+  "detail.close_panel": "Stäng panel",
+  "detail.type_label": "Typ:",
+  "detail.secret_badge": "HEMLIG",
+  "detail.secret_value": "•••••••• (hemlig)",
+
+  "config.file_not_found": "(hittades inte)",
+  "config.edit_tooltip": "Redigera ${name}",
+
+  "edit.title": "Redigera runtime-inställning",
+  "edit.open_dashboard": "Öppna i inställningspanelen ↗",
+  "edit.loading": "Läser in inställning…",
+  "edit.close_panel": "Stäng panel",
+  "edit.edit_setting": "Redigera runtime-inställning",
+
+  "edit.key_label": "Nyckel",
+  "edit.value_type_label": "Värdetyp",
+  "edit.value_label": "Värde",
+  "edit.description_label": "Beskrivning",
+
+  "edit.type_string": "sträng",
+  "edit.type_integer": "heltal",
+  "edit.type_float": "decimaltal",
+  "edit.type_boolean": "boolesk",
+  "edit.type_datetime": "datum och tid",
+  "edit.type_array": "array",
+
+  "edit.enabled": "Aktiverad",
+  "edit.cancel": "Avbryt",
+  "edit.save": "Spara",
+  "edit.saving": "Sparar…",
+
+  "edit.placeholder_array": "En post per rad",
+  "edit.placeholder_integer": "Ange ett heltal",
+  "edit.placeholder_float": "Ange ett tal",
+  "edit.placeholder_datetime": "Ange datum och tid (t.ex. 2025-01-15T10:30:00Z)",
+  "edit.save_error": "Det gick inte att spara inställningen.",
+
+  "language.label": "Språk",
+  "language.name": "Svenska",
+
+  "dir": "ltr"
+}

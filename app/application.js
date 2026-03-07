@@ -16,6 +16,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const dpValue = document.getElementById("ultra-settings-dp-value");
   const dpMeta = document.getElementById("ultra-settings-dp-meta");
   const dpClose = document.getElementById("ultra-settings-dp-close");
+  const languageMenu = document.getElementById("ultra-settings-language-menu");
+  const languageOptions = document.querySelectorAll(".ultra-settings-language-option");
+
+  const closeLanguageMenu = () => {
+    if (languageMenu) languageMenu.removeAttribute("open");
+  };
 
   if (!sidebar || !mainContent) return;
 
@@ -60,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeSidebar = () => {
     if (sidebar) sidebar.classList.remove("open");
     if (sidebarOverlay) sidebarOverlay.classList.remove("open");
+    closeLanguageMenu();
   };
 
   if (hamburger) hamburger.addEventListener("click", () => {
@@ -146,6 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ── Keyboard Shortcuts ──
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
+      closeLanguageMenu();
       closePanel();
       // Close SuperSettings edit panel if open
       const ssBg = document.getElementById("ultra-settings-ss-panel-bg");
@@ -191,8 +199,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   if (changedKey) {
     sessionStorage.removeItem("ultra-settings-changed-key");
+    const changedSection = sessionStorage.getItem("ultra-settings-changed-section");
+    sessionStorage.removeItem("ultra-settings-changed-section");
     // Find the edit button with the matching key and highlight its field card
-    const editBtn = document.querySelector('.ultra-settings-ss-edit-btn[data-ss-key="' + CSS.escape(changedKey) + '"]');
+    const scope = (changedSection && document.getElementById(changedSection)) || document;
+    const editBtn = scope.querySelector('.ultra-settings-ss-edit-btn[data-ss-key="' + CSS.escape(changedKey) + '"]');
     if (editBtn) {
       const card = editBtn.closest(".ultra-settings-field-card");
       if (card) {
@@ -217,8 +228,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const ssValueTypeSelect = document.getElementById("ultra-settings-ss-value-type");
     const ssValueTextarea = document.getElementById("ultra-settings-ss-value");
     const ssValueField = document.getElementById("ultra-settings-ss-value-field");
+    const ssIntegerField = document.getElementById("ultra-settings-ss-integer-field");
+    const ssIntegerInput = document.getElementById("ultra-settings-ss-integer-value");
+    const ssFloatField = document.getElementById("ultra-settings-ss-float-field");
+    const ssFloatInput = document.getElementById("ultra-settings-ss-float-value");
     const ssBooleanField = document.getElementById("ultra-settings-ss-boolean-field");
     const ssBooleanCheckbox = document.getElementById("ultra-settings-ss-boolean-value");
+    const ssDatetimeField = document.getElementById("ultra-settings-ss-datetime-field");
+    const ssDatetimeInput = document.getElementById("ultra-settings-ss-datetime-value");
+    const ssTzLabel = document.getElementById("ultra-settings-ss-tz-label");
     const ssDescriptionInput = document.getElementById("ultra-settings-ss-description");
     const ssSaveBtn = document.getElementById("ultra-settings-ss-save");
     const ssCancelBtn = document.getElementById("ultra-settings-ss-cancel");
@@ -265,30 +283,36 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
+    // Get the local timezone name for display
+    const localTz = (() => {
+      try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e) { return "UTC"; }
+    })();
+    if (ssTzLabel) ssTzLabel.textContent = localTz;
+
     // Show/hide value fields based on type
     const updateValueField = (type) => {
+      ssValueField.style.display = "none";
+      ssIntegerField.style.display = "none";
+      ssFloatField.style.display = "none";
+      ssBooleanField.style.display = "none";
+      ssDatetimeField.style.display = "none";
+
       if (type === "boolean") {
-        ssValueField.style.display = "none";
         ssBooleanField.style.display = "";
+      } else if (type === "integer") {
+        ssIntegerField.style.display = "";
+      } else if (type === "float") {
+        ssFloatField.style.display = "";
+      } else if (type === "datetime") {
+        ssDatetimeField.style.display = "";
+      } else if (type === "array") {
+        ssValueField.style.display = "";
+        ssValueTextarea.rows = 6;
+        ssValueTextarea.placeholder = t("edit.placeholder_array");
       } else {
         ssValueField.style.display = "";
-        ssBooleanField.style.display = "none";
-        if (type === "array") {
-          ssValueTextarea.rows = 6;
-          ssValueTextarea.placeholder = t("edit.placeholder_array");
-        } else if (type === "integer") {
-          ssValueTextarea.rows = 1;
-          ssValueTextarea.placeholder = t("edit.placeholder_integer");
-        } else if (type === "float") {
-          ssValueTextarea.rows = 1;
-          ssValueTextarea.placeholder = t("edit.placeholder_float");
-        } else if (type === "datetime") {
-          ssValueTextarea.rows = 1;
-          ssValueTextarea.placeholder = t("edit.placeholder_datetime");
-        } else {
-          ssValueTextarea.rows = 3;
-          ssValueTextarea.placeholder = "";
-        }
+        ssValueTextarea.rows = 3;
+        ssValueTextarea.placeholder = "";
       }
     };
 
@@ -296,10 +320,66 @@ document.addEventListener("DOMContentLoaded", () => {
       updateValueField(ssValueTypeSelect.value);
     });
 
-    // Get the current value from the form
+    // Enforce integer-only input: strip non-integer characters as the user types
+    if (ssIntegerInput) {
+      ssIntegerInput.addEventListener("input", () => {
+        const raw = ssIntegerInput.value;
+        // Allow empty, sole minus sign while typing, or valid integer
+        if (raw === "" || raw === "-") return;
+        const parsed = parseInt(raw, 10);
+        if (isNaN(parsed)) {
+          ssIntegerInput.value = "";
+        } else if (String(parsed) !== raw) {
+          ssIntegerInput.value = parsed;
+        }
+      });
+    }
+
+    // Convert the datetime-local input value (local time) to a UTC ISO 8601 string
+    const datetimeToISO = () => {
+      const localVal = ssDatetimeInput.value; // e.g. "2025-01-15T10:30:00"
+      if (!localVal) return "";
+      const d = new Date(localVal);
+      if (isNaN(d.getTime())) return localVal;
+      return d.toISOString();
+    };
+
+    // Parse a UTC ISO 8601 string and populate the datetime-local input in local time
+    const populateDatetime = (isoStr) => {
+      if (!isoStr) {
+        ssDatetimeInput.value = "";
+        return;
+      }
+      let str = String(isoStr).trim();
+      // Normalize Ruby Time#to_json format ("2026-03-20 01:07:56 UTC") to ISO 8601
+      str = str.replace(/ UTC$/, "Z").replace(/ /, "T");
+      // Ensure the string is treated as UTC if no timezone indicator present
+      if (!str.endsWith("Z") && !/[+-]\d{2}:?\d{2}$/.test(str)) {
+        str += "Z";
+      }
+      const d = new Date(str);
+      if (isNaN(d.getTime())) {
+        ssDatetimeInput.value = "";
+        return;
+      }
+      // Format as local datetime-local value: YYYY-MM-DDTHH:MM:SS
+      const pad = (n) => String(n).padStart(2, "0");
+      ssDatetimeInput.value = d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) +
+        "T" + pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+    };
+
     const getFormValue = () => {
       if (ssValueTypeSelect.value === "boolean") {
         return ssBooleanCheckbox.checked ? "true" : "false";
+      }
+      if (ssValueTypeSelect.value === "integer") {
+        return ssIntegerInput.value;
+      }
+      if (ssValueTypeSelect.value === "float") {
+        return ssFloatInput.value;
+      }
+      if (ssValueTypeSelect.value === "datetime") {
+        return datetimeToISO();
       }
       return ssValueTextarea.value;
     };
@@ -315,6 +395,9 @@ document.addEventListener("DOMContentLoaded", () => {
       ssKeyInput.value = key;
       if (ssTitle) ssTitle.textContent = key;
       ssValueTextarea.value = "";
+      ssIntegerInput.value = "";
+      ssFloatInput.value = "";
+      ssDatetimeInput.value = "";
       ssBooleanCheckbox.checked = false;
       ssDescriptionInput.value = defaultDescription || "";
       ssValueTypeSelect.value = defaultType || "string";
@@ -350,6 +433,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
           if (setting.value_type === "boolean") {
             ssBooleanCheckbox.checked = (setting.value === true || setting.value === "true");
+          } else if (setting.value_type === "integer") {
+            ssIntegerInput.value = (setting.value != null) ? String(setting.value) : "";
+          } else if (setting.value_type === "float") {
+            ssFloatInput.value = (setting.value != null) ? String(setting.value) : "";
+          } else if (setting.value_type === "datetime") {
+            populateDatetime((setting.value != null) ? String(setting.value) : "");
           } else if (setting.value_type === "array" && Array.isArray(setting.value)) {
             ssValueTextarea.value = setting.value.join("\n");
           } else {
@@ -393,6 +482,9 @@ document.addEventListener("DOMContentLoaded", () => {
             sessionStorage.setItem("ultra-settings-scroll", mainContent.scrollTop);
           }
           sessionStorage.setItem("ultra-settings-changed-key", params.key);
+          if (ssContainer._activeSectionId) {
+            sessionStorage.setItem("ultra-settings-changed-section", ssContainer._activeSectionId);
+          }
           window.location.reload();
         } else {
           ssSaveBtn.disabled = false;
@@ -428,6 +520,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const btn = e.target.closest(".ultra-settings-ss-edit-btn");
       if (btn) {
         e.preventDefault();
+        const section = btn.closest(".ultra-settings-config-section");
+        ssContainer._activeSectionId = section ? section.id : null;
         openSsPanel(
           btn.dataset.ssKey || "",
           btn.dataset.ssDefaultType || "string",
@@ -437,19 +531,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ── Language Picker ──
-  const localePicker = document.getElementById("ultra-settings-locale-select");
-  if (localePicker) {
-    localePicker.addEventListener("change", () => {
-      const locale = localePicker.value;
-      // Persist the choice in a cookie (accessible server-side)
-      document.cookie = "ultra_settings_locale=" + encodeURIComponent(locale) + ";path=/;max-age=31536000;SameSite=Lax";
-      // Also store in localStorage for client-side persistence
-      try { localStorage.setItem("ultra_settings_locale", locale); } catch(e) {}
-      // Reload with lang query param so server picks it up immediately
-      const url = new URL(window.location.href);
-      url.searchParams.set("lang", locale);
-      window.location.href = url.toString();
+  // ── Language Menu ──
+  if (languageMenu && languageOptions.length > 0) {
+    languageOptions.forEach((option) => {
+      option.addEventListener("click", () => {
+        const locale = option.dataset.locale;
+        if (!locale) return;
+
+        closeLanguageMenu();
+
+        // Persist the choice in a cookie (accessible server-side)
+        document.cookie = "ultra_settings_locale=" + encodeURIComponent(locale) + ";path=/;max-age=31536000;SameSite=Lax";
+
+        // Also store in localStorage for client-side persistence
+        try { localStorage.setItem("ultra_settings_locale", locale); } catch(e) {}
+
+        // Reload with lang query param so server picks it up immediately
+        const url = new URL(window.location.href);
+        url.searchParams.set("lang", locale);
+        window.location.href = url.toString();
+      });
+    });
+
+    document.addEventListener("click", (e) => {
+      if (languageMenu.hasAttribute("open") && !e.target.closest("#ultra-settings-language-menu")) {
+        closeLanguageMenu();
+      }
     });
   }
 });
