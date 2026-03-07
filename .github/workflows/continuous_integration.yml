@@ -30,6 +30,7 @@ jobs:
             appraisal: "without_super_settings"
           - ruby: "3.0"
           - ruby: "2.5"
+            appraisal: "without_super_settings"
     steps:
     - uses: actions/checkout@v4
     - name: Set up Ruby ${{ matrix.ruby }}

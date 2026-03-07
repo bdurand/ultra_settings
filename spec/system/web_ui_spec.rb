@@ -222,8 +222,8 @@ RSpec.describe "Web UI", type: :system do
       end
 
       # The SuperSettings edit panel should open
+      expect(page).to have_css("#ultra-settings-ss-panel.open", wait: 5)
       ss_panel = find("#ultra-settings-ss-panel")
-      expect(ss_panel[:class]).to include("open")
 
       # Wait for the form to appear (loading state completes)
       within ss_panel do
@@ -262,15 +262,14 @@ RSpec.describe "Web UI", type: :system do
         end
       end
 
-      ss_panel = find("#ultra-settings-ss-panel")
-      expect(ss_panel[:class]).to include("open")
+      expect(page).to have_css("#ultra-settings-ss-panel.open", wait: 5)
 
-      within ss_panel do
+      within "#ultra-settings-ss-panel" do
         expect(page).to have_css("#ultra-settings-ss-form", visible: true, wait: 5)
         click_button "Cancel"
       end
 
-      expect(ss_panel[:class]).not_to include("open")
+      expect(page).not_to have_css("#ultra-settings-ss-panel.open")
 
       # Nothing should have been saved
       setting = SuperSettings::RestAPI.show("my_service.timeout")
