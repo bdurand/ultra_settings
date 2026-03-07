@@ -1,6 +1,8 @@
 <%= style_tag %>
 
 <% configurations = UltraSettings.__configurations__.reject { |config| config.class.fields.empty? }.sort_by { |config| config.class.name.downcase } %>
+<% locales = UltraSettings::I18n.available_locales %>
+<% current_locale_name = UltraSettings::I18n.t("language.name", locale: locale) %>
 
 <div class="ultra-settings"<% if can_edit_super_settings %> data-ss-editing="true"<% end %><% raw_url = UltraSettings.instance_variable_get(:@runtime_settings_url).to_s %><% unless raw_url.empty? %> data-runtime-settings-url="<%= html_escape(raw_url) %>"<% end %>>
   <button class="ultra-settings-hamburger" id="ultra-settings-hamburger" aria-label="<%= t('sidebar.open_nav_menu') %>">
@@ -12,16 +14,6 @@
     <div class="ultra-settings-sidebar-brand">
       <h1 class="ultra-settings-brand-title"><%= t('page.brand_title') %></h1>
       <div class="ultra-settings-brand-subtitle"><%= t('page.brand_subtitle') %></div>
-      <% if UltraSettings::I18n.available_locales.size > 1 %>
-        <div class="ultra-settings-locale-picker">
-          <label for="ultra-settings-locale-select" class="ultra-settings-locale-label"><%= t('language.label') %></label>
-          <select id="ultra-settings-locale-select" class="ultra-settings-locale-select">
-            <% UltraSettings::I18n.available_locales.each do |loc| %>
-              <option value="<%= loc %>"<%= ' selected' if loc == locale %>><%= html_escape(UltraSettings::I18n.t('language.name', locale: loc)) %></option>
-            <% end %>
-          </select>
-        </div>
-      <% end %>
     </div>
 
     <div class="ultra-settings-sidebar-search">
@@ -58,6 +50,53 @@
         </div>
       <% end %>
     </nav>
+
+    <% if locales.size > 1 %>
+      <div class="ultra-settings-sidebar-footer">
+        <details class="ultra-settings-language-menu" id="ultra-settings-language-menu">
+          <summary class="ultra-settings-language-trigger" aria-label="<%= t('language.label') %>" aria-haspopup="menu">
+            <span class="ultra-settings-language-trigger-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M3.6 9h16.8"></path>
+                <path d="M3.6 15h16.8"></path>
+                <path d="M12 3a14 14 0 0 1 0 18"></path>
+                <path d="M12 3a14 14 0 0 0 0 18"></path>
+              </svg>
+            </span>
+            <span class="ultra-settings-language-trigger-current"><%= html_escape(current_locale_name) %></span>
+            <span class="ultra-settings-language-trigger-caret" aria-hidden="true">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m4 6 4 4 4-4"></path>
+              </svg>
+            </span>
+          </summary>
+
+          <menu class="ultra-settings-language-popup" role="menu" aria-label="<%= t('language.label') %>">
+            <% locales.each do |loc| %>
+              <% language_name = UltraSettings::I18n.t('language.name', locale: loc) %>
+              <% active = loc == locale %>
+              <li>
+                <button
+                  type="button"
+                  class="ultra-settings-language-option<%= ' is-active' if active %>"
+                  role="menuitemradio"
+                  aria-checked="<%= active %>"
+                  data-locale="<%= html_escape(loc) %>"
+                >
+                  <span class="ultra-settings-language-option-name"><%= html_escape(language_name) %></span>
+                  <span class="ultra-settings-language-option-check" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m3.5 8 3 3 6-6"></path>
+                    </svg>
+                  </span>
+                </button>
+              </li>
+            <% end %>
+          </menu>
+        </details>
+      </div>
+    <% end %>
   </aside>
 
   <main class="ultra-settings-main" id="ultra-settings-main" role="main">

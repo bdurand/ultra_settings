@@ -83,6 +83,26 @@ RSpec.describe "Web UI", type: :system do
     end
   end
 
+  describe "language menu" do
+    it "switches locales from the sidebar footer popup" do
+      visit "/?lang=en"
+
+      expect(page).to have_css("html[lang='en'][dir='ltr']")
+      expect(page).to have_css(".ultra-settings-sidebar-footer .ultra-settings-language-trigger-current", text: "English")
+      expect(page).to have_no_css("#ultra-settings-locale-select")
+
+      find(".ultra-settings-language-trigger").click
+
+      within ".ultra-settings-language-popup" do
+        find(".ultra-settings-language-option", text: "Français").click
+      end
+
+      expect(page).to have_css("html[lang='fr'][dir='ltr']")
+      expect(page).to have_css(".ultra-settings-sidebar-footer .ultra-settings-language-trigger-current", text: "Français")
+      expect(page).to have_css(".ultra-settings-brand-subtitle", text: /inspecteur de configuration/i)
+    end
+  end
+
   describe "filtering configurations" do
     it "filters configurations in the sidebar by typing in the search box" do
       visit "/"

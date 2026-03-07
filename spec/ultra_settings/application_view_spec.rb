@@ -10,6 +10,15 @@ RSpec.describe UltraSettings::ApplicationView do
     expect(html).to match(/<script>.*<\/script>/m)
   end
 
+  it "renders the language menu in the sidebar footer instead of a select" do
+    html = UltraSettings::ApplicationView.new.render
+    expect(html).to include('id="ultra-settings-language-menu"')
+    expect(html).to include('class="ultra-settings-language-popup"')
+    expect(html).to match(/ultra-settings-sidebar-nav.*ultra-settings-sidebar-footer/m)
+    expect(html).not_to include('id="ultra-settings-locale-select"')
+    expect(html).not_to include("ultra-settings-language-option-code")
+  end
+
   it "renders the configuration CSS" do
     html = UltraSettings::ApplicationView.new.render
     expect(html).to match(/<style type="text\/css">.*<\/style>/m)

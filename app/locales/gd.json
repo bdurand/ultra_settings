@@ -1,0 +1,68 @@
+{
+  "page.title": "Rèiteachadh an aplacaid",
+  "page.brand_title": "UltraSettings",
+  "page.brand_subtitle": "Neach-sgrùdaidh rèiteachaidh",
+
+  "sidebar.open_nav_menu": "Fosgail clàr-seòlaidh",
+  "sidebar.config_list": "Liosta rèiteachaidhean",
+  "sidebar.filter_placeholder": "Criathraich rèiteachaidhean is raointean…",
+  "sidebar.filter_aria_label": "Criathraich rèiteachaidhean",
+  "sidebar.configurations_label": "Rèiteachaidhean",
+  "sidebar.config_nav": "Seòladh rèiteachaidhean",
+
+  "field.secret": "Dìomhair",
+  "field.static": "Statach",
+  "field.nil": "nil",
+  "field.click_to_expand": "Briog gus leudachadh",
+  "field.not_set": "gun suidheachadh",
+
+  "source.env": "ENV",
+  "source.setting": "SUIDHEACHADH",
+  "source.yaml": "YAML",
+  "source.default": "BUN-ROGHAILTE",
+  "source.active": "● Gnìomhach",
+  "source.overridden": "Air a chur na àite",
+
+  "detail.field_detail": "Mion-fhiosrachadh an raoin",
+  "detail.close_panel": "Dùin am pannal",
+  "detail.type_label": "Seòrsa:",
+  "detail.secret_badge": "DÌOMHAIR",
+  "detail.secret_value": "•••••••• (dìomhair)",
+
+  "config.file_not_found": "(cha deach a lorg)",
+  "config.edit_tooltip": "Deasaich ${name}",
+
+  "edit.title": "Deasaich suidheachadh ruith-ùine",
+  "edit.open_dashboard": "Fosgail ann am deas-bhòrd nan suidheachaidhean ↗",
+  "edit.loading": "A’ luchdadh suidheachaidh…",
+  "edit.close_panel": "Dùin am pannal",
+  "edit.edit_setting": "Deasaich suidheachadh ruith-ùine",
+
+  "edit.key_label": "Iuchair",
+  "edit.value_type_label": "Seòrsa luach",
+  "edit.value_label": "Luach",
+  "edit.description_label": "Tuairisgeul",
+
+  "edit.type_string": "sreang",
+  "edit.type_integer": "àireamh slàn",
+  "edit.type_float": "àireamh dheicheach",
+  "edit.type_boolean": "booleach",
+  "edit.type_datetime": "ceann-latha is àm",
+  "edit.type_array": "eagar",
+
+  "edit.enabled": "An comas",
+  "edit.cancel": "Sguir dheth",
+  "edit.save": "Sàbhail",
+  "edit.saving": "A’ sàbhaladh…",
+
+  "edit.placeholder_array": "Aon inntrigeadh gach loidhne",
+  "edit.placeholder_integer": "Cuir a-steach àireamh slàn",
+  "edit.placeholder_float": "Cuir a-steach àireamh",
+  "edit.placeholder_datetime": "Cuir a-steach ceann-latha is àm (m.e. 2025-01-15T10:30:00Z)",
+  "edit.save_error": "Cha b’ urrainn dhuinn an suidheachadh a shàbhaladh.",
+
+  "language.label": "Cànan",
+  "language.name": "Gàidhlig",
+
+  "dir": "ltr"
+}
