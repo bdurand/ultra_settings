@@ -35,6 +35,11 @@ require_relative "spec/test_configs/my_service_configuration"
 class BlankConfiguration < UltraSettings::Configuration
 end
 
+ENV.fetch("TEST_CONFIG_COUNT", "0").to_i.times do |i|
+  klass = Class.new(TestConfiguration)
+  Object.const_set("TestConfiguration#{i}", klass)
+end
+
 UltraSettings.add(:test)
 UltraSettings.add(:namespace, "Test::NamespaceConfiguration")
 
