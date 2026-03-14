@@ -18,7 +18,6 @@ module UltraSettings
     # Initialize the application view with a color scheme.
     #
     # @param color_scheme [Symbol] The color scheme to use (:light, :dark, or :system).
-    # @param can_edit_super_settings [Boolean] Whether SuperSettings inline editing is enabled.
     # @param locale [String] The locale code for translations.
     def initialize(color_scheme: :light, can_edit_super_settings: false, locale: UltraSettings::I18n::DEFAULT_LOCALE)
       @css = application_css(color_scheme)

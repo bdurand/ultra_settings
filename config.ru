@@ -1,5 +1,11 @@
 # This is a sample rackup file for testing the UltraSettings web UI.
 #
+# It demonstrates three ways to use the web UI:
+#
+# 1. Stand-alone Rack app   — GET /
+# 2. Embedded ApplicationView — GET /embedded
+# 3. Embedded ConfigurationView — GET /test_configuration
+#
 # ```bash
 # bundle exec rackup
 # ```
@@ -16,7 +22,7 @@ if ENV.fetch("USE_SUPER_SETTINGS", "true") == "true"
   require "super_settings"
   require "super_settings/storage/test_storage"
   SuperSettings::Setting.storage = SuperSettings::Storage::TestStorage
-  UltraSettings.super_settings_editing = lambda { |req| ENV.fetch("SUPER_SETTINGS_EDITING", "true") == "true" }
+  UltraSettings.super_settings_editing = ->(_req) { ENV.fetch("SUPER_SETTINGS_EDITING", "true") == "true" }
 else
   UltraSettings.runtime_settings = {"my_service.timeout" => 2.5}
 end
@@ -43,4 +49,68 @@ end
 UltraSettings.add(:test)
 UltraSettings.add(:namespace, "Test::NamespaceConfiguration")
 
-run UltraSettings::RackApp.new(color_scheme: ENV.fetch("COLOR_SCHEME", nil))
+# Helper class for rendering embedded views inside a sample application layout.
+# This demonstrates how you would embed the UltraSettings views in your own
+# application pages with your own header, sidebars, and footer.
+class SampleEmbeddedApp
+  LAYOUT_TEMPLATE = File.join(__dir__, "test_app", "app", "views", "layout.html.erb")
+
+  def initialize(color_scheme: nil)
+    @color_scheme = color_scheme&.to_sym
+  end
+
+  def call(env)
+    content = yield
+    title = env["ultra_settings.title"] || "Settings"
+    color_scheme = @color_scheme
+    html = render_layout(title: title, content: content, color_scheme: color_scheme)
+    [200, {"content-type" => "text/html; charset=utf-8"}, [html]]
+  end
+
+  private
+
+  def render_layout(title:, content:, color_scheme:)
+    ERB.new(File.read(LAYOUT_TEMPLATE)).result(binding)
+  end
+end
+
+color_scheme = ENV.fetch("COLOR_SCHEME", nil)
+embedded_app = SampleEmbeddedApp.new(color_scheme: color_scheme)
+
+# GET /embedded — Demonstrates embedding UltraSettings::ApplicationView
+# in your own application layout with a header, sidebar, and footer.
+embedded_application = lambda do |env|
+  env["ultra_settings.title"] = "Embedded Settings"
+  embedded_app.call(env) do
+    <<~HTML
+      <h2>Application Settings</h2>
+      <p class="subtitle">
+        This page demonstrates embedding <code>UltraSettings::ApplicationView</code>
+        inside your own application layout.
+      </p>
+      #{UltraSettings::ApplicationView.new(color_scheme: color_scheme&.to_sym).render}
+    HTML
+  end
+end
+
+# GET /test_configuration — Demonstrates embedding UltraSettings::ConfigurationView
+# for a single configuration in your own application layout.
+embedded_configuration = lambda do |env|
+  env["ultra_settings.title"] = "Test Configuration"
+  embedded_app.call(env) do
+    <<~HTML
+      <h2>Test Configuration</h2>
+      <p class="subtitle">
+        This page demonstrates embedding <code>UltraSettings::ConfigurationView</code>
+        for a single configuration inside your own application layout.
+      </p>
+      #{UltraSettings::ConfigurationView.new(TestConfiguration.instance).render}
+    HTML
+  end
+end
+
+run Rack::URLMap.new(
+  "/" => UltraSettings::RackApp.new(color_scheme: color_scheme),
+  "/embedded" => embedded_application,
+  "/test_configuration" => embedded_configuration
+)

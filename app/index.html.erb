@@ -3,56 +3,24 @@
 <% configurations = UltraSettings.__configurations__.reject { |config| config.class.fields.empty? }.sort_by { |config| config.class.name.downcase } %>
 <% locales = UltraSettings::I18n.available_locales %>
 <% current_locale_name = UltraSettings::I18n.t("language.name", locale: locale) %>
+<% single_config = configurations.size == 1 %>
 
-<div class="ultra-settings"<% if can_edit_super_settings %> data-ss-editing="true"<% end %><% raw_url = UltraSettings.instance_variable_get(:@runtime_settings_url).to_s %><% unless raw_url.empty? %> data-runtime-settings-url="<%= html_escape(raw_url) %>"<% end %>>
-  <button class="ultra-settings-hamburger" id="ultra-settings-hamburger" aria-label="<%= t('sidebar.open_nav_menu') %>">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-  </button>
-  <div class="ultra-settings-sidebar-overlay" id="ultra-settings-sidebar-overlay"></div>
+<div class="ultra-settings"<% if can_edit_super_settings %> data-ss-editing="true"<% end %><% raw_url = UltraSettings.instance_variable_get(:@runtime_settings_url).to_s %><% unless raw_url.empty? %> data-runtime-settings-url="<%= html_escape(raw_url) %>"<% end %><% if single_config %> data-single-config="section-<%= html_escape(configurations.first.class.name) %>"<% end %>>
 
-  <aside class="ultra-settings-sidebar" id="ultra-settings-sidebar" role="navigation" aria-label="<%= t('sidebar.config_list') %>">
-    <div class="ultra-settings-sidebar-brand">
-      <h1 class="ultra-settings-brand-title"><%= t('page.brand_title') %></h1>
-      <div class="ultra-settings-brand-subtitle"><%= t('page.brand_subtitle') %></div>
-    </div>
+  <% unless single_config %>
+    <div class="ultra-settings-topbar" id="ultra-settings-topbar">
+      <div class="ultra-settings-search-wrap">
+        <svg class="ultra-settings-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="ultra-settings-search-input" placeholder="<%= html_escape(t('search.placeholder')) %>" autocomplete="off" aria-label="<%= t('search.filter_aria_label') %>">
+        <button type="button" class="ultra-settings-search-clear" id="ultra-settings-search-clear" aria-label="<%= t('search.clear_aria') %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
 
-    <div class="ultra-settings-sidebar-search">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <circle cx="11" cy="11" r="8"/>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
-      <input type="text" id="ultra-settings-search-input" placeholder="<%= html_escape(t('sidebar.filter_placeholder')) %>" autocomplete="off" aria-label="<%= t('sidebar.filter_aria_label') %>">
-    </div>
-
-    <div class="ultra-settings-section-label"><%= t('sidebar.configurations_label') %></div>
-
-    <nav class="ultra-settings-sidebar-nav" id="ultra-settings-sidebar-nav" aria-label="<%= t('sidebar.config_nav') %>">
-      <% configurations.each_with_index do |config, index| %>
-        <%
-          config_text = [config.class.name, config.class.description]
-          config.class.fields.each do |field|
-            config_text << field.name
-            config_text << field.description
-            config_text << field.env_var
-            config_text << field.runtime_setting
-          end
-          search_text = config_text.compact.join(" ").downcase
-        %>
-        <div
-          class="ultra-settings-nav-item<%= ' active' if index == 0 %>"
-          data-config-id="section-<%= html_escape(config.class.name) %>"
-          data-search="<%= html_escape(search_text) %>"
-          role="button"
-          tabindex="0"
-        >
-          <span class="ultra-settings-nav-name"><%= html_escape(config.class.name) %></span>
-          <span class="ultra-settings-nav-count"><%= config.class.fields.size %></span>
-        </div>
-      <% end %>
-    </nav>
-
-    <% if locales.size > 1 %>
-      <div class="ultra-settings-sidebar-footer">
+      <% if locales.size > 1 %>
         <details class="ultra-settings-language-menu" id="ultra-settings-language-menu">
           <summary class="ultra-settings-language-trigger" aria-label="<%= t('language.label') %>" aria-haspopup="menu">
             <span class="ultra-settings-language-trigger-icon" aria-hidden="true">
@@ -95,21 +63,50 @@
             <% end %>
           </menu>
         </details>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="ultra-settings-config-list" id="ultra-settings-config-list">
+    <% configurations.each do |config| %>
+      <%
+        config_text = [config.class.name, config.class.description]
+        config.class.fields.each do |field|
+          config_text << field.name
+          config_text << field.description
+          config_text << field.env_var
+          config_text << field.runtime_setting
+        end
+        search_text = config_text.compact.join(" ").downcase
+      %>
+      <div
+        class="ultra-settings-config-list-item"
+        data-config-id="section-<%= html_escape(config.class.name) %>"
+        data-search="<%= html_escape(search_text) %>"
+        role="button"
+        tabindex="0"
+      >
+        <div class="ultra-settings-config-list-name"><%= html_escape(config.class.name) %></div>
+        <% if config.class.description %>
+          <div class="ultra-settings-config-list-desc"><%= html_escape(config.class.description) %></div>
+        <% end %>
+        <span class="ultra-settings-config-list-count"><%= config.class.fields.size %> <%= t('config_list.fields') %></span>
       </div>
     <% end %>
-  </aside>
+  </div>
 
-  <main class="ultra-settings-main" id="ultra-settings-main" role="main">
+  <div class="ultra-settings-config-detail" id="ultra-settings-config-detail">
     <% configurations.each do |configuration| %>
       <section
         class="ultra-settings-config-section"
         id="section-<%= html_escape(configuration.class.name) %>"
         data-config-id="section-<%= html_escape(configuration.class.name) %>"
+        style="display:none"
       >
         <%= UltraSettings::ConfigurationView.new(configuration, can_edit_super_settings: can_edit_super_settings, locale: locale).render %>
       </section>
     <% end %>
-  </main>
+  </div>
 
   <!-- Detail Panel -->
   <div class="ultra-settings-panel-bg" id="ultra-settings-panel-bg"></div>

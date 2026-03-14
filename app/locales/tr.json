@@ -10,6 +10,16 @@
   "sidebar.configurations_label": "Yapılandırmalar",
   "sidebar.config_nav": "Yapılandırma gezinmesi",
 
+  "search.placeholder": "Yapılandırmaları ara…",
+  "search.filter_aria_label": "Yapılandırmaları ara",
+  "search.clear_aria": "Seçimi temizle ve listeye dön",
+  "config_list.fields": "alanlar",
+
+  "search.placeholder": "Yapılandırmaları ara…",
+  "search.filter_aria_label": "Yapılandırmaları ara",
+  "search.clear_aria": "Seçimi temizle ve listeye dön",
+  "config_list.fields": "alanlar",
+
   "field.secret": "Gizli",
   "field.static": "Statik",
   "field.nil": "nil",

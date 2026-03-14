@@ -10,6 +10,16 @@
   "sidebar.configurations_label": "Configurações",
   "sidebar.config_nav": "Navegação de configurações",
 
+  "search.placeholder": "Buscar configurações…",
+  "search.filter_aria_label": "Buscar configurações",
+  "search.clear_aria": "Limpar seleção e voltar para a lista",
+  "config_list.fields": "campos",
+
+  "search.placeholder": "Buscar configurações…",
+  "search.filter_aria_label": "Buscar configurações",
+  "search.clear_aria": "Limpar seleção e voltar para a lista",
+  "config_list.fields": "campos",
+
   "field.secret": "Secreto",
   "field.static": "Estático",
   "field.nil": "nil",

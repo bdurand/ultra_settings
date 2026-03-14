@@ -10,6 +10,12 @@
   "sidebar.configurations_label": "Rèiteachaidhean",
   "sidebar.config_nav": "Seòladh rèiteachaidhean",
 
+  "search.placeholder": "Lorg rèiteachaidhean…",
+  "search.filter_aria_label": "Lorg rèiteachaidhean",
+  "search.clear_aria": "Glan an taghadh is till dhan liosta",
+  "config_list.fields": "raointean",
+
+
   "field.secret": "Dìomhair",
   "field.static": "Statach",
   "field.nil": "nil",

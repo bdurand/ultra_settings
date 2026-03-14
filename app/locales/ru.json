@@ -10,6 +10,16 @@
   "sidebar.configurations_label": "Конфигурации",
   "sidebar.config_nav": "Навигация по конфигурациям",
 
+  "search.placeholder": "Поиск конфигураций…",
+  "search.filter_aria_label": "Поиск конфигураций",
+  "search.clear_aria": "Очистить выбор и вернуться к списку",
+  "config_list.fields": "поля",
+
+  "search.placeholder": "Поиск конфигураций…",
+  "search.filter_aria_label": "Поиск конфигураций",
+  "search.clear_aria": "Очистить выбор и вернуться к списку",
+  "config_list.fields": "поля",
+
   "field.secret": "Секретно",
   "field.static": "Статическое",
   "field.nil": "nil",

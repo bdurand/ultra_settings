@@ -10,6 +10,16 @@
   "sidebar.configurations_label": "Konfigurationer",
   "sidebar.config_nav": "Konfigurationsnavigering",
 
+  "search.placeholder": "Sök konfigurationer…",
+  "search.filter_aria_label": "Sök konfigurationer",
+  "search.clear_aria": "Rensa urval och återgå till listan",
+  "config_list.fields": "fält",
+
+  "search.placeholder": "Sök konfigurationer…",
+  "search.filter_aria_label": "Sök konfigurationer",
+  "search.clear_aria": "Rensa urval och återgå till listan",
+  "config_list.fields": "fält",
+
   "field.secret": "Hemlig",
   "field.static": "Statisk",
   "field.nil": "nil",

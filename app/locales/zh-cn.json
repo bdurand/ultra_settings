@@ -10,6 +10,16 @@
   "sidebar.configurations_label": "配置",
   "sidebar.config_nav": "配置导航",
 
+  "search.placeholder": "搜索配置…",
+  "search.filter_aria_label": "搜索配置",
+  "search.clear_aria": "清除选择并返回列表",
+  "config_list.fields": "字段",
+
+  "search.placeholder": "搜索配置…",
+  "search.filter_aria_label": "搜索配置",
+  "search.clear_aria": "清除选择并返回列表",
+  "config_list.fields": "字段",
+
   "field.secret": "机密",
   "field.static": "静态",
   "field.nil": "nil",

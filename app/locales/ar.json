@@ -10,6 +10,16 @@
   "sidebar.configurations_label": "الإعدادات",
   "sidebar.config_nav": "تنقل الإعدادات",
 
+  "search.placeholder": "البحث في التكوينات…",
+  "search.filter_aria_label": "البحث في التكوينات",
+  "search.clear_aria": "مسح التحديد والعودة إلى القائمة",
+  "config_list.fields": "حقول",
+
+  "search.placeholder": "البحث في التكوينات…",
+  "search.filter_aria_label": "البحث في التكوينات",
+  "search.clear_aria": "مسح التحديد والعودة إلى القائمة",
+  "config_list.fields": "حقول",
+
   "field.secret": "سري",
   "field.static": "ثابت",
   "field.nil": "nil",

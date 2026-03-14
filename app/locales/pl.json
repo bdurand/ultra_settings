@@ -10,6 +10,12 @@
   "sidebar.configurations_label": "Konfiguracje",
   "sidebar.config_nav": "Nawigacja konfiguracji",
 
+  "search.placeholder": "Szukaj konfiguracji…",
+  "search.filter_aria_label": "Szukaj konfiguracji",
+  "search.clear_aria": "Wyczyść wybór i wróć do listy",
+  "config_list.fields": "pola",
+
+
   "field.secret": "Tajne",
   "field.static": "Statyczne",
   "field.nil": "nil",

@@ -10,6 +10,12 @@
   "sidebar.configurations_label": "תצורות",
   "sidebar.config_nav": "ניווט תצורות",
 
+  "search.placeholder": "חפש תצורות…",
+  "search.filter_aria_label": "חפש תצורות",
+  "search.clear_aria": "נקה בחירה וחזור לרשימה",
+  "config_list.fields": "שדות",
+
+
   "field.secret": "סודי",
   "field.static": "סטטי",
   "field.nil": "nil",

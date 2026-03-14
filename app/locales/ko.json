@@ -10,6 +10,12 @@
   "sidebar.configurations_label": "구성",
   "sidebar.config_nav": "구성 탐색",
 
+  "search.placeholder": "구성 검색…",
+  "search.filter_aria_label": "구성 검색",
+  "search.clear_aria": "선택 지우기 및 목록으로 돌아가기",
+  "config_list.fields": "필드",
+
+
   "field.secret": "비밀",
   "field.static": "정적",
   "field.nil": "nil",

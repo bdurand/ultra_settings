@@ -10,6 +10,16 @@
   "sidebar.configurations_label": "Cấu hình",
   "sidebar.config_nav": "Điều hướng cấu hình",
 
+  "search.placeholder": "Tìm kiếm cấu hình…",
+  "search.filter_aria_label": "Tìm kiếm cấu hình",
+  "search.clear_aria": "Xóa lựa chọn và quay lại danh sách",
+  "config_list.fields": "các trường",
+
+  "search.placeholder": "Tìm kiếm cấu hình…",
+  "search.filter_aria_label": "Tìm kiếm cấu hình",
+  "search.clear_aria": "Xóa lựa chọn và quay lại danh sách",
+  "config_list.fields": "các trường",
+
   "field.secret": "Bí mật",
   "field.static": "Tĩnh",
   "field.nil": "nil",

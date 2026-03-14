@@ -5,16 +5,16 @@ require "spec_helper"
 RSpec.describe UltraSettings::ApplicationView do
   it "renders the configuration as an HTML application with multiple configurations" do
     html = UltraSettings::ApplicationView.new.render
-    expect(html).to match(/class="ultra-settings-sidebar"/)
-    expect(html).to match(/ultra-settings-fields/m)
+    expect(html).to match(/class="ultra-settings-config-list"/)
+    expect(html).to match(/ultra-settings-config-detail/m)
     expect(html).to match(/<script>.*<\/script>/m)
   end
 
-  it "renders the language menu in the sidebar footer instead of a select" do
+  it "renders the language menu in the topbar" do
     html = UltraSettings::ApplicationView.new.render
     expect(html).to include('id="ultra-settings-language-menu"')
     expect(html).to include('class="ultra-settings-language-popup"')
-    expect(html).to match(/ultra-settings-sidebar-nav.*ultra-settings-sidebar-footer/m)
+    expect(html).to match(/ultra-settings-topbar.*ultra-settings-language-menu/m)
     expect(html).not_to include('id="ultra-settings-locale-select"')
     expect(html).not_to include("ultra-settings-language-option-code")
   end

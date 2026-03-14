@@ -10,6 +10,16 @@
   "sidebar.configurations_label": "Διαμορφώσεις",
   "sidebar.config_nav": "Πλοήγηση διαμορφώσεων",
 
+  "search.placeholder": "Αναζήτηση ρυθμίσεων…",
+  "search.filter_aria_label": "Αναζήτηση ρυθμίσεων",
+  "search.clear_aria": "Εκκαθάριση επιλογής και επιστροφή στη λίστα",
+  "config_list.fields": "πεδία",
+
+  "search.placeholder": "Αναζήτηση ρυθμίσεων…",
+  "search.filter_aria_label": "Αναζήτηση ρυθμίσεων",
+  "search.clear_aria": "Εκκαθάριση επιλογής και επιστροφή στη λίστα",
+  "config_list.fields": "πεδία",
+
   "field.secret": "Μυστικό",
   "field.static": "Στατικό",
   "field.nil": "nil",

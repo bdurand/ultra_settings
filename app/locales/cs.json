@@ -10,6 +10,16 @@
   "sidebar.configurations_label": "Konfigurace",
   "sidebar.config_nav": "Navigace konfigurací",
 
+  "search.placeholder": "Hledat konfigurace…",
+  "search.filter_aria_label": "Hledat konfigurace",
+  "search.clear_aria": "Zrušit výběr a vrátit se na seznam",
+  "config_list.fields": "pole",
+
+  "search.placeholder": "Hledat konfigurace…",
+  "search.filter_aria_label": "Hledat konfigurace",
+  "search.clear_aria": "Zrušit výběr a vrátit se na seznam",
+  "config_list.fields": "pole",
+
   "field.secret": "Tajné",
   "field.static": "Statické",
   "field.nil": "nil",

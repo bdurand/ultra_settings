@@ -10,6 +10,12 @@
   "sidebar.configurations_label": "設定",
   "sidebar.config_nav": "設定ナビゲーション",
 
+  "search.placeholder": "構成を検索…",
+  "search.filter_aria_label": "構成を検索",
+  "search.clear_aria": "選択をクリアしてリストに戻る",
+  "config_list.fields": "フィールド",
+
+
   "field.secret": "シークレット",
   "field.static": "静的",
   "field.nil": "nil",

@@ -10,6 +10,12 @@
   "sidebar.configurations_label": "कॉन्फ़िगरेशन",
   "sidebar.config_nav": "कॉन्फ़िगरेशन नेविगेशन",
 
+  "search.placeholder": "कॉन्फ़िगरेशन खोजें…",
+  "search.filter_aria_label": "कॉन्फ़िगरेशन खोजें",
+  "search.clear_aria": "चयन साफ़ करें और सूची पर वापस लौटें",
+  "config_list.fields": "फ़ील्ड्स",
+
+
   "field.secret": "गुप्त",
   "field.static": "स्थिर",
   "field.nil": "nil",

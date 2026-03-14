@@ -3,13 +3,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const _i18n = window.__ultraSettingsI18n || {};
   const t = (key) => _i18n[key] || key;
 
-  const sidebar = document.getElementById("ultra-settings-sidebar");
-  const sidebarOverlay = document.getElementById("ultra-settings-sidebar-overlay");
-  const hamburger = document.getElementById("ultra-settings-hamburger");
-  const mainContent = document.getElementById("ultra-settings-main");
-  const navItems = document.querySelectorAll(".ultra-settings-nav-item");
-  const sections = document.querySelectorAll(".ultra-settings-config-section");
+  const root = document.querySelector(".ultra-settings");
   const searchInput = document.getElementById("ultra-settings-search-input");
+  const searchClear = document.getElementById("ultra-settings-search-clear");
+  const configList = document.getElementById("ultra-settings-config-list");
+  const configDetail = document.getElementById("ultra-settings-config-detail");
+  const configListItems = document.querySelectorAll(".ultra-settings-config-list-item");
+  const sections = document.querySelectorAll(".ultra-settings-config-section");
   const panelBg = document.getElementById("ultra-settings-panel-bg");
   const detailPanel = document.getElementById("ultra-settings-detail-panel");
   const dpTitle = document.getElementById("ultra-settings-dp-title");
@@ -23,86 +23,171 @@ document.addEventListener("DOMContentLoaded", () => {
     if (languageMenu) languageMenu.removeAttribute("open");
   };
 
-  if (!sidebar || !mainContent) return;
+  if (!root) return;
 
-  let activeConfigId = navItems.length > 0 ? navItems[0].dataset.configId : null;
+  const singleConfig = root.dataset.singleConfig || null;
+  let selectedConfigId = null;
+  let initialLoad = true;
 
-  // ── Sidebar Navigation ──
-  const selectConfig = (id) => {
-    activeConfigId = id;
-    navItems.forEach(el => el.classList.toggle("active", el.dataset.configId === id));
-    const section = document.getElementById(id);
-    if (section) section.scrollIntoView({ block: "start" });
-    if (window.innerWidth <= 768) closeSidebar();
+  // ── View transition helper ──
+  let animating = false;
+  const animateView = (outEl, inEl, callback) => {
+    if (animating) return;
+    if (!outEl || !inEl) { if (callback) callback(); return; }
+    animating = true;
+    // Ensure the incoming element is hidden until the exit animation finishes
+    inEl.style.display = "none";
+    outEl.classList.add("ultra-settings-view-exit");
+    outEl.addEventListener("animationend", function handler() {
+      outEl.removeEventListener("animationend", handler);
+      outEl.classList.remove("ultra-settings-view-exit");
+      outEl.style.display = "none";
+      inEl.style.display = "";
+      inEl.classList.add("ultra-settings-view-enter");
+      inEl.addEventListener("animationend", function handler2() {
+        inEl.removeEventListener("animationend", handler2);
+        inEl.classList.remove("ultra-settings-view-enter");
+        animating = false;
+      }, { once: true });
+      if (callback) callback();
+    }, { once: true });
   };
 
-  navItems.forEach(item => {
+  // ── Config Selection ──
+  const selectConfig = (configId) => {
+    selectedConfigId = configId;
+
+    // Show only the selected section
+    sections.forEach(s => {
+      s.style.display = (s.dataset.configId === configId) ? "" : "none";
+    });
+
+    // Update search field
+    if (searchInput) {
+      const configName = configId.replace(/^section-/, "");
+      searchInput.value = configName;
+      searchInput.readOnly = true;
+    }
+    if (searchClear) searchClear.classList.add("visible");
+
+    // Update hash
+    const configName = configId.replace(/^section-/, "");
+    if (window.location.hash !== "#" + configName) {
+      history.replaceState(null, "", "#" + configName);
+    }
+
+    // Animate list → detail
+    if (configList && configDetail && !initialLoad) {
+      if (configList.style.display === "none") {
+        // Already showing detail, just swap content
+        configDetail.classList.add("active");
+      } else {
+        configDetail.classList.add("active");
+        animateView(configList, configDetail);
+      }
+    } else {
+      if (configList) configList.style.display = "none";
+      if (configDetail) configDetail.classList.add("active");
+    }
+  };
+
+  const clearSelection = () => {
+    selectedConfigId = null;
+
+    // Hide all sections
+    sections.forEach(s => { s.style.display = "none"; });
+
+    // Reset search field
+    if (searchInput) {
+      searchInput.value = "";
+      searchInput.readOnly = false;
+    }
+    if (searchClear) searchClear.classList.remove("visible");
+
+    // Show all list items (clear any filter)
+    configListItems.forEach(item => item.classList.remove("hidden"));
+
+    // Clear hash
+    history.replaceState(null, "", window.location.pathname + window.location.search);
+
+    // Animate detail → list
+    if (configDetail && configList) {
+      animateView(configDetail, configList, () => {
+        // Clean up: let CSS classes control display again
+        configDetail.classList.remove("active");
+        configDetail.style.display = "";
+        configList.style.display = "";
+      });
+    } else {
+      if (configList) configList.style.display = "";
+      if (configDetail) configDetail.classList.remove("active");
+    }
+  };
+
+  // ── Config List Item Handlers ──
+  configListItems.forEach(item => {
     item.addEventListener("click", () => selectConfig(item.dataset.configId));
     item.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectConfig(item.dataset.configId); }
     });
   });
 
-  // ── Scroll Spy ──
-  if (mainContent && sections.length > 0) {
-    mainContent.addEventListener("scroll", () => {
-      let current = activeConfigId;
-      sections.forEach(s => {
-        if (s.getBoundingClientRect().top <= 160) current = s.dataset.configId;
-      });
-      if (current !== activeConfigId) {
-        activeConfigId = current;
-        navItems.forEach(el => el.classList.toggle("active", el.dataset.configId === current));
-      }
-    });
-  }
-
-  // ── Hamburger Menu ──
-  const openSidebar = () => {
-    if (sidebar) sidebar.classList.add("open");
-    if (sidebarOverlay) sidebarOverlay.classList.add("open");
-  };
-
-  const closeSidebar = () => {
-    if (sidebar) sidebar.classList.remove("open");
-    if (sidebarOverlay) sidebarOverlay.classList.remove("open");
-    closeLanguageMenu();
-  };
-
-  if (hamburger) hamburger.addEventListener("click", () => {
-    sidebar.classList.contains("open") ? closeSidebar() : openSidebar();
-  });
-
-  if (sidebarOverlay) sidebarOverlay.addEventListener("click", closeSidebar);
-
-  // ── Inline Search Filter ──
+  // ── Search Filter (list view) ──
   if (searchInput) {
     searchInput.addEventListener("input", function() {
+      if (selectedConfigId) return; // Don't filter when a config is selected
+
       const q = this.value.toLowerCase().trim();
-
-      sections.forEach(section => {
-        const configId = section.dataset.configId;
-        const navItem = document.querySelector('.ultra-settings-nav-item[data-config-id="' + configId + '"]');
-        const configSearch = navItem ? (navItem.dataset.search || "") : "";
-        const configMatch = !q || configSearch.includes(q);
-        const cards = section.querySelectorAll(".ultra-settings-field-card");
-        let anyFieldMatch = false;
-
-        cards.forEach(card => {
-          const fieldSearch = (card.dataset.fieldSearch || "");
-          const fieldMatch = configMatch || !q || fieldSearch.includes(q);
-          card.classList.toggle("hidden", !fieldMatch);
-          if (fieldMatch) anyFieldMatch = true;
-        });
-
-        const showSection = configMatch || anyFieldMatch;
-        section.classList.toggle("hidden", !showSection);
-
-        // Sync nav item visibility with section
-        if (navItem) navItem.classList.toggle("hidden", !showSection);
+      configListItems.forEach(item => {
+        const searchData = item.dataset.search || "";
+        const match = !q || searchData.includes(q);
+        item.classList.toggle("hidden", !match);
       });
     });
   }
+
+  // ── Clear Button ──
+  if (searchClear) {
+    searchClear.addEventListener("click", clearSelection);
+  }
+
+  // ── Hash-based Navigation ──
+  const handleHash = () => {
+    const hash = window.location.hash.replace(/^#/, "");
+    if (hash) {
+      const configId = "section-" + hash;
+      const exists = Array.from(sections).some(s => s.dataset.configId === configId);
+      if (exists) {
+        selectConfig(configId);
+        return;
+      }
+    }
+    // No valid hash — if not single config, show list
+    if (!singleConfig && selectedConfigId) {
+      clearSelection();
+    }
+  };
+
+  window.addEventListener("hashchange", handleHash);
+
+  // ── Single Config Auto-Select ──
+  if (singleConfig) {
+    selectConfig(singleConfig);
+  } else {
+    // Check for stored config (after SuperSettings save reload)
+    const storedConfig = sessionStorage.getItem("ultra-settings-selected-config");
+    if (storedConfig) {
+      sessionStorage.removeItem("ultra-settings-selected-config");
+      const exists = Array.from(sections).some(s => s.dataset.configId === storedConfig);
+      if (exists) {
+        selectConfig(storedConfig);
+      }
+    } else {
+      handleHash();
+    }
+  }
+
+  initialLoad = false;
 
   // ── Detail Panel ──
   const openPanel = (name, value, type, isSecret) => {
@@ -163,19 +248,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ── Hash-based navigation ──
-  const handleHash = () => {
-    const hash = window.location.hash.replace(/^#/, "");
-    if (hash) {
-      const configId = "section-" + hash;
-      const exists = Array.from(navItems).some(item => item.dataset.configId === configId);
-      if (exists) selectConfig(configId);
-    }
-  };
-
-  window.addEventListener("hashchange", handleHash);
-  handleHash();
-
   // ── Equalize chip widths ──
   const equalizeChipWidths = () => {
     const chips = document.querySelectorAll(".ultra-settings-source-chip");
@@ -190,13 +262,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   equalizeChipWidths();
 
-  // ── Restore scroll & flash after setting save ──
-  const savedScroll = sessionStorage.getItem("ultra-settings-scroll");
+  // ── Restore selection & flash after setting save ──
   const changedKey = sessionStorage.getItem("ultra-settings-changed-key");
-  if (savedScroll != null) {
-    mainContent.scrollTop = parseInt(savedScroll, 10);
-    sessionStorage.removeItem("ultra-settings-scroll");
-  }
   if (changedKey) {
     sessionStorage.removeItem("ultra-settings-changed-key");
     const changedSection = sessionStorage.getItem("ultra-settings-changed-section");
@@ -477,13 +544,14 @@ document.addEventListener("DOMContentLoaded", () => {
       saveSetting(params, (result) => {
         if (result.status === 200 && result.data.success) {
           closeSsPanel();
-          // Preserve scroll position and flash the changed row after reload
-          if (mainContent) {
-            sessionStorage.setItem("ultra-settings-scroll", mainContent.scrollTop);
+          // Store selected config so we can restore it after reload
+          if (selectedConfigId) {
+            sessionStorage.setItem("ultra-settings-selected-config", selectedConfigId);
           }
           sessionStorage.setItem("ultra-settings-changed-key", params.key);
-          if (ssContainer._activeSectionId) {
-            sessionStorage.setItem("ultra-settings-changed-section", ssContainer._activeSectionId);
+          const activeSection = document.querySelector(".ultra-settings-config-section[style='']");
+          if (activeSection) {
+            sessionStorage.setItem("ultra-settings-changed-section", activeSection.id);
           }
           window.location.reload();
         } else {
@@ -520,8 +588,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const btn = e.target.closest(".ultra-settings-ss-edit-btn");
       if (btn) {
         e.preventDefault();
-        const section = btn.closest(".ultra-settings-config-section");
-        ssContainer._activeSectionId = section ? section.id : null;
         openSsPanel(
           btn.dataset.ssKey || "",
           btn.dataset.ssDefaultType || "string",

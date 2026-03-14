@@ -10,6 +10,12 @@
   "sidebar.configurations_label": "Configuraties",
   "sidebar.config_nav": "Configuratienavigatie",
 
+  "search.placeholder": "Configuraties zoeken…",
+  "search.filter_aria_label": "Configuraties zoeken",
+  "search.clear_aria": "Selectie wissen en terugkeren naar lijst",
+  "config_list.fields": "velden",
+
+
   "field.secret": "Geheim",
   "field.static": "Statisch",
   "field.nil": "nil",

@@ -10,6 +10,16 @@
   "sidebar.configurations_label": "تشکیلات",
   "sidebar.config_nav": "تشکیل نیویگیشن",
 
+  "search.placeholder": "ترتیبات تلاش کریں…",
+  "search.filter_aria_label": "ترتیبات تلاش کریں",
+  "search.clear_aria": "انتخاب صاف کریں اور فہرست پر واپس جائیں",
+  "config_list.fields": "فیلڈز",
+
+  "search.placeholder": "ترتیبات تلاش کریں…",
+  "search.filter_aria_label": "ترتیبات تلاش کریں",
+  "search.clear_aria": "انتخاب صاف کریں اور فہرست پر واپس جائیں",
+  "config_list.fields": "فیلڈز",
+
   "field.secret": "خفیہ",
   "field.static": "جامد",
   "field.nil": "nil",

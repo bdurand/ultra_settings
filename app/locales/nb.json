@@ -10,6 +10,12 @@
   "sidebar.configurations_label": "Konfigurasjoner",
   "sidebar.config_nav": "Konfigurasjonsnavigasjon",
 
+  "search.placeholder": "Søk i konfigurasjoner…",
+  "search.filter_aria_label": "Søk i konfigurasjoner",
+  "search.clear_aria": "Fjern utvalg og gå tilbake til listen",
+  "config_list.fields": "felt",
+
+
   "field.secret": "Hemmelig",
   "field.static": "Statisk",
   "field.nil": "nil",

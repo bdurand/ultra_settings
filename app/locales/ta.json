@@ -10,6 +10,16 @@
   "sidebar.configurations_label": "உள்ளமைவுகள்",
   "sidebar.config_nav": "உள்ளமைவு வழிசெலுத்தல்",
 
+  "search.placeholder": "உள்ளமைவுகளைத் தேடு…",
+  "search.filter_aria_label": "உள்ளமைவுகளைத் தேடு",
+  "search.clear_aria": "தேர்வை அழித்து பட்டியலுக்கு திரும்பு",
+  "config_list.fields": "புலங்கள்",
+
+  "search.placeholder": "உள்ளமைவுகளைத் தேடு…",
+  "search.filter_aria_label": "உள்ளமைவுகளைத் தேடு",
+  "search.clear_aria": "தேர்வை அழித்து பட்டியலுக்கு திரும்பு",
+  "config_list.fields": "புலங்கள்",
+
   "field.secret": "ரகசியம்",
   "field.static": "நிலையான",
   "field.nil": "nil",

@@ -21,7 +21,7 @@ RSpec.describe "Web UI", type: :system do
     skip "super_settings gem is not available" unless defined?(::SuperSettings)
     SuperSettings::Setting.storage = SuperSettings::Storage::TestStorage
 
-    # Register several configurations so the sidebar has content to filter.
+    # Register several configurations so the list has content to filter.
     UltraSettings.add(:my_service) unless UltraSettings.respond_to?(:my_service)
     UltraSettings.add(:explicit, "ExplicitConfiguration") unless UltraSettings.respond_to?(:explicit)
   end
@@ -76,6 +76,11 @@ RSpec.describe "Web UI", type: :system do
     JS
   end
 
+  # Helper to select a configuration from the list view
+  def select_config(name)
+    find(".ultra-settings-config-list-item", text: name).click
+  end
+
   describe "HTML direction attribute" do
     it "sets dir='ltr' on the html element for English locale" do
       visit "/"
@@ -83,13 +88,60 @@ RSpec.describe "Web UI", type: :system do
     end
   end
 
+  describe "configuration list (default view)" do
+    it "shows all configurations as clickable cards" do
+      visit "/"
+
+      within "#ultra-settings-config-list" do
+        expect(page).to have_css(".ultra-settings-config-list-item", minimum: 2)
+        expect(page).to have_text("MyServiceConfiguration")
+        expect(page).to have_text("TestConfiguration")
+      end
+
+      # Config detail should not be visible
+      expect(page).not_to have_css(".ultra-settings-config-detail.active")
+    end
+
+    it "selects a configuration when clicking a list item" do
+      visit "/"
+
+      select_config("MyServiceConfiguration")
+
+      # List should be hidden, detail should be visible
+      expect(page).to have_css(".ultra-settings-config-detail.active")
+      expect(page).to have_css("#section-MyServiceConfiguration")
+
+      # Search field should show config name
+      search_input = find("#ultra-settings-search-input")
+      expect(search_input.value).to eq("MyServiceConfiguration")
+    end
+
+    it "returns to the list view when clicking the clear button" do
+      visit "/"
+
+      select_config("MyServiceConfiguration")
+      expect(page).to have_css(".ultra-settings-config-detail.active")
+
+      find("#ultra-settings-search-clear").click
+
+      # Should be back to list view
+      expect(page).not_to have_css(".ultra-settings-config-detail.active")
+      within "#ultra-settings-config-list" do
+        expect(page).to have_css(".ultra-settings-config-list-item", minimum: 2)
+      end
+
+      # Search field should be empty
+      search_input = find("#ultra-settings-search-input")
+      expect(search_input.value).to eq("")
+    end
+  end
+
   describe "language menu" do
-    it "switches locales from the sidebar footer popup" do
+    it "switches locales from the topbar" do
       visit "/?lang=en"
 
       expect(page).to have_css("html[lang='en'][dir='ltr']")
-      expect(page).to have_css(".ultra-settings-sidebar-footer .ultra-settings-language-trigger-current", text: "English")
-      expect(page).to have_no_css("#ultra-settings-locale-select")
+      expect(page).to have_css(".ultra-settings-language-trigger-current", text: "English")
 
       find(".ultra-settings-language-trigger").click
 
@@ -98,18 +150,17 @@ RSpec.describe "Web UI", type: :system do
       end
 
       expect(page).to have_css("html[lang='fr'][dir='ltr']")
-      expect(page).to have_css(".ultra-settings-sidebar-footer .ultra-settings-language-trigger-current", text: "Français")
-      expect(page).to have_css(".ultra-settings-brand-subtitle", text: /inspecteur de configuration/i)
+      expect(page).to have_css(".ultra-settings-language-trigger-current", text: "Français")
     end
   end
 
   describe "filtering configurations" do
-    it "filters configurations in the sidebar by typing in the search box" do
+    it "filters configurations in the list by typing in the search box" do
       visit "/"
 
       # All configurations should be visible initially
-      within ".ultra-settings-sidebar-nav" do
-        expect(page).to have_css(".ultra-settings-nav-item", minimum: 2)
+      within "#ultra-settings-config-list" do
+        expect(page).to have_css(".ultra-settings-config-list-item", minimum: 2)
         expect(page).to have_text("MyServiceConfiguration")
         expect(page).to have_text("TestConfiguration")
       end
@@ -117,42 +168,25 @@ RSpec.describe "Web UI", type: :system do
       # Type a filter term that matches only one configuration
       fill_in "ultra-settings-search-input", with: "MyService"
 
-      within ".ultra-settings-sidebar-nav" do
+      within "#ultra-settings-config-list" do
         # MyServiceConfiguration should still be visible
-        my_service_nav = find(".ultra-settings-nav-item", text: "MyServiceConfiguration")
-        expect(my_service_nav).not_to match_css(".hidden")
+        my_service_item = find(".ultra-settings-config-list-item", text: "MyServiceConfiguration")
+        expect(my_service_item).not_to match_css(".hidden")
 
         # Other configurations should be hidden
-        page.all(".ultra-settings-nav-item").each do |nav_item|
-          next if nav_item.text.include?("MyServiceConfiguration")
-          expect(nav_item[:class]).to include("hidden")
+        page.all(".ultra-settings-config-list-item").each do |item|
+          next if item.text.include?("MyServiceConfiguration")
+          expect(item[:class]).to include("hidden")
         end
       end
 
       # Clear the filter — all should reappear
       fill_in "ultra-settings-search-input", with: ""
 
-      within ".ultra-settings-sidebar-nav" do
-        page.all(".ultra-settings-nav-item").each do |nav_item|
-          expect(nav_item[:class]).not_to include("hidden")
+      within "#ultra-settings-config-list" do
+        page.all(".ultra-settings-config-list-item").each do |item|
+          expect(item[:class]).not_to include("hidden")
         end
-      end
-    end
-
-    it "filters fields within a configuration section" do
-      visit "/"
-
-      # Filter by a specific field name
-      fill_in "ultra-settings-search-input", with: "timeout"
-
-      # The MyServiceConfiguration section should be visible (it has a timeout field)
-      my_service_section = find("#section-MyServiceConfiguration")
-      expect(my_service_section[:class]).not_to include("hidden")
-
-      within my_service_section do
-        # The timeout field card should be visible
-        timeout_card = find(".ultra-settings-field-card[data-field-name='timeout']")
-        expect(timeout_card[:class]).not_to include("hidden")
       end
     end
   end
@@ -160,6 +194,7 @@ RSpec.describe "Web UI", type: :system do
   describe "showing configuration values" do
     it "displays field values inline on the page" do
       visit "/"
+      select_config("MyServiceConfiguration")
 
       my_service_section = find("#section-MyServiceConfiguration")
 
@@ -187,6 +222,7 @@ RSpec.describe "Web UI", type: :system do
 
     it "opens a detail panel when clicking a field value" do
       visit "/"
+      select_config("MyServiceConfiguration")
 
       my_service_section = find("#section-MyServiceConfiguration")
 
@@ -205,6 +241,7 @@ RSpec.describe "Web UI", type: :system do
 
     it "closes the detail panel via the close button" do
       visit "/"
+      select_config("MyServiceConfiguration")
 
       my_service_section = find("#section-MyServiceConfiguration")
       within my_service_section do
@@ -220,6 +257,7 @@ RSpec.describe "Web UI", type: :system do
 
     it "shows field descriptions" do
       visit "/"
+      select_config("MyServiceConfiguration")
 
       my_service_section = find("#section-MyServiceConfiguration")
       within my_service_section do
@@ -232,6 +270,7 @@ RSpec.describe "Web UI", type: :system do
 
     it "shows data source information for each field" do
       visit "/"
+      select_config("MyServiceConfiguration")
 
       my_service_section = find("#section-MyServiceConfiguration")
       within my_service_section do
@@ -249,6 +288,7 @@ RSpec.describe "Web UI", type: :system do
   describe "editing a SuperSetting" do
     it "opens the edit panel and saves a new runtime setting" do
       visit "/"
+      select_config("MyServiceConfiguration")
 
       my_service_section = find("#section-MyServiceConfiguration")
 
@@ -292,6 +332,7 @@ RSpec.describe "Web UI", type: :system do
 
     it "can cancel editing without saving" do
       visit "/"
+      select_config("MyServiceConfiguration")
 
       my_service_section = find("#section-MyServiceConfiguration")
       within my_service_section do
@@ -319,6 +360,7 @@ RSpec.describe "Web UI", type: :system do
       UltraSettings.instance_variable_set(:@super_settings_editing, false)
 
       visit "/"
+      select_config("MyServiceConfiguration")
 
       expect(page).not_to have_css(".ultra-settings-ss-edit-btn")
       expect(page).not_to have_css("#ultra-settings-ss-panel")
@@ -331,6 +373,7 @@ RSpec.describe "Web UI", type: :system do
       ])
 
       visit "/"
+      select_config("MyServiceConfiguration")
 
       my_service_section = find("#section-MyServiceConfiguration")
       within my_service_section do
@@ -349,6 +392,16 @@ RSpec.describe "Web UI", type: :system do
         expect(find("#ultra-settings-ss-value").value).to eq("example.com")
         expect(find("#ultra-settings-ss-description").value).to eq("The host")
       end
+    end
+  end
+
+  describe "hash-based navigation" do
+    it "auto-selects a configuration from the URL hash" do
+      visit "/#MyServiceConfiguration"
+
+      # Should show MyServiceConfiguration detail view
+      expect(page).to have_css(".ultra-settings-config-detail.active")
+      expect(page).to have_css("#section-MyServiceConfiguration[style='']", wait: 5)
     end
   end
 end

@@ -10,6 +10,11 @@
   "sidebar.configurations_label": "Configurations",
   "sidebar.config_nav": "Configuration navigation",
 
+  "search.placeholder": "Search configurations…",
+  "search.filter_aria_label": "Search configurations",
+  "search.clear_aria": "Clear selection and return to list",
+  "config_list.fields": "fields",
+
   "field.secret": "Secret",
   "field.static": "Static",
   "field.nil": "nil",

@@ -10,6 +10,12 @@
   "sidebar.configurations_label": "Konfigūracijos",
   "sidebar.config_nav": "Konfigūracijų naršymas",
 
+  "search.placeholder": "Ieškoti konfigūracijų…",
+  "search.filter_aria_label": "Ieškoti konfigūracijų",
+  "search.clear_aria": "Išvalyti pasirinkimą ir grįžti į sąrašą",
+  "config_list.fields": "laukai",
+
+
   "field.secret": "Slapta",
   "field.static": "Statinis",
   "field.nil": "nil",
