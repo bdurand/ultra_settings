@@ -2,77 +2,61 @@
   "page.title": "Конфігурація застосунку",
   "page.brand_title": "UltraSettings",
   "page.brand_subtitle": "Інспектор конфігурації",
-
   "sidebar.open_nav_menu": "Відкрити меню навігації",
   "sidebar.config_list": "Список конфігурацій",
   "sidebar.filter_placeholder": "Фільтрувати конфігурації та поля…",
   "sidebar.filter_aria_label": "Фільтрувати конфігурації",
   "sidebar.configurations_label": "Конфігурації",
   "sidebar.config_nav": "Навігація конфігурацій",
-
   "search.placeholder": "Пошук конфігурацій…",
   "search.filter_aria_label": "Пошук конфігурацій",
   "search.clear_aria": "Очистити вибір і повернутися до списку",
   "config_list.fields": "поля",
-
-  "search.placeholder": "Пошук конфігурацій…",
-  "search.filter_aria_label": "Пошук конфігурацій",
-  "search.clear_aria": "Очистити вибір і повернутися до списку",
-  "config_list.fields": "поля",
-
   "field.secret": "Секретно",
   "field.static": "Статичне",
   "field.nil": "nil",
   "field.click_to_expand": "Натисніть, щоб розгорнути",
   "field.not_set": "не задано",
-
   "source.env": "ENV",
   "source.setting": "НАЛАШТУВАННЯ",
   "source.yaml": "YAML",
   "source.default": "ЗА ЗАМОВЧУВАННЯМ",
   "source.active": "● Активно",
   "source.overridden": "Перевизначено",
-
   "detail.field_detail": "Деталі поля",
   "detail.close_panel": "Закрити панель",
   "detail.type_label": "Тип:",
   "detail.secret_badge": "СЕКРЕТНО",
   "detail.secret_value": "•••••••• (секретно)",
-
   "config.file_not_found": "(не знайдено)",
   "config.edit_tooltip": "Редагувати ${name}",
-
   "edit.title": "Редагувати налаштування часу виконання",
   "edit.open_dashboard": "Відкрити на панелі налаштувань ↗",
   "edit.loading": "Завантаження налаштування…",
   "edit.close_panel": "Закрити панель",
   "edit.edit_setting": "Редагувати налаштування часу виконання",
-
   "edit.key_label": "Ключ",
   "edit.value_type_label": "Тип значення",
   "edit.value_label": "Значення",
   "edit.description_label": "Опис",
-
   "edit.type_string": "рядок",
   "edit.type_integer": "ціле число",
   "edit.type_float": "десяткове число",
   "edit.type_boolean": "логічне значення",
   "edit.type_datetime": "дата і час",
   "edit.type_array": "масив",
-
   "edit.enabled": "Увімкнено",
   "edit.cancel": "Скасувати",
   "edit.save": "Зберегти",
   "edit.saving": "Збереження…",
-
   "edit.placeholder_array": "Один запис на рядок",
   "edit.placeholder_integer": "Введіть ціле число",
   "edit.placeholder_float": "Введіть число",
   "edit.placeholder_datetime": "Введіть дату й час (наприклад, 2025-01-15T10:30:00Z)",
   "edit.save_error": "Не вдалося зберегти налаштування.",
-
+  "edit.http_error": "Сервер повернув помилку (HTTP ${status}). Будь ласка, спробуйте ще раз.",
+  "edit.network_error": "Не вдалося підключитися до сервера. Будь ласка, перевірте зєднання і спробуйте ще раз.",
   "language.label": "Мова",
   "language.name": "Українська",
-
   "dir": "ltr"
 }

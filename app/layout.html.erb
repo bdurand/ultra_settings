@@ -30,5 +30,54 @@
     <main class="ultra-settings-page-content">
       <%= content %>
     </main>
+    <% locales = UltraSettings::I18n.available_locales %>
+    <% if locales.size > 1 %>
+      <footer class="ultra-settings-page-footer">
+        <% locale = @locale || UltraSettings::I18n::DEFAULT_LOCALE %>
+        <% current_locale_name = UltraSettings::I18n.t("language.name", locale: locale) %>
+        <details class="ultra-settings-language-menu" id="ultra-settings-language-menu">
+          <summary class="ultra-settings-language-trigger" aria-label="<%= t('language.label') %>" aria-haspopup="menu">
+            <span class="ultra-settings-language-trigger-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M3.6 9h16.8"></path>
+                <path d="M3.6 15h16.8"></path>
+                <path d="M12 3a14 14 0 0 1 0 18"></path>
+                <path d="M12 3a14 14 0 0 0 0 18"></path>
+              </svg>
+            </span>
+            <span class="ultra-settings-language-trigger-current"><%= html_escape(current_locale_name) %></span>
+            <span class="ultra-settings-language-trigger-caret" aria-hidden="true">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m4 6 4 4 4-4"></path>
+              </svg>
+            </span>
+          </summary>
+
+          <menu class="ultra-settings-language-popup" role="menu" aria-label="<%= t('language.label') %>">
+            <% locales.each do |loc| %>
+              <% language_name = UltraSettings::I18n.t('language.name', locale: loc) %>
+              <% active = loc == locale %>
+              <li>
+                <button
+                  type="button"
+                  class="ultra-settings-language-option<%= ' is-active' if active %>"
+                  role="menuitemradio"
+                  aria-checked="<%= active %>"
+                  data-locale="<%= html_escape(loc) %>"
+                >
+                  <span class="ultra-settings-language-option-name"><%= html_escape(language_name) %></span>
+                  <span class="ultra-settings-language-option-check" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m3.5 8 3 3 6-6"></path>
+                    </svg>
+                  </span>
+                </button>
+              </li>
+            <% end %>
+          </menu>
+        </details>
+      </footer>
+    <% end %>
   </body>
 </html>

@@ -10,13 +10,9 @@ RSpec.describe UltraSettings::ApplicationView do
     expect(html).to match(/<script>.*<\/script>/m)
   end
 
-  it "renders the language menu in the topbar" do
+  it "does not render the language menu (moved to layout)" do
     html = UltraSettings::ApplicationView.new.render
-    expect(html).to include('id="ultra-settings-language-menu"')
-    expect(html).to include('class="ultra-settings-language-popup"')
-    expect(html).to match(/ultra-settings-topbar.*ultra-settings-language-menu/m)
-    expect(html).not_to include('id="ultra-settings-locale-select"')
-    expect(html).not_to include("ultra-settings-language-option-code")
+    expect(html).not_to include('id="ultra-settings-language-menu"')
   end
 
   it "renders the configuration CSS" do
@@ -43,21 +39,33 @@ RSpec.describe UltraSettings::ApplicationView do
     expect(style_tag).to end_with("</style>")
   end
 
-  describe "super_settings_api_path" do
+  describe "super_settings_api_path", skip: !defined?(::SuperSettings) && "super_settings gem is not available" do
+    around do |example|
+      save_val = UltraSettings.instance_variable_get(:@super_settings_api_path)
+      begin
+        example.run
+      ensure
+        UltraSettings.instance_variable_set(:@super_settings_api_path, save_val)
+      end
+    end
+
     it "renders the edit panel when super_settings_api_path is set", settings: {} do
-      html = UltraSettings::ApplicationView.new(super_settings_api_path: "/super_settings").render
+      UltraSettings.super_settings_api_path = "/super_settings"
+      html = UltraSettings::ApplicationView.new.render
       expect(html).to include('data-ss-api-path="/super_settings"')
       expect(html).to include("ultra-settings-ss-panel")
     end
 
     it "does not render the edit panel when super_settings_api_path is nil" do
-      html = UltraSettings::ApplicationView.new(super_settings_api_path: nil).render
-      expect(html).not_to include('data-ss-api-path')
+      UltraSettings.instance_variable_set(:@super_settings_api_path, nil)
+      html = UltraSettings::ApplicationView.new.render
+      expect(html).not_to include("data-ss-api-path")
       expect(html).not_to include('id="ultra-settings-ss-panel"')
     end
 
     it "renders valid HTML with super_settings_api_path set", settings: {} do
-      html = UltraSettings::ApplicationView.new(super_settings_api_path: "/super_settings").render
+      UltraSettings.super_settings_api_path = "/super_settings"
+      html = UltraSettings::ApplicationView.new.render
       doc = Nokogiri::HTML5(html)
       expect(doc.errors).to be_empty
     end

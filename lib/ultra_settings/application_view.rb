@@ -19,10 +19,9 @@ module UltraSettings
     #
     # @param color_scheme [Symbol] The color scheme to use (:light, :dark, or :system).
     # @param locale [String] The locale code for translations.
-    def initialize(color_scheme: :light, super_settings_api_path: nil, locale: UltraSettings::I18n::DEFAULT_LOCALE)
+    def initialize(color_scheme: :light, locale: UltraSettings::I18n::DEFAULT_LOCALE)
       @css = application_css(color_scheme)
       @css = @css.html_safe if @css.respond_to?(:html_safe)
-      @super_settings_api_path = super_settings_api_path
       @locale = locale
     end
 
@@ -32,7 +31,6 @@ module UltraSettings
     # @param table_class [String] @deprecated; no longer used.
     # @return [String] The rendered HTML.
     def render(select_class: nil, table_class: nil)
-      super_settings_api_path = @super_settings_api_path
       locale = @locale
       html = ViewHelper.erb_template("index.html.erb").result(binding)
       html = html.html_safe if html.respond_to?(:html_safe)

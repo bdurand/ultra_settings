@@ -2,77 +2,61 @@
   "page.title": "应用配置",
   "page.brand_title": "UltraSettings",
   "page.brand_subtitle": "配置检查器",
-
   "sidebar.open_nav_menu": "打开导航菜单",
   "sidebar.config_list": "配置列表",
   "sidebar.filter_placeholder": "筛选配置和字段…",
   "sidebar.filter_aria_label": "筛选配置",
   "sidebar.configurations_label": "配置",
   "sidebar.config_nav": "配置导航",
-
   "search.placeholder": "搜索配置…",
   "search.filter_aria_label": "搜索配置",
   "search.clear_aria": "清除选择并返回列表",
   "config_list.fields": "字段",
-
-  "search.placeholder": "搜索配置…",
-  "search.filter_aria_label": "搜索配置",
-  "search.clear_aria": "清除选择并返回列表",
-  "config_list.fields": "字段",
-
   "field.secret": "机密",
   "field.static": "静态",
   "field.nil": "nil",
   "field.click_to_expand": "点击展开",
   "field.not_set": "未设置",
-
   "source.env": "ENV",
   "source.setting": "设置",
   "source.yaml": "YAML",
   "source.default": "默认",
   "source.active": "● 当前生效",
   "source.overridden": "已覆盖",
-
   "detail.field_detail": "字段详情",
   "detail.close_panel": "关闭面板",
   "detail.type_label": "类型：",
   "detail.secret_badge": "机密",
   "detail.secret_value": "•••••••• (机密)",
-
   "config.file_not_found": "(未找到)",
   "config.edit_tooltip": "编辑 ${name}",
-
   "edit.title": "编辑运行时设置",
   "edit.open_dashboard": "在设置仪表板中打开 ↗",
   "edit.loading": "正在加载设置…",
   "edit.close_panel": "关闭面板",
   "edit.edit_setting": "编辑运行时设置",
-
   "edit.key_label": "键",
   "edit.value_type_label": "值类型",
   "edit.value_label": "值",
   "edit.description_label": "说明",
-
   "edit.type_string": "字符串",
   "edit.type_integer": "整数",
   "edit.type_float": "浮点数",
   "edit.type_boolean": "布尔值",
   "edit.type_datetime": "日期时间",
   "edit.type_array": "数组",
-
   "edit.enabled": "已启用",
   "edit.cancel": "取消",
   "edit.save": "保存",
   "edit.saving": "正在保存…",
-
   "edit.placeholder_array": "每行一项",
   "edit.placeholder_integer": "请输入整数",
   "edit.placeholder_float": "请输入数字",
   "edit.placeholder_datetime": "请输入日期时间 (例如 2025-01-15T10:30:00Z)",
   "edit.save_error": "保存设置失败。",
-
+  "edit.http_error": "服务器返回错误 (HTTP ${status})。请重试。",
+  "edit.network_error": "无法连接到服务器。请检查您的连接并重试。",
   "language.label": "语言",
   "language.name": "简体中文",
-
   "dir": "ltr"
 }

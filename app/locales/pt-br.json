@@ -2,77 +2,61 @@
   "page.title": "Configuração do aplicativo",
   "page.brand_title": "UltraSettings",
   "page.brand_subtitle": "Inspetor de configuração",
-
   "sidebar.open_nav_menu": "Abrir menu de navegação",
   "sidebar.config_list": "Lista de configurações",
   "sidebar.filter_placeholder": "Filtrar configurações e campos…",
   "sidebar.filter_aria_label": "Filtrar configurações",
   "sidebar.configurations_label": "Configurações",
   "sidebar.config_nav": "Navegação de configurações",
-
   "search.placeholder": "Buscar configurações…",
   "search.filter_aria_label": "Buscar configurações",
   "search.clear_aria": "Limpar seleção e voltar para a lista",
   "config_list.fields": "campos",
-
-  "search.placeholder": "Buscar configurações…",
-  "search.filter_aria_label": "Buscar configurações",
-  "search.clear_aria": "Limpar seleção e voltar para a lista",
-  "config_list.fields": "campos",
-
   "field.secret": "Secreto",
   "field.static": "Estático",
   "field.nil": "nil",
   "field.click_to_expand": "Clique para expandir",
   "field.not_set": "não definido",
-
   "source.env": "ENV",
   "source.setting": "CONFIGURAÇÃO",
   "source.yaml": "YAML",
   "source.default": "PADRÃO",
   "source.active": "● Ativo",
   "source.overridden": "Substituído",
-
   "detail.field_detail": "Detalhes do campo",
   "detail.close_panel": "Fechar painel",
   "detail.type_label": "Tipo:",
   "detail.secret_badge": "SECRETO",
   "detail.secret_value": "•••••••• (secreto)",
-
   "config.file_not_found": "(não encontrado)",
   "config.edit_tooltip": "Editar ${name}",
-
   "edit.title": "Editar configuração de runtime",
   "edit.open_dashboard": "Abrir no painel de configurações ↗",
   "edit.loading": "Carregando configuração…",
   "edit.close_panel": "Fechar painel",
   "edit.edit_setting": "Editar configuração de runtime",
-
   "edit.key_label": "Chave",
   "edit.value_type_label": "Tipo de valor",
   "edit.value_label": "Valor",
   "edit.description_label": "Descrição",
-
   "edit.type_string": "texto",
   "edit.type_integer": "inteiro",
   "edit.type_float": "decimal",
   "edit.type_boolean": "booleano",
   "edit.type_datetime": "data e hora",
   "edit.type_array": "array",
-
   "edit.enabled": "Habilitado",
   "edit.cancel": "Cancelar",
   "edit.save": "Salvar",
   "edit.saving": "Salvando…",
-
   "edit.placeholder_array": "Uma entrada por linha",
   "edit.placeholder_integer": "Digite um inteiro",
   "edit.placeholder_float": "Digite um número",
   "edit.placeholder_datetime": "Digite uma data e hora (ex.: 2025-01-15T10:30:00Z)",
   "edit.save_error": "Falha ao salvar a configuração.",
-
+  "edit.http_error": "O servidor retornou um erro (HTTP ${status}). Por favor, tente novamente.",
+  "edit.network_error": "Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.",
   "language.label": "Idioma",
   "language.name": "Português (Brasil)",
-
   "dir": "ltr"
 }

@@ -2,73 +2,61 @@
   "page.title": "애플리케이션 구성",
   "page.brand_title": "UltraSettings",
   "page.brand_subtitle": "구성 검사기",
-
   "sidebar.open_nav_menu": "탐색 메뉴 열기",
   "sidebar.config_list": "구성 목록",
   "sidebar.filter_placeholder": "구성과 필드를 필터링…",
   "sidebar.filter_aria_label": "구성 필터링",
   "sidebar.configurations_label": "구성",
   "sidebar.config_nav": "구성 탐색",
-
   "search.placeholder": "구성 검색…",
   "search.filter_aria_label": "구성 검색",
   "search.clear_aria": "선택 지우기 및 목록으로 돌아가기",
   "config_list.fields": "필드",
-
-
   "field.secret": "비밀",
   "field.static": "정적",
   "field.nil": "nil",
   "field.click_to_expand": "클릭하여 펼치기",
   "field.not_set": "설정되지 않음",
-
   "source.env": "ENV",
   "source.setting": "설정",
   "source.yaml": "YAML",
   "source.default": "기본값",
   "source.active": "● 활성",
   "source.overridden": "재정의됨",
-
   "detail.field_detail": "필드 세부 정보",
   "detail.close_panel": "패널 닫기",
   "detail.type_label": "유형:",
   "detail.secret_badge": "비밀",
   "detail.secret_value": "•••••••• (비밀)",
-
   "config.file_not_found": "(찾을 수 없음)",
   "config.edit_tooltip": "${name} 편집",
-
   "edit.title": "런타임 설정 편집",
   "edit.open_dashboard": "설정 대시보드에서 열기 ↗",
   "edit.loading": "설정 불러오는 중…",
   "edit.close_panel": "패널 닫기",
   "edit.edit_setting": "런타임 설정 편집",
-
   "edit.key_label": "키",
   "edit.value_type_label": "값 유형",
   "edit.value_label": "값",
   "edit.description_label": "설명",
-
   "edit.type_string": "문자열",
   "edit.type_integer": "정수",
   "edit.type_float": "실수",
   "edit.type_boolean": "불리언",
   "edit.type_datetime": "날짜/시간",
   "edit.type_array": "배열",
-
   "edit.enabled": "사용",
   "edit.cancel": "취소",
   "edit.save": "저장",
   "edit.saving": "저장 중…",
-
   "edit.placeholder_array": "한 줄에 하나씩 입력",
   "edit.placeholder_integer": "정수를 입력하세요",
   "edit.placeholder_float": "숫자를 입력하세요",
   "edit.placeholder_datetime": "날짜/시간을 입력하세요 (예: 2025-01-15T10:30:00Z)",
   "edit.save_error": "설정을 저장하지 못했습니다.",
-
+  "edit.http_error": "서버에서 오류를 반환했습니다 (HTTP ${status}). 다시 시도해 주세요.",
+  "edit.network_error": "서버에 연결할 수 없습니다. 연결을 확인하고 다시 시도해 주세요.",
   "language.label": "언어",
   "language.name": "한국어",
-
   "dir": "ltr"
 }

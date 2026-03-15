@@ -3,6 +3,8 @@
 module UltraSettings
   # Helper class for rendering the settings information in an HTML page.
   class WebView
+    include RenderHelper
+
     attr_reader :layout_css
 
     # Initialize a new WebView with the specified color scheme.
@@ -33,7 +35,6 @@ module UltraSettings
     def content
       UltraSettings::ApplicationView.new(
         color_scheme: @color_scheme,
-        super_settings_api_path: UltraSettings.super_settings_api_path,
         locale: @locale || UltraSettings::I18n::DEFAULT_LOCALE
       ).render
     end

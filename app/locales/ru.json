@@ -2,77 +2,61 @@
   "page.title": "Конфигурация приложения",
   "page.brand_title": "UltraSettings",
   "page.brand_subtitle": "Инспектор конфигурации",
-
   "sidebar.open_nav_menu": "Открыть меню навигации",
   "sidebar.config_list": "Список конфигураций",
   "sidebar.filter_placeholder": "Фильтровать конфигурации и поля…",
   "sidebar.filter_aria_label": "Фильтровать конфигурации",
   "sidebar.configurations_label": "Конфигурации",
   "sidebar.config_nav": "Навигация по конфигурациям",
-
   "search.placeholder": "Поиск конфигураций…",
   "search.filter_aria_label": "Поиск конфигураций",
   "search.clear_aria": "Очистить выбор и вернуться к списку",
   "config_list.fields": "поля",
-
-  "search.placeholder": "Поиск конфигураций…",
-  "search.filter_aria_label": "Поиск конфигураций",
-  "search.clear_aria": "Очистить выбор и вернуться к списку",
-  "config_list.fields": "поля",
-
   "field.secret": "Секретно",
   "field.static": "Статическое",
   "field.nil": "nil",
   "field.click_to_expand": "Нажмите, чтобы развернуть",
   "field.not_set": "не задано",
-
   "source.env": "ENV",
   "source.setting": "НАСТРОЙКА",
   "source.yaml": "YAML",
   "source.default": "ПО УМОЛЧАНИЮ",
   "source.active": "● Активно",
   "source.overridden": "Переопределено",
-
   "detail.field_detail": "Сведения о поле",
   "detail.close_panel": "Закрыть панель",
   "detail.type_label": "Тип:",
   "detail.secret_badge": "СЕКРЕТНО",
   "detail.secret_value": "•••••••• (секретно)",
-
   "config.file_not_found": "(не найдено)",
   "config.edit_tooltip": "Изменить ${name}",
-
   "edit.title": "Изменить настройку времени выполнения",
   "edit.open_dashboard": "Открыть на панели настроек ↗",
   "edit.loading": "Загрузка настройки…",
   "edit.close_panel": "Закрыть панель",
   "edit.edit_setting": "Изменить настройку времени выполнения",
-
   "edit.key_label": "Ключ",
   "edit.value_type_label": "Тип значения",
   "edit.value_label": "Значение",
   "edit.description_label": "Описание",
-
   "edit.type_string": "строка",
   "edit.type_integer": "целое число",
   "edit.type_float": "число с плавающей точкой",
   "edit.type_boolean": "логическое значение",
   "edit.type_datetime": "дата и время",
   "edit.type_array": "массив",
-
   "edit.enabled": "Включено",
   "edit.cancel": "Отмена",
   "edit.save": "Сохранить",
   "edit.saving": "Сохранение…",
-
   "edit.placeholder_array": "По одному значению в строке",
   "edit.placeholder_integer": "Введите целое число",
   "edit.placeholder_float": "Введите число",
   "edit.placeholder_datetime": "Введите дату и время (например, 2025-01-15T10:30:00Z)",
   "edit.save_error": "Не удалось сохранить настройку.",
-
+  "edit.http_error": "Сервер вернул ошибку (HTTP ${status}). Пожалуйста, попробуйте еще раз.",
+  "edit.network_error": "Не удалось подключиться к серверу. Пожалуйста, проверьте ваше соединение и попробуйте еще раз.",
   "language.label": "Язык",
   "language.name": "Русский",
-
   "dir": "ltr"
 }

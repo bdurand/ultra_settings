@@ -77,8 +77,18 @@ body {
   padding: 0 24px;
 }
 
+.ultra-settings-page-footer {
+  max-width: 940px;
+  padding: 0 44px 24px 44px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 @media (max-width: 640px) {
   .ultra-settings-page-header-inner {
+    padding: 16px;
+  }
+  .ultra-settings-page-footer {
     padding: 16px;
   }
 }

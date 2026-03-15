@@ -2,73 +2,61 @@
   "page.title": "アプリケーション設定",
   "page.brand_title": "UltraSettings",
   "page.brand_subtitle": "設定インスペクター",
-
   "sidebar.open_nav_menu": "ナビゲーションメニューを開く",
   "sidebar.config_list": "設定一覧",
   "sidebar.filter_placeholder": "設定とフィールドを絞り込む…",
   "sidebar.filter_aria_label": "設定を絞り込む",
   "sidebar.configurations_label": "設定",
   "sidebar.config_nav": "設定ナビゲーション",
-
   "search.placeholder": "構成を検索…",
   "search.filter_aria_label": "構成を検索",
   "search.clear_aria": "選択をクリアしてリストに戻る",
   "config_list.fields": "フィールド",
-
-
   "field.secret": "シークレット",
   "field.static": "静的",
   "field.nil": "nil",
   "field.click_to_expand": "クリックして展開",
   "field.not_set": "未設定",
-
   "source.env": "ENV",
   "source.setting": "設定",
   "source.yaml": "YAML",
   "source.default": "デフォルト",
   "source.active": "● 有効",
   "source.overridden": "上書き済み",
-
   "detail.field_detail": "フィールド詳細",
   "detail.close_panel": "パネルを閉じる",
   "detail.type_label": "型:",
   "detail.secret_badge": "シークレット",
   "detail.secret_value": "•••••••• (シークレット)",
-
   "config.file_not_found": "(見つかりません)",
   "config.edit_tooltip": "${name} を編集",
-
   "edit.title": "ランタイム設定を編集",
   "edit.open_dashboard": "設定ダッシュボードで開く ↗",
   "edit.loading": "設定を読み込み中…",
   "edit.close_panel": "パネルを閉じる",
   "edit.edit_setting": "ランタイム設定を編集",
-
   "edit.key_label": "キー",
   "edit.value_type_label": "値の種類",
   "edit.value_label": "値",
   "edit.description_label": "説明",
-
   "edit.type_string": "文字列",
   "edit.type_integer": "整数",
   "edit.type_float": "浮動小数点数",
   "edit.type_boolean": "真偽値",
   "edit.type_datetime": "日時",
   "edit.type_array": "配列",
-
   "edit.enabled": "有効",
   "edit.cancel": "キャンセル",
   "edit.save": "保存",
   "edit.saving": "保存中…",
-
   "edit.placeholder_array": "1 行に 1 項目",
   "edit.placeholder_integer": "整数を入力",
   "edit.placeholder_float": "数値を入力",
   "edit.placeholder_datetime": "日時を入力してください (例: 2025-01-15T10:30:00Z)",
   "edit.save_error": "設定を保存できませんでした。",
-
+  "edit.http_error": "サーバーがエラーを返しました (HTTP ${status})。もう一度お試しください。",
+  "edit.network_error": "サーバーに到達できません。接続を確認してもう一度お試しください。",
   "language.label": "言語",
   "language.name": "日本語",
-
   "dir": "ltr"
 }

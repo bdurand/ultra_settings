@@ -2,77 +2,61 @@
   "page.title": "ایپلی کیشن کی تشکیل",
   "page.brand_title": "UltraSettings",
   "page.brand_subtitle": "تشکیل معائنہ کار",
-
   "sidebar.open_nav_menu": "نیویگیشن مینو کھولیں",
   "sidebar.config_list": "تشکیلات کی فہرست",
   "sidebar.filter_placeholder": "تشکیلات اور فیلڈز فلٹر کریں…",
   "sidebar.filter_aria_label": "تشکیلات فلٹر کریں",
   "sidebar.configurations_label": "تشکیلات",
   "sidebar.config_nav": "تشکیل نیویگیشن",
-
   "search.placeholder": "ترتیبات تلاش کریں…",
   "search.filter_aria_label": "ترتیبات تلاش کریں",
   "search.clear_aria": "انتخاب صاف کریں اور فہرست پر واپس جائیں",
   "config_list.fields": "فیلڈز",
-
-  "search.placeholder": "ترتیبات تلاش کریں…",
-  "search.filter_aria_label": "ترتیبات تلاش کریں",
-  "search.clear_aria": "انتخاب صاف کریں اور فہرست پر واپس جائیں",
-  "config_list.fields": "فیلڈز",
-
   "field.secret": "خفیہ",
   "field.static": "جامد",
   "field.nil": "nil",
   "field.click_to_expand": "پھیلانے کے لیے کلک کریں",
   "field.not_set": "سیٹ نہیں",
-
   "source.env": "ENV",
   "source.setting": "ترتیب",
   "source.yaml": "YAML",
   "source.default": "طے شدہ",
   "source.active": "● فعال",
   "source.overridden": "اووررائیڈ شدہ",
-
   "detail.field_detail": "فیلڈ کی تفصیل",
   "detail.close_panel": "پینل بند کریں",
   "detail.type_label": "قسم:",
   "detail.secret_badge": "خفیہ",
   "detail.secret_value": "•••••••• (خفیہ)",
-
   "config.file_not_found": "(نہیں ملا)",
   "config.edit_tooltip": "${name} میں ترمیم کریں",
-
   "edit.title": "رن ٹائم ترتیب میں ترمیم کریں",
   "edit.open_dashboard": "ترتیبات ڈیش بورڈ میں کھولیں ↗",
   "edit.loading": "ترتیب لوڈ ہو رہی ہے…",
   "edit.close_panel": "پینل بند کریں",
   "edit.edit_setting": "رن ٹائم ترتیب میں ترمیم کریں",
-
   "edit.key_label": "کلید",
   "edit.value_type_label": "قدر کی قسم",
   "edit.value_label": "قدر",
   "edit.description_label": "تفصیل",
-
   "edit.type_string": "سٹرنگ",
   "edit.type_integer": "صحیح عدد",
   "edit.type_float": "اعشاری عدد",
   "edit.type_boolean": "بولین",
   "edit.type_datetime": "تاریخ اور وقت",
   "edit.type_array": "ارے",
-
   "edit.enabled": "فعال",
   "edit.cancel": "منسوخ کریں",
   "edit.save": "محفوظ کریں",
   "edit.saving": "محفوظ کیا جا رہا ہے…",
-
   "edit.placeholder_array": "ہر سطر میں ایک اندراج",
   "edit.placeholder_integer": "ایک صحیح عدد درج کریں",
   "edit.placeholder_float": "ایک عدد درج کریں",
   "edit.placeholder_datetime": "تاریخ اور وقت درج کریں (مثلاً 2025-01-15T10:30:00Z)",
   "edit.save_error": "ترتیب محفوظ نہ ہو سکی۔",
-
+  "edit.http_error": "سرور نے ایک خامی لوٹائی (HTTP ${status})۔ براہ کرم دوبارہ کوشش کریں۔",
+  "edit.network_error": "سرور تک پہنچنے سے قاصر۔ براہ کرم اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
   "language.label": "زبان",
   "language.name": "اردو",
-
   "dir": "rtl"
 }

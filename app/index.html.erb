@@ -1,11 +1,9 @@
 <%= style_tag %>
 
 <% configurations = UltraSettings.__configurations__.reject { |config| config.class.fields.empty? }.sort_by { |config| config.class.name.downcase } %>
-<% locales = UltraSettings::I18n.available_locales %>
-<% current_locale_name = UltraSettings::I18n.t("language.name", locale: locale) %>
 <% single_config = configurations.size == 1 %>
 
-<div class="ultra-settings"<% if super_settings_api_path %> data-ss-api-path="<%= html_escape(super_settings_api_path) %>"<% end %><% raw_url = UltraSettings.instance_variable_get(:@runtime_settings_url).to_s %><% unless raw_url.empty? %> data-runtime-settings-url="<%= html_escape(raw_url) %>"<% end %><% if single_config %> data-single-config="section-<%= html_escape(configurations.first.class.name) %>"<% end %>>
+<div class="ultra-settings"<% if UltraSettings.super_settings_api_path %> data-ss-api-path="<%= html_escape(UltraSettings.super_settings_api_path) %>"<% end %><% raw_url = UltraSettings.instance_variable_get(:@runtime_settings_url).to_s %><% unless raw_url.empty? %> data-runtime-settings-url="<%= html_escape(raw_url) %>"<% end %><% if single_config %> data-single-config="section-<%= html_escape(configurations.first.class.name) %>"<% end %>>
 
   <% unless single_config %>
     <div class="ultra-settings-topbar" id="ultra-settings-topbar">
@@ -19,51 +17,6 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-
-      <% if locales.size > 1 %>
-        <details class="ultra-settings-language-menu" id="ultra-settings-language-menu">
-          <summary class="ultra-settings-language-trigger" aria-label="<%= t('language.label') %>" aria-haspopup="menu">
-            <span class="ultra-settings-language-trigger-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="9"></circle>
-                <path d="M3.6 9h16.8"></path>
-                <path d="M3.6 15h16.8"></path>
-                <path d="M12 3a14 14 0 0 1 0 18"></path>
-                <path d="M12 3a14 14 0 0 0 0 18"></path>
-              </svg>
-            </span>
-            <span class="ultra-settings-language-trigger-current"><%= html_escape(current_locale_name) %></span>
-            <span class="ultra-settings-language-trigger-caret" aria-hidden="true">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m4 6 4 4 4-4"></path>
-              </svg>
-            </span>
-          </summary>
-
-          <menu class="ultra-settings-language-popup" role="menu" aria-label="<%= t('language.label') %>">
-            <% locales.each do |loc| %>
-              <% language_name = UltraSettings::I18n.t('language.name', locale: loc) %>
-              <% active = loc == locale %>
-              <li>
-                <button
-                  type="button"
-                  class="ultra-settings-language-option<%= ' is-active' if active %>"
-                  role="menuitemradio"
-                  aria-checked="<%= active %>"
-                  data-locale="<%= html_escape(loc) %>"
-                >
-                  <span class="ultra-settings-language-option-name"><%= html_escape(language_name) %></span>
-                  <span class="ultra-settings-language-option-check" aria-hidden="true">
-                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="m3.5 8 3 3 6-6"></path>
-                    </svg>
-                  </span>
-                </button>
-              </li>
-            <% end %>
-          </menu>
-        </details>
-      <% end %>
     </div>
   <% end %>
 
@@ -103,7 +56,7 @@
         data-config-id="section-<%= html_escape(configuration.class.name) %>"
         style="display:none"
       >
-        <%= UltraSettings::ConfigurationView.new(configuration, super_settings_api_path: super_settings_api_path, locale: locale).render %>
+        <%= UltraSettings::ConfigurationView.new(configuration, locale: locale).render %>
       </section>
     <% end %>
   </div>
@@ -123,7 +76,7 @@
     </div>
   </div>
 
-  <% if super_settings_api_path %>
+  <% if UltraSettings.super_settings_api_path %>
     <!-- SuperSettings Edit Panel (slide-out) -->
     <div class="ultra-settings-ss-panel-bg" id="ultra-settings-ss-panel-bg"></div>
     <div class="ultra-settings-ss-panel" id="ultra-settings-ss-panel" role="dialog" aria-label="<%= t('edit.edit_setting') %>">

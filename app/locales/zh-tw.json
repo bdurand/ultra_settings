@@ -2,77 +2,61 @@
   "page.title": "應用程式設定",
   "page.brand_title": "UltraSettings",
   "page.brand_subtitle": "設定檢查器",
-
   "sidebar.open_nav_menu": "開啟導覽選單",
   "sidebar.config_list": "設定清單",
   "sidebar.filter_placeholder": "篩選設定與欄位…",
   "sidebar.filter_aria_label": "篩選設定",
   "sidebar.configurations_label": "設定",
   "sidebar.config_nav": "設定導覽",
-
   "search.placeholder": "搜尋配置…",
   "search.filter_aria_label": "搜尋配置",
   "search.clear_aria": "清除選取並返回列表",
   "config_list.fields": "欄位",
-
-  "search.placeholder": "搜尋配置…",
-  "search.filter_aria_label": "搜尋配置",
-  "search.clear_aria": "清除選取並返回列表",
-  "config_list.fields": "欄位",
-
   "field.secret": "機密",
   "field.static": "靜態",
   "field.nil": "nil",
   "field.click_to_expand": "點擊以展開",
   "field.not_set": "未設定",
-
   "source.env": "ENV",
   "source.setting": "設定",
   "source.yaml": "YAML",
   "source.default": "預設",
   "source.active": "● 目前生效",
   "source.overridden": "已覆寫",
-
   "detail.field_detail": "欄位詳細資料",
   "detail.close_panel": "關閉面板",
   "detail.type_label": "類型：",
   "detail.secret_badge": "機密",
   "detail.secret_value": "•••••••• (機密)",
-
   "config.file_not_found": "(找不到)",
   "config.edit_tooltip": "編輯 ${name}",
-
   "edit.title": "編輯執行階段設定",
   "edit.open_dashboard": "在設定儀表板中開啟 ↗",
   "edit.loading": "正在載入設定…",
   "edit.close_panel": "關閉面板",
   "edit.edit_setting": "編輯執行階段設定",
-
   "edit.key_label": "鍵",
   "edit.value_type_label": "值類型",
   "edit.value_label": "值",
   "edit.description_label": "描述",
-
   "edit.type_string": "字串",
   "edit.type_integer": "整數",
   "edit.type_float": "浮點數",
   "edit.type_boolean": "布林值",
   "edit.type_datetime": "日期時間",
   "edit.type_array": "陣列",
-
   "edit.enabled": "已啟用",
   "edit.cancel": "取消",
   "edit.save": "儲存",
   "edit.saving": "儲存中…",
-
   "edit.placeholder_array": "每行一項",
   "edit.placeholder_integer": "請輸入整數",
   "edit.placeholder_float": "請輸入數字",
   "edit.placeholder_datetime": "請輸入日期時間 (例如 2025-01-15T10:30:00Z)",
   "edit.save_error": "儲存設定失敗。",
-
+  "edit.http_error": "伺服器回傳錯誤 (HTTP ${status})。請重試。",
+  "edit.network_error": "無法連線至伺服器。請檢查您的連線並重試。",
   "language.label": "語言",
   "language.name": "繁體中文",
-
   "dir": "ltr"
 }

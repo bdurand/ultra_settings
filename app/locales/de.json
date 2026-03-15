@@ -2,77 +2,61 @@
   "page.title": "Anwendungskonfiguration",
   "page.brand_title": "UltraSettings",
   "page.brand_subtitle": "Konfigurationsinspektor",
-
   "sidebar.open_nav_menu": "Navigationsmenü öffnen",
   "sidebar.config_list": "Konfigurationsliste",
   "sidebar.filter_placeholder": "Konfigurationen & Felder filtern…",
   "sidebar.filter_aria_label": "Konfigurationen filtern",
   "sidebar.configurations_label": "Konfigurationen",
   "sidebar.config_nav": "Konfigurationsnavigation",
-
   "search.placeholder": "Konfigurationen suchen…",
   "search.filter_aria_label": "Konfigurationen suchen",
   "search.clear_aria": "Auswahl aufheben und zur Liste zurückkehren",
   "config_list.fields": "Felder",
-
-  "search.placeholder": "Konfigurationen suchen…",
-  "search.filter_aria_label": "Konfigurationen suchen",
-  "search.clear_aria": "Auswahl aufheben und zur Liste zurückkehren",
-  "config_list.fields": "Felder",
-
   "field.secret": "Geheim",
   "field.static": "Statisch",
   "field.nil": "nil",
   "field.click_to_expand": "Zum Aufklappen klicken",
   "field.not_set": "nicht gesetzt",
-
   "source.env": "ENV",
   "source.setting": "EINSTELLUNG",
   "source.yaml": "YAML",
   "source.default": "STANDARD",
   "source.active": "● Aktiv",
   "source.overridden": "Überschrieben",
-
   "detail.field_detail": "Felddetails",
   "detail.close_panel": "Bereich schließen",
   "detail.type_label": "Typ:",
   "detail.secret_badge": "GEHEIM",
   "detail.secret_value": "•••••••• (geheim)",
-
   "config.file_not_found": "(nicht gefunden)",
   "config.edit_tooltip": "${name} bearbeiten",
-
   "edit.title": "Laufzeiteinstellung bearbeiten",
   "edit.open_dashboard": "Im Einstellungs-Dashboard öffnen ↗",
   "edit.loading": "Einstellung wird geladen…",
   "edit.close_panel": "Bereich schließen",
   "edit.edit_setting": "Laufzeiteinstellung bearbeiten",
-
   "edit.key_label": "Schlüssel",
   "edit.value_type_label": "Werttyp",
   "edit.value_label": "Wert",
   "edit.description_label": "Beschreibung",
-
   "edit.type_string": "Zeichenfolge",
   "edit.type_integer": "Ganzzahl",
   "edit.type_float": "Gleitkommazahl",
   "edit.type_boolean": "Boolesch",
   "edit.type_datetime": "Datum/Zeit",
   "edit.type_array": "Array",
-
   "edit.enabled": "Aktiviert",
   "edit.cancel": "Abbrechen",
   "edit.save": "Speichern",
   "edit.saving": "Wird gespeichert…",
-
   "edit.placeholder_array": "Ein Eintrag pro Zeile",
   "edit.placeholder_integer": "Geben Sie eine Ganzzahl ein",
   "edit.placeholder_float": "Geben Sie eine Zahl ein",
   "edit.placeholder_datetime": "Geben Sie ein Datum mit Uhrzeit ein (z. B. 2025-01-15T10:30:00Z)",
   "edit.save_error": "Die Einstellung konnte nicht gespeichert werden.",
-
+  "edit.http_error": "Der Server hat einen Fehler zurückgegeben (HTTP ${status}). Bitte versuchen Sie es erneut.",
+  "edit.network_error": "Der Server konnte nicht erreicht werden. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
   "language.label": "Sprache",
   "language.name": "Deutsch",
-
   "dir": "ltr"
 }

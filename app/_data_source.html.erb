@@ -19,7 +19,7 @@
   <% end %>
 
   <% if source == :settings %>
-    <% if super_settings_api_path %>
+    <% if defined?(super_settings_api_path) && super_settings_api_path %>
       <button
         type="button"
         class="ultra-settings-edit-link ultra-settings-ss-edit-btn"
