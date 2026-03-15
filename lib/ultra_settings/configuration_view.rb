@@ -16,11 +16,11 @@ module UltraSettings
     # Initialize the configuration view with a configuration instance.
     #
     # @param configuration [UltraSettings::Configuration] The configuration instance to display.
-    # @param can_edit_super_settings [Boolean] Whether SuperSettings inline editing is enabled.
+    # @param super_settings_api_path [String, nil] The URL path where the SuperSettings API is mounted.
     # @param locale [String] The locale code for translations.
-    def initialize(configuration, can_edit_super_settings: false, locale: UltraSettings::I18n::DEFAULT_LOCALE)
+    def initialize(configuration, super_settings_api_path: nil, locale: UltraSettings::I18n::DEFAULT_LOCALE)
       @configuration = configuration
-      @can_edit_super_settings = can_edit_super_settings
+      @super_settings_api_path = super_settings_api_path
       @locale = locale
     end
 
@@ -30,7 +30,7 @@ module UltraSettings
     # @return [String] The rendered HTML.
     def render(table_class: "")
       configuration = @configuration
-      can_edit_super_settings = @can_edit_super_settings
+      super_settings_api_path = @super_settings_api_path
       html = ViewHelper.erb_template("configuration.html.erb").result(binding)
       html = html.html_safe if html.respond_to?(:html_safe)
       html

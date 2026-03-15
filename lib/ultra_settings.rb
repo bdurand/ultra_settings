@@ -41,7 +41,7 @@ module UltraSettings
   @runtime_settings = nil
   @runtime_settings_url = nil
   @runtime_settings_secure = true
-  @super_settings_editing = false
+  @super_settings_api_path = nil
 
   class << self
     # Adds a configuration to the root namespace. The configuration will be
@@ -221,47 +221,37 @@ module UltraSettings
       @runtime_settings_secure
     end
 
-    # Enable inline editing of runtime settings using the super_settings gem.
-    # When this is set to true (or to a callable), the web UI will show edit dialogs
-    # for runtime settings that allow creating or updating settings directly through
-    # the SuperSettings API. This requires the super_settings gem to be loaded and
-    # set as the runtime settings store.
+    # Set the URL path where the SuperSettings API is mounted. When this is set,
+    # the web UI will check the SuperSettings API at this path for edit access
+    # and load the SuperSettings api.js client library to enable inline editing
+    # of runtime settings.
     #
-    # You can pass a boolean to enable or disable editing globally, or a lambda/proc
-    # that accepts a Rack::Request and returns a boolean. This allows you to control
-    # access based on the current request (e.g. checking user permissions).
+    # The path must be a relative URL path starting with "/". Authorization is
+    # handled entirely by SuperSettings — the browser makes a GET request to
+    # the /authorized endpoint to check access and all API calls go directly
+    # to the SuperSettings endpoint.
     #
-    # @param value [Boolean, Proc] Whether to enable super_settings editing, or a
-    #   callable that receives a Rack::Request and returns a boolean.
+    # @param value [String, nil] The relative URL path where SuperSettings is mounted.
     # @return [void]
-    def super_settings_editing=(value)
-      raise "super_settings gem is required for super_settings editing" unless defined?(::SuperSettings)
+    def super_settings_api_path=(value)
+      raise "super_settings gem is required for super_settings_api_path" unless defined?(::SuperSettings)
 
-      if value.respond_to?(:call)
-        @super_settings_editing = value
-        self.runtime_settings = ::SuperSettings
-      else
-        @super_settings_editing = !!value
-        self.runtime_settings = ::SuperSettings if @super_settings_editing
+      if value.nil?
+        @super_settings_api_path = nil
+        return
       end
+
+      value = value.to_s
+      raise ArgumentError, "super_settings_api_path must be a relative URL path starting with '/'" unless value.start_with?("/")
+
+      @super_settings_api_path = value.chomp("/")
+      self.runtime_settings = ::SuperSettings
     end
 
-    # Check if super_settings editing is allowed for the given request.
+    # Get the URL path where the SuperSettings API is mounted.
     #
-    # If `super_settings_editing` was set to a callable (e.g. a lambda), it will be
-    # invoked with the request to determine access. Otherwise, the boolean value is returned.
-    #
-    # @param request [Rack::Request, nil] The current Rack request (required when using a callable).
-    # @return [Boolean]
-    def can_edit_super_settings?(request = nil)
-      return false unless defined?(::SuperSettings) && !@runtime_settings.nil?
-
-      if @super_settings_editing.respond_to?(:call)
-        !!@super_settings_editing.call(request)
-      else
-        !!@super_settings_editing
-      end
-    end
+    # @return [String, nil]
+    attr_reader :super_settings_api_path
 
     # Set whether fields should be considered secret by default.
     #

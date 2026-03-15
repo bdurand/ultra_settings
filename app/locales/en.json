@@ -65,6 +65,8 @@
   "edit.placeholder_float": "Enter a number",
   "edit.placeholder_datetime": "Enter a datetime (e.g. 2025-01-15T10:30:00Z)",
   "edit.save_error": "Failed to save setting.",
+  "edit.http_error": "The server returned an error (HTTP ${status}). Please try again.",
+  "edit.network_error": "Unable to reach the server. Please check your connection and try again.",
 
   "language.label": "Language",
   "language.name": "English",

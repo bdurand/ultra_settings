@@ -43,32 +43,21 @@ RSpec.describe UltraSettings::ApplicationView do
     expect(style_tag).to end_with("</style>")
   end
 
-  describe "super_settings editing" do
-    around do |example|
-      save_editing = UltraSettings.instance_variable_get(:@super_settings_editing)
-      save_runtime = UltraSettings.instance_variable_get(:@runtime_settings)
-      begin
-        example.run
-      ensure
-        UltraSettings.instance_variable_set(:@super_settings_editing, save_editing)
-        UltraSettings.runtime_settings = save_runtime
-      end
-    end
-
-    it "renders the edit panel when can_edit_super_settings is true", settings: {} do
-      html = UltraSettings::ApplicationView.new(can_edit_super_settings: true).render
-      expect(html).to include('data-ss-editing="true"')
+  describe "super_settings_api_path" do
+    it "renders the edit panel when super_settings_api_path is set", settings: {} do
+      html = UltraSettings::ApplicationView.new(super_settings_api_path: "/super_settings").render
+      expect(html).to include('data-ss-api-path="/super_settings"')
       expect(html).to include("ultra-settings-ss-panel")
     end
 
-    it "does not render the edit panel when can_edit_super_settings is false" do
-      html = UltraSettings::ApplicationView.new(can_edit_super_settings: false).render
-      expect(html).not_to include('data-ss-editing="true"')
+    it "does not render the edit panel when super_settings_api_path is nil" do
+      html = UltraSettings::ApplicationView.new(super_settings_api_path: nil).render
+      expect(html).not_to include('data-ss-api-path')
       expect(html).not_to include('id="ultra-settings-ss-panel"')
     end
 
-    it "renders valid HTML with super_settings editing enabled", settings: {} do
-      html = UltraSettings::ApplicationView.new(can_edit_super_settings: true).render
+    it "renders valid HTML with super_settings_api_path set", settings: {} do
+      html = UltraSettings::ApplicationView.new(super_settings_api_path: "/super_settings").render
       doc = Nokogiri::HTML5(html)
       expect(doc.errors).to be_empty
     end

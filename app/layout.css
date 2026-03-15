@@ -72,6 +72,11 @@ body {
   letter-spacing: 0.01em;
 }
 
+.ultra-settings-page-content {
+  max-width: 940px;
+  padding: 0 24px;
+}
+
 @media (max-width: 640px) {
   .ultra-settings-page-header-inner {
     padding: 16px;

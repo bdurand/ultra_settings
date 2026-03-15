@@ -29,12 +29,12 @@ RSpec.describe "Web UI", type: :system do
   before do
     skip "super_settings gem is not available" unless defined?(::SuperSettings)
 
-    @saved_editing = UltraSettings.instance_variable_get(:@super_settings_editing)
+    @saved_api_path = UltraSettings.instance_variable_get(:@super_settings_api_path)
     @saved_runtime = UltraSettings.instance_variable_get(:@runtime_settings)
     @saved_secret = UltraSettings.instance_variable_get(:@fields_secret_by_default)
 
-    # Enable super_settings editing for all tests by default
-    UltraSettings.instance_variable_set(:@super_settings_editing, true)
+    # Enable super_settings integration for all tests by default
+    UltraSettings.instance_variable_set(:@super_settings_api_path, "/super_settings")
     UltraSettings.runtime_settings = SuperSettings
     UltraSettings.fields_secret_by_default = false
 
@@ -43,12 +43,22 @@ RSpec.describe "Web UI", type: :system do
   end
 
   after do
-    UltraSettings.instance_variable_set(:@super_settings_editing, @saved_editing)
+    UltraSettings.instance_variable_set(:@super_settings_api_path, @saved_api_path)
     UltraSettings.instance_variable_set(:@runtime_settings, @saved_runtime)
     UltraSettings.fields_secret_by_default = @saved_secret if @saved_secret
   end
 
-  let(:rack_app) { UltraSettings::RackApp.new }
+  # Build a combined Rack app that mounts both UltraSettings and SuperSettings.
+  # We use SuperSettings::RackApplication with a path_prefix so it handles
+  # routing internally, and pass the UltraSettings app as the fallback.
+  let(:rack_app) do
+    us_app = UltraSettings::RackApp.new
+    SuperSettings::RackApplication.new(us_app, "/super_settings") do
+      def current_user(request)
+        "test-user"
+      end
+    end
+  end
 
   before do
     Capybara.app = rack_app
@@ -296,7 +306,7 @@ RSpec.describe "Web UI", type: :system do
         # Find the timeout field's runtime setting edit button
         timeout_card = find(".ultra-settings-field-card[data-field-name='timeout']")
         within timeout_card do
-          find(".ultra-settings-ss-edit-btn").click
+          find(".ultra-settings-ss-edit-btn", wait: 10).click
         end
       end
 
@@ -338,7 +348,7 @@ RSpec.describe "Web UI", type: :system do
       within my_service_section do
         timeout_card = find(".ultra-settings-field-card[data-field-name='timeout']")
         within timeout_card do
-          find(".ultra-settings-ss-edit-btn").click
+          find(".ultra-settings-ss-edit-btn", wait: 10).click
         end
       end
 
@@ -356,8 +366,8 @@ RSpec.describe "Web UI", type: :system do
       expect(setting).to be_nil
     end
 
-    it "does not show edit buttons when super_settings editing is disabled" do
-      UltraSettings.instance_variable_set(:@super_settings_editing, false)
+    it "does not show edit buttons when super_settings_api_path is nil" do
+      UltraSettings.instance_variable_set(:@super_settings_api_path, nil)
 
       visit "/"
       select_config("MyServiceConfiguration")
@@ -379,7 +389,7 @@ RSpec.describe "Web UI", type: :system do
       within my_service_section do
         host_card = find(".ultra-settings-field-card[data-field-name='host']")
         within host_card do
-          find(".ultra-settings-ss-edit-btn").click
+          find(".ultra-settings-ss-edit-btn", wait: 10).click
         end
       end
 

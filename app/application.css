@@ -15,6 +15,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: var(--bg-page);
+  padding: 20px;
 }
 
 .ultra-settings *, .ultra-settings *::before, .ultra-settings *::after {
@@ -28,7 +29,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 20px 44px 12px;
+  padding: 0 0 12px;
   max-width: 940px;
 }
 
@@ -315,7 +316,7 @@
    ══════════════════════════════════════════ */
 .ultra-settings-config-list {
   max-width: 940px;
-  padding: 8px 44px 40px;
+  padding: 8px 0 40px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -379,17 +380,10 @@
 }
 
 /* ══════════════════════════════════════════
-   MAIN CONTENT
-   ══════════════════════════════════════════ */
-.ultra-settings-main {
-  background: var(--bg-page);
-}
-
-/* ══════════════════════════════════════════
    CONFIG SECTIONS
    ══════════════════════════════════════════ */
 .ultra-settings-config-section {
-  padding: 0 44px 40px;
+  padding: 0;
   max-width: 940px;
 }
 
@@ -397,8 +391,8 @@
   position: sticky;
   top: -1px; z-index: 10;
   background: var(--bg-sticky);
-  padding: 25px 44px 16px;
-  margin: 0 -44px 24px;
+  padding: 25px 0 16px;
+  margin: 0 0 24px;
   border-bottom: 1px solid var(--border-light);
 }
 
@@ -918,7 +912,7 @@
 .ultra-settings-ss-loading {
   text-align: center;
   padding: 32px 16px;
-  color: var(--text-muted);
+  color: var(--text-tertiary);
   font-size: 0.875rem;
 }
 
@@ -939,7 +933,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-muted);
+  color: var(--text-tertiary);
 }
 
 .ultra-settings-ss-input {
@@ -1001,7 +995,7 @@ input[type="number"].ultra-settings-ss-input::-webkit-outer-spin-button {
 .ultra-settings-ss-tz-label {
   flex-shrink: 0;
   font-size: 0.8125rem;
-  color: var(--text-muted);
+  color: var(--text-tertiary);
   white-space: nowrap;
   align-self: center;
 }
@@ -1031,6 +1025,12 @@ input[type="number"].ultra-settings-ss-input::-webkit-outer-spin-button {
   line-height: 1.4;
 }
 
+.ultra-settings-ss-error-list {
+  margin: 0;
+  padding-left: 1.2em;
+  list-style: disc;
+}
+
 .ultra-settings-ss-actions {
   display: flex;
   justify-content: flex-end;
@@ -1055,7 +1055,7 @@ input[type="number"].ultra-settings-ss-input::-webkit-outer-spin-button {
 }
 
 .ultra-settings-ss-btn-cancel:hover {
-  background: var(--bg-hover);
+  background: var(--bg-code);
 }
 
 .ultra-settings-ss-btn-save {
@@ -1071,6 +1071,17 @@ input[type="number"].ultra-settings-ss-input::-webkit-outer-spin-button {
 .ultra-settings-ss-btn-save:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+@keyframes ultra-settings-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ultra-settings-spinner {
+  width: 1em;
+  height: 1em;
+  animation: ultra-settings-spin 0.8s linear infinite;
+  vertical-align: middle;
 }
 
 /* ══════════════════════════════════════════

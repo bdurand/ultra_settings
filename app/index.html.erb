@@ -5,7 +5,7 @@
 <% current_locale_name = UltraSettings::I18n.t("language.name", locale: locale) %>
 <% single_config = configurations.size == 1 %>
 
-<div class="ultra-settings"<% if can_edit_super_settings %> data-ss-editing="true"<% end %><% raw_url = UltraSettings.instance_variable_get(:@runtime_settings_url).to_s %><% unless raw_url.empty? %> data-runtime-settings-url="<%= html_escape(raw_url) %>"<% end %><% if single_config %> data-single-config="section-<%= html_escape(configurations.first.class.name) %>"<% end %>>
+<div class="ultra-settings"<% if super_settings_api_path %> data-ss-api-path="<%= html_escape(super_settings_api_path) %>"<% end %><% raw_url = UltraSettings.instance_variable_get(:@runtime_settings_url).to_s %><% unless raw_url.empty? %> data-runtime-settings-url="<%= html_escape(raw_url) %>"<% end %><% if single_config %> data-single-config="section-<%= html_escape(configurations.first.class.name) %>"<% end %>>
 
   <% unless single_config %>
     <div class="ultra-settings-topbar" id="ultra-settings-topbar">
@@ -103,7 +103,7 @@
         data-config-id="section-<%= html_escape(configuration.class.name) %>"
         style="display:none"
       >
-        <%= UltraSettings::ConfigurationView.new(configuration, can_edit_super_settings: can_edit_super_settings, locale: locale).render %>
+        <%= UltraSettings::ConfigurationView.new(configuration, super_settings_api_path: super_settings_api_path, locale: locale).render %>
       </section>
     <% end %>
   </div>
@@ -123,7 +123,7 @@
     </div>
   </div>
 
-  <% if can_edit_super_settings %>
+  <% if super_settings_api_path %>
     <!-- SuperSettings Edit Panel (slide-out) -->
     <div class="ultra-settings-ss-panel-bg" id="ultra-settings-ss-panel-bg"></div>
     <div class="ultra-settings-ss-panel" id="ultra-settings-ss-panel" role="dialog" aria-label="<%= t('edit.edit_setting') %>">

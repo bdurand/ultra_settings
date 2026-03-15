@@ -283,318 +283,384 @@ document.addEventListener("DOMContentLoaded", () => {
   // ══════════════════════════════════════════
   // SuperSettings Inline Editing
   // ══════════════════════════════════════════
-  const ssContainer = document.querySelector(".ultra-settings[data-ss-editing]");
-  if (ssContainer) {
-    const ssPanel = document.getElementById("ultra-settings-ss-panel");
-    const ssPanelBg = document.getElementById("ultra-settings-ss-panel-bg");
-    const ssForm = document.getElementById("ultra-settings-ss-form");
-    const ssLoading = document.getElementById("ultra-settings-ss-loading");
-    const ssErrors = document.getElementById("ultra-settings-ss-errors");
-    const ssKeyInput = document.getElementById("ultra-settings-ss-key");
-    const ssTitle = document.getElementById("ultra-settings-ss-title");
-    const ssValueTypeSelect = document.getElementById("ultra-settings-ss-value-type");
-    const ssValueTextarea = document.getElementById("ultra-settings-ss-value");
-    const ssValueField = document.getElementById("ultra-settings-ss-value-field");
-    const ssIntegerField = document.getElementById("ultra-settings-ss-integer-field");
-    const ssIntegerInput = document.getElementById("ultra-settings-ss-integer-value");
-    const ssFloatField = document.getElementById("ultra-settings-ss-float-field");
-    const ssFloatInput = document.getElementById("ultra-settings-ss-float-value");
-    const ssBooleanField = document.getElementById("ultra-settings-ss-boolean-field");
-    const ssBooleanCheckbox = document.getElementById("ultra-settings-ss-boolean-value");
-    const ssDatetimeField = document.getElementById("ultra-settings-ss-datetime-field");
-    const ssDatetimeInput = document.getElementById("ultra-settings-ss-datetime-value");
-    const ssTzLabel = document.getElementById("ultra-settings-ss-tz-label");
-    const ssDescriptionInput = document.getElementById("ultra-settings-ss-description");
-    const ssSaveBtn = document.getElementById("ultra-settings-ss-save");
-    const ssCancelBtn = document.getElementById("ultra-settings-ss-cancel");
-    const ssCloseBtn = document.getElementById("ultra-settings-ss-panel-close");
-    const ssExternalLink = document.getElementById("ultra-settings-ss-external-link");
-    const ssRuntimeUrlTemplate = ssContainer.dataset.runtimeSettingsUrl || "";
-
-    // Determine API base URL from current page
-    const getApiBase = () => {
-      let base = window.location.pathname.replace(/\/+$/, "");
-      return base;
-    };
-
-    // Fetch a setting from the SuperSettings API
-    const fetchSetting = (key, callback) => {
-      const url = getApiBase() + "/super_settings/setting?key=" + encodeURIComponent(key);
-      fetch(url, {credentials: "same-origin"})
-        .then(resp => {
-          if (resp.ok) return resp.json();
-          if (resp.status === 404) return null;
-          throw new Error(resp.status + " " + resp.statusText);
-        })
-        .then(callback)
-        .catch(err => {
-          console.error("Error fetching setting:", err);
-          callback(null);
-        });
-    };
-
-    // Save a setting via the SuperSettings API
-    const saveSetting = (params, callback) => {
-      const url = getApiBase() + "/super_settings/setting";
-      fetch(url, {
-        method: "POST",
-        credentials: "same-origin",
-        headers: {"Content-Type": "application/json", "Accept": "application/json"},
-        body: JSON.stringify({settings: [params]})
+  const ssApiPath = root ? root.dataset.ssApiPath : null;
+  if (ssApiPath) {
+    // Check access to the SuperSettings API via GET request
+    fetch(ssApiPath + "/authorized", {method: "GET", credentials: "same-origin"})
+      .then(resp => {
+        if (!resp.ok) {
+          console.log("SuperSettings: access check returned " + resp.status + ", editing disabled");
+          return;
+        }
+        const auth = resp.headers.get("super-settings-permission");
+        if (auth !== "read-write") {
+          console.log("SuperSettings: authorization is '" + auth + "', editing disabled (requires read-write)");
+          return;
+        }
+        loadSuperSettingsApi();
       })
-        .then(resp => resp.json().then(data => ({status: resp.status, data})))
-        .then(callback)
-        .catch(err => {
-          console.error("Error saving setting:", err);
-          callback({status: 500, data: {error: err.message}});
-        });
-    };
-
-    // Get the local timezone name for display
-    const localTz = (() => {
-      try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e) { return "UTC"; }
-    })();
-    if (ssTzLabel) ssTzLabel.textContent = localTz;
-
-    // Show/hide value fields based on type
-    const updateValueField = (type) => {
-      ssValueField.style.display = "none";
-      ssIntegerField.style.display = "none";
-      ssFloatField.style.display = "none";
-      ssBooleanField.style.display = "none";
-      ssDatetimeField.style.display = "none";
-
-      if (type === "boolean") {
-        ssBooleanField.style.display = "";
-      } else if (type === "integer") {
-        ssIntegerField.style.display = "";
-      } else if (type === "float") {
-        ssFloatField.style.display = "";
-      } else if (type === "datetime") {
-        ssDatetimeField.style.display = "";
-      } else if (type === "array") {
-        ssValueField.style.display = "";
-        ssValueTextarea.rows = 6;
-        ssValueTextarea.placeholder = t("edit.placeholder_array");
-      } else {
-        ssValueField.style.display = "";
-        ssValueTextarea.rows = 3;
-        ssValueTextarea.placeholder = "";
-      }
-    };
-
-    ssValueTypeSelect.addEventListener("change", () => {
-      updateValueField(ssValueTypeSelect.value);
-    });
-
-    // Enforce integer-only input: strip non-integer characters as the user types
-    if (ssIntegerInput) {
-      ssIntegerInput.addEventListener("input", () => {
-        const raw = ssIntegerInput.value;
-        // Allow empty, sole minus sign while typing, or valid integer
-        if (raw === "" || raw === "-") return;
-        const parsed = parseInt(raw, 10);
-        if (isNaN(parsed)) {
-          ssIntegerInput.value = "";
-        } else if (String(parsed) !== raw) {
-          ssIntegerInput.value = parsed;
-        }
+      .catch(err => {
+        console.log("SuperSettings: access check failed, editing disabled", err);
       });
-    }
 
-    // Convert the datetime-local input value (local time) to a UTC ISO 8601 string
-    const datetimeToISO = () => {
-      const localVal = ssDatetimeInput.value; // e.g. "2025-01-15T10:30:00"
-      if (!localVal) return "";
-      const d = new Date(localVal);
-      if (isNaN(d.getTime())) return localVal;
-      return d.toISOString();
-    };
+    // Load the SuperSettings api.js client library
+    const loadSuperSettingsApi = () => {
+      // Insert a hidden element so api.js can find its base URL
+      const apiBaseEl = document.createElement("div");
+      apiBaseEl.className = "super-settings";
+      apiBaseEl.dataset.apiBaseUrl = ssApiPath;
+      apiBaseEl.style.display = "none";
+      document.body.appendChild(apiBaseEl);
 
-    // Parse a UTC ISO 8601 string and populate the datetime-local input in local time
-    const populateDatetime = (isoStr) => {
-      if (!isoStr) {
-        ssDatetimeInput.value = "";
-        return;
-      }
-      let str = String(isoStr).trim();
-      // Normalize Ruby Time#to_json format ("2026-03-20 01:07:56 UTC") to ISO 8601
-      str = str.replace(/ UTC$/, "Z").replace(/ /, "T");
-      // Ensure the string is treated as UTC if no timezone indicator present
-      if (!str.endsWith("Z") && !/[+-]\d{2}:?\d{2}$/.test(str)) {
-        str += "Z";
-      }
-      const d = new Date(str);
-      if (isNaN(d.getTime())) {
-        ssDatetimeInput.value = "";
-        return;
-      }
-      // Format as local datetime-local value: YYYY-MM-DDTHH:MM:SS
-      const pad = (n) => String(n).padStart(2, "0");
-      ssDatetimeInput.value = d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) +
-        "T" + pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
-    };
-
-    const getFormValue = () => {
-      if (ssValueTypeSelect.value === "boolean") {
-        return ssBooleanCheckbox.checked ? "true" : "false";
-      }
-      if (ssValueTypeSelect.value === "integer") {
-        return ssIntegerInput.value;
-      }
-      if (ssValueTypeSelect.value === "float") {
-        return ssFloatInput.value;
-      }
-      if (ssValueTypeSelect.value === "datetime") {
-        return datetimeToISO();
-      }
-      return ssValueTextarea.value;
-    };
-
-    // Open the edit panel
-    const openSsPanel = (key, defaultType, defaultDescription) => {
-      if (!ssPanel) return;
-
-      // Close the detail panel if open
-      closePanel();
-
-      // Reset form
-      ssKeyInput.value = key;
-      if (ssTitle) ssTitle.textContent = key;
-      ssValueTextarea.value = "";
-      ssIntegerInput.value = "";
-      ssFloatInput.value = "";
-      ssDatetimeInput.value = "";
-      ssBooleanCheckbox.checked = false;
-      ssDescriptionInput.value = defaultDescription || "";
-      ssValueTypeSelect.value = defaultType || "string";
-      updateValueField(ssValueTypeSelect.value);
-      ssErrors.style.display = "none";
-      ssErrors.textContent = "";
-      ssForm.style.display = "none";
-      ssLoading.style.display = "";
-      ssSaveBtn.disabled = false;
-      ssSaveBtn.textContent = t("edit.save");
-
-      // Build and show external link if runtime_settings_url is configured
-      if (ssExternalLink && ssRuntimeUrlTemplate) {
-        const externalUrl = ssRuntimeUrlTemplate
-          .replace("${name}", encodeURIComponent(key))
-          .replace("${type}", encodeURIComponent(defaultType || ""))
-          .replace("${description}", encodeURIComponent(defaultDescription || ""));
-        ssExternalLink.href = externalUrl;
-        ssExternalLink.style.display = "";
-      } else if (ssExternalLink) {
-        ssExternalLink.style.display = "none";
-      }
-
-      ssPanelBg.classList.add("open");
-      ssPanel.classList.add("open");
-
-      // Fetch existing setting
-      fetchSetting(key, (setting) => {
-        if (setting && !setting.error) {
-          // Existing setting — populate form with current values
-          ssValueTypeSelect.value = setting.value_type || defaultType || "string";
-          updateValueField(ssValueTypeSelect.value);
-
-          if (setting.value_type === "boolean") {
-            ssBooleanCheckbox.checked = (setting.value === true || setting.value === "true");
-          } else if (setting.value_type === "integer") {
-            ssIntegerInput.value = (setting.value != null) ? String(setting.value) : "";
-          } else if (setting.value_type === "float") {
-            ssFloatInput.value = (setting.value != null) ? String(setting.value) : "";
-          } else if (setting.value_type === "datetime") {
-            populateDatetime((setting.value != null) ? String(setting.value) : "");
-          } else if (setting.value_type === "array" && Array.isArray(setting.value)) {
-            ssValueTextarea.value = setting.value.join("\n");
-          } else {
-            ssValueTextarea.value = (setting.value != null) ? String(setting.value) : "";
-          }
-
-          if (setting.description) {
-            ssDescriptionInput.value = setting.description;
-          }
+      const script = document.createElement("script");
+      script.src = ssApiPath + "/api.js";
+      script.onload = () => {
+        if (!window.SuperSettingsAPI) {
+          console.log("SuperSettings: api.js loaded but SuperSettingsAPI not available");
+          return;
         }
-        // If not found, defaults already applied
+        enableSuperSettingsUI();
+      };
+      script.onerror = () => {
+        console.log("SuperSettings: failed to load api.js, editing disabled");
+      };
+      document.head.appendChild(script);
+    };
 
-        ssLoading.style.display = "none";
-        ssForm.style.display = "";
+    // Enable the editing UI after api.js is loaded and access is confirmed
+    const enableSuperSettingsUI = () => {
+      const ssPanel = document.getElementById("ultra-settings-ss-panel");
+      const ssPanelBg = document.getElementById("ultra-settings-ss-panel-bg");
+      const ssForm = document.getElementById("ultra-settings-ss-form");
+      const ssLoading = document.getElementById("ultra-settings-ss-loading");
+      const ssErrors = document.getElementById("ultra-settings-ss-errors");
+      const ssKeyInput = document.getElementById("ultra-settings-ss-key");
+      const ssTitle = document.getElementById("ultra-settings-ss-title");
+      const ssValueTypeSelect = document.getElementById("ultra-settings-ss-value-type");
+      const ssValueTextarea = document.getElementById("ultra-settings-ss-value");
+      const ssValueField = document.getElementById("ultra-settings-ss-value-field");
+      const ssIntegerField = document.getElementById("ultra-settings-ss-integer-field");
+      const ssIntegerInput = document.getElementById("ultra-settings-ss-integer-value");
+      const ssFloatField = document.getElementById("ultra-settings-ss-float-field");
+      const ssFloatInput = document.getElementById("ultra-settings-ss-float-value");
+      const ssBooleanField = document.getElementById("ultra-settings-ss-boolean-field");
+      const ssBooleanCheckbox = document.getElementById("ultra-settings-ss-boolean-value");
+      const ssDatetimeField = document.getElementById("ultra-settings-ss-datetime-field");
+      const ssDatetimeInput = document.getElementById("ultra-settings-ss-datetime-value");
+      const ssTzLabel = document.getElementById("ultra-settings-ss-tz-label");
+      const ssDescriptionInput = document.getElementById("ultra-settings-ss-description");
+      const ssSaveBtn = document.getElementById("ultra-settings-ss-save");
+      const ssCancelBtn = document.getElementById("ultra-settings-ss-cancel");
+      const ssCloseBtn = document.getElementById("ultra-settings-ss-panel-close");
+      const ssExternalLink = document.getElementById("ultra-settings-ss-external-link");
+      const ssRuntimeUrlTemplate = root.dataset.runtimeSettingsUrl || "";
+
+      // Show all edit buttons (they are rendered hidden by default)
+      document.querySelectorAll(".ultra-settings-ss-edit-btn").forEach(btn => {
+        btn.style.display = "";
       });
-    };
 
-    const closeSsPanel = () => {
-      if (ssPanelBg) ssPanelBg.classList.remove("open");
-      if (ssPanel) ssPanel.classList.remove("open");
-    };
+      // Get the local timezone name for display
+      const localTz = (() => {
+        try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e) { return "UTC"; }
+      })();
+      if (ssTzLabel) ssTzLabel.textContent = localTz;
 
-    // Handle save
-    ssSaveBtn.addEventListener("click", () => {
-      const params = {
-        key: ssKeyInput.value,
-        value: getFormValue(),
-        value_type: ssValueTypeSelect.value,
-        description: ssDescriptionInput.value
+      // Show/hide value fields based on type
+      const updateValueField = (type) => {
+        ssValueField.style.display = "none";
+        ssIntegerField.style.display = "none";
+        ssFloatField.style.display = "none";
+        ssBooleanField.style.display = "none";
+        ssDatetimeField.style.display = "none";
+
+        if (type === "boolean") {
+          ssBooleanField.style.display = "";
+        } else if (type === "integer") {
+          ssIntegerField.style.display = "";
+        } else if (type === "float") {
+          ssFloatField.style.display = "";
+        } else if (type === "datetime") {
+          ssDatetimeField.style.display = "";
+        } else if (type === "array") {
+          ssValueField.style.display = "";
+          ssValueTextarea.rows = 6;
+          ssValueTextarea.placeholder = t("edit.placeholder_array");
+        } else {
+          ssValueField.style.display = "";
+          ssValueTextarea.rows = 3;
+          ssValueTextarea.placeholder = "";
+        }
       };
 
-      ssSaveBtn.disabled = true;
-      ssSaveBtn.textContent = t("edit.saving");
-      ssErrors.style.display = "none";
+      ssValueTypeSelect.addEventListener("change", () => {
+        updateValueField(ssValueTypeSelect.value);
+      });
 
-      saveSetting(params, (result) => {
-        if (result.status === 200 && result.data.success) {
-          closeSsPanel();
-          // Store selected config so we can restore it after reload
-          if (selectedConfigId) {
-            sessionStorage.setItem("ultra-settings-selected-config", selectedConfigId);
+      // Enforce integer-only input: strip non-integer characters as the user types
+      if (ssIntegerInput) {
+        ssIntegerInput.addEventListener("input", () => {
+          const raw = ssIntegerInput.value;
+          // Allow empty, sole minus sign while typing, or valid integer
+          if (raw === "" || raw === "-") return;
+          const parsed = parseInt(raw, 10);
+          if (isNaN(parsed)) {
+            ssIntegerInput.value = "";
+          } else if (String(parsed) !== raw) {
+            ssIntegerInput.value = parsed;
           }
-          sessionStorage.setItem("ultra-settings-changed-key", params.key);
-          const activeSection = document.querySelector(".ultra-settings-config-section[style='']");
-          if (activeSection) {
-            sessionStorage.setItem("ultra-settings-changed-section", activeSection.id);
-          }
-          window.location.reload();
-        } else {
-          ssSaveBtn.disabled = false;
-          ssSaveBtn.textContent = t("edit.save");
+        });
+      }
 
-          let errorMsg = t("edit.save_error");
-          if (result.data && result.data.errors) {
+      // Convert the datetime-local input value (local time) to a UTC ISO 8601 string
+      const datetimeToISO = () => {
+        const localVal = ssDatetimeInput.value; // e.g. "2025-01-15T10:30:00"
+        if (!localVal) return "";
+        const d = new Date(localVal);
+        if (isNaN(d.getTime())) return localVal;
+        return d.toISOString();
+      };
+
+      // Parse a UTC ISO 8601 string and populate the datetime-local input in local time
+      const populateDatetime = (isoStr) => {
+        if (!isoStr) {
+          ssDatetimeInput.value = "";
+          return;
+        }
+        let str = String(isoStr).trim();
+        // Normalize Ruby Time#to_json format ("2026-03-20 01:07:56 UTC") to ISO 8601
+        str = str.replace(/ UTC$/, "Z").replace(/ /, "T");
+        // Ensure the string is treated as UTC if no timezone indicator present
+        if (!str.endsWith("Z") && !/[+-]\d{2}:?\d{2}$/.test(str)) {
+          str += "Z";
+        }
+        const d = new Date(str);
+        if (isNaN(d.getTime())) {
+          ssDatetimeInput.value = "";
+          return;
+        }
+        // Format as local datetime-local value: YYYY-MM-DDTHH:MM:SS
+        const pad = (n) => String(n).padStart(2, "0");
+        ssDatetimeInput.value = d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) +
+          "T" + pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+      };
+
+      const getFormValue = () => {
+        if (ssValueTypeSelect.value === "boolean") {
+          return ssBooleanCheckbox.checked ? "true" : "false";
+        }
+        if (ssValueTypeSelect.value === "integer") {
+          return ssIntegerInput.value;
+        }
+        if (ssValueTypeSelect.value === "float") {
+          return ssFloatInput.value;
+        }
+        if (ssValueTypeSelect.value === "datetime") {
+          return datetimeToISO();
+        }
+        return ssValueTextarea.value;
+      };
+
+      // Fetch a setting using the SuperSettings API client
+      const fetchSetting = (key, callback) => {
+        SuperSettingsAPI.fetchSetting(key, callback, (status) => {
+          if (status === 404) {
+            callback(null);
+          } else {
+            console.error("SuperSettings: error fetching setting, status " + status);
+            callback(null);
+          }
+        });
+      };
+
+      // Save a setting via the SuperSettings API
+      const saveSetting = (params, callback) => {
+        fetch(ssApiPath + "/settings", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {"Content-Type": "application/json", "Accept": "application/json"},
+          body: JSON.stringify({settings: [params]})
+        })
+          .then(resp => {
+            return resp.json()
+              .then(data => ({status: resp.status, ok: resp.ok, data}))
+              .catch(() => ({status: resp.status, ok: resp.ok, data: null}));
+          })
+          .then(result => {
+            if (!result.ok && !result.data) {
+              result.data = {success: false, errors: {_http: [t("edit.http_error").replace("${status}", result.status)]}};
+            }
+            callback(result);
+          })
+          .catch(err => {
+            console.error("SuperSettings: error saving setting", err);
+            callback({status: 0, ok: false, data: {success: false, errors: {_http: [t("edit.network_error")]}}});
+          });
+      };
+
+      // Open the edit panel
+      const openSsPanel = (key, defaultType, defaultDescription) => {
+        if (!ssPanel) return;
+
+        // Close the detail panel if open
+        closePanel();
+
+        // Reset form
+        ssKeyInput.value = key;
+        if (ssTitle) ssTitle.textContent = key;
+        ssValueTextarea.value = "";
+        ssIntegerInput.value = "";
+        ssFloatInput.value = "";
+        ssDatetimeInput.value = "";
+        ssBooleanCheckbox.checked = false;
+        ssDescriptionInput.value = defaultDescription || "";
+        ssValueTypeSelect.value = defaultType || "string";
+        updateValueField(ssValueTypeSelect.value);
+        ssErrors.style.display = "none";
+        ssErrors.textContent = "";
+        ssForm.style.display = "none";
+        ssLoading.style.display = "";
+        ssSaveBtn.disabled = false;
+        ssSaveBtn.textContent = t("edit.save");
+
+        // Build and show external link if runtime_settings_url is configured
+        if (ssExternalLink && ssRuntimeUrlTemplate) {
+          const externalUrl = ssRuntimeUrlTemplate
+            .replace("${name}", encodeURIComponent(key))
+            .replace("${type}", encodeURIComponent(defaultType || ""))
+            .replace("${description}", encodeURIComponent(defaultDescription || ""));
+          ssExternalLink.href = externalUrl;
+          ssExternalLink.style.display = "";
+        } else if (ssExternalLink) {
+          ssExternalLink.style.display = "none";
+        }
+
+        ssPanelBg.classList.add("open");
+        ssPanel.classList.add("open");
+
+        // Fetch existing setting
+        fetchSetting(key, (setting) => {
+          if (setting && !setting.error) {
+            // Existing setting — populate form with current values
+            ssValueTypeSelect.value = setting.value_type || defaultType || "string";
+            updateValueField(ssValueTypeSelect.value);
+
+            if (setting.value_type === "boolean") {
+              ssBooleanCheckbox.checked = (setting.value === true || setting.value === "true");
+            } else if (setting.value_type === "integer") {
+              ssIntegerInput.value = (setting.value != null) ? String(setting.value) : "";
+            } else if (setting.value_type === "float") {
+              ssFloatInput.value = (setting.value != null) ? String(setting.value) : "";
+            } else if (setting.value_type === "datetime") {
+              populateDatetime((setting.value != null) ? String(setting.value) : "");
+            } else if (setting.value_type === "array" && Array.isArray(setting.value)) {
+              ssValueTextarea.value = setting.value.join("\n");
+            } else {
+              ssValueTextarea.value = (setting.value != null) ? String(setting.value) : "";
+            }
+
+            if (setting.description) {
+              ssDescriptionInput.value = setting.description;
+            }
+          }
+          // If not found, defaults already applied
+
+          ssLoading.style.display = "none";
+          ssForm.style.display = "";
+        });
+      };
+
+      const closeSsPanel = () => {
+        if (ssPanelBg) ssPanelBg.classList.remove("open");
+        if (ssPanel) ssPanel.classList.remove("open");
+      };
+
+      // Handle save
+      ssSaveBtn.addEventListener("click", () => {
+        const params = {
+          key: ssKeyInput.value,
+          value: getFormValue(),
+          value_type: ssValueTypeSelect.value,
+          description: ssDescriptionInput.value
+        };
+
+        ssSaveBtn.disabled = true;
+        ssCancelBtn.disabled = true;
+        ssSaveBtn.innerHTML = '<svg class="ultra-settings-spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="31.4 31.4" /></svg>';
+        ssErrors.style.display = "none";
+
+        saveSetting(params, (result) => {
+          if (result.data && result.data.success) {
+            closeSsPanel();
+            // Store selected config so we can restore it after reload
+            if (selectedConfigId) {
+              sessionStorage.setItem("ultra-settings-selected-config", selectedConfigId);
+            }
+            sessionStorage.setItem("ultra-settings-changed-key", params.key);
+            const activeSection = document.querySelector(".ultra-settings-config-section[style='']");
+            if (activeSection) {
+              sessionStorage.setItem("ultra-settings-changed-section", activeSection.id);
+            }
+            window.location.reload();
+          } else {
+            ssSaveBtn.disabled = false;
+            ssCancelBtn.disabled = false;
+            ssSaveBtn.textContent = t("edit.save");
+
+            // Collect all error messages from the response
             const msgs = [];
-            Object.entries(result.data.errors).forEach(([field, errs]) => {
-              if (Array.isArray(errs)) {
-                errs.forEach(e => msgs.push(e));
-              } else {
-                msgs.push(String(errs));
-              }
-            });
-            if (msgs.length > 0) errorMsg = msgs.join("; ");
-          } else if (result.data && result.data.error) {
-            errorMsg = result.data.error;
+            if (result.data && result.data.errors) {
+              Object.entries(result.data.errors).forEach(([key, errs]) => {
+                if (Array.isArray(errs)) {
+                  errs.forEach(e => msgs.push(String(e)));
+                } else {
+                  msgs.push(String(errs));
+                }
+              });
+            } else if (result.data && result.data.error) {
+              msgs.push(String(result.data.error));
+            }
+
+            // Build the alert content
+            ssErrors.innerHTML = "";
+            if (msgs.length === 0) {
+              msgs.push(t("edit.save_error"));
+            }
+            if (msgs.length === 1) {
+              ssErrors.textContent = msgs[0];
+            } else {
+              const ul = document.createElement("ul");
+              ul.className = "ultra-settings-ss-error-list";
+              msgs.forEach(msg => {
+                const li = document.createElement("li");
+                li.textContent = msg;
+                ul.appendChild(li);
+              });
+              ssErrors.appendChild(ul);
+            }
+            ssErrors.style.display = "";
           }
-          ssErrors.textContent = errorMsg;
-          ssErrors.style.display = "";
+        });
+      });
+
+      // Handle cancel / close
+      ssCancelBtn.addEventListener("click", closeSsPanel);
+      ssCloseBtn.addEventListener("click", closeSsPanel);
+      if (ssPanelBg) ssPanelBg.addEventListener("click", closeSsPanel);
+
+      // Delegate clicks on edit buttons
+      document.addEventListener("click", (e) => {
+        const btn = e.target.closest(".ultra-settings-ss-edit-btn");
+        if (btn) {
+          e.preventDefault();
+          openSsPanel(
+            btn.dataset.ssKey || "",
+            btn.dataset.ssDefaultType || "string",
+            btn.dataset.ssDefaultDescription || ""
+          );
         }
       });
-    });
-
-    // Handle cancel / close
-    ssCancelBtn.addEventListener("click", closeSsPanel);
-    ssCloseBtn.addEventListener("click", closeSsPanel);
-    if (ssPanelBg) ssPanelBg.addEventListener("click", closeSsPanel);
-
-    // Delegate clicks on edit buttons
-    document.addEventListener("click", (e) => {
-      const btn = e.target.closest(".ultra-settings-ss-edit-btn");
-      if (btn) {
-        e.preventDefault();
-        openSsPanel(
-          btn.dataset.ssKey || "",
-          btn.dataset.ssDefaultType || "string",
-          btn.dataset.ssDefaultDescription || ""
-        );
-      }
-    });
+    };
   }
 
   // ── Language Menu ──

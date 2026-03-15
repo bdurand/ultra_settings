@@ -23,6 +23,7 @@ module UltraSettings
     def render_settings(request = nil, locale: UltraSettings::I18n::DEFAULT_LOCALE)
       @request = request
       @locale = locale
+      refresh_super_settings!
       @layout_template.result(binding)
     end
 
@@ -32,7 +33,7 @@ module UltraSettings
     def content
       UltraSettings::ApplicationView.new(
         color_scheme: @color_scheme,
-        can_edit_super_settings: UltraSettings.can_edit_super_settings?(@request),
+        super_settings_api_path: UltraSettings.super_settings_api_path,
         locale: @locale || UltraSettings::I18n::DEFAULT_LOCALE
       ).render
     end
@@ -58,6 +59,12 @@ module UltraSettings
       vars = ViewHelper.erb_template("layout_vars.css.erb").result(binding)
       css = ViewHelper.read_app_file("layout.css")
       "#{vars}\n#{css}"
+    end
+
+    def refresh_super_settings!
+      return unless defined?(SuperSettings) && UltraSettings.__runtime_settings__ == SuperSettings
+
+      SuperSettings.refresh_settings
     end
   end
 end

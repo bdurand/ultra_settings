@@ -22,7 +22,7 @@ if ENV.fetch("USE_SUPER_SETTINGS", "true") == "true"
   require "super_settings"
   require "super_settings/storage/test_storage"
   SuperSettings::Setting.storage = SuperSettings::Storage::TestStorage
-  UltraSettings.super_settings_editing = ->(_req) { ENV.fetch("SUPER_SETTINGS_EDITING", "true") == "true" }
+  UltraSettings.super_settings_api_path = "/super_settings"
 else
   UltraSettings.runtime_settings = {"my_service.timeout" => 2.5}
 end
@@ -109,8 +109,22 @@ embedded_configuration = lambda do |env|
   end
 end
 
-run Rack::URLMap.new(
+ultra_settings_app = Rack::URLMap.new(
   "/" => UltraSettings::RackApp.new(color_scheme: color_scheme),
   "/embedded" => embedded_application,
   "/test_configuration" => embedded_configuration
 )
+
+if defined?(SuperSettings::RackApplication)
+  # Mount SuperSettings as middleware with a path prefix.
+  # Requests to /super_settings/* are handled by SuperSettings;
+  # all others fall through to the UltraSettings app.
+  app = SuperSettings::RackApplication.new(ultra_settings_app, "/super_settings") do
+    def current_user(request)
+      "demo"
+    end
+  end
+  run app
+else
+  run ultra_settings_app
+end
