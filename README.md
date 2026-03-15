@@ -445,6 +445,19 @@ You'll also need to include the CSS for the configuration view on your page.
 </head>
 ```
 
+#### Customizing The Web UI
+
+You can specify the color scheme by setting by providing the `color_scheme` option to the `UltraSettings::ApplicationView` constructor. The default color scheme is `:light`. You can also set the scheme to `:dark` or `:system`.
+
+```ruby
+UltraSettings::ApplicationView.new(color_scheme: :dark)
+```
+
+You can specify the language to render the application in with the `locale` option to the `UltraSettings::ApplicationView` constructor. The default language is English but it can be changed to any language that has a corresponding JSON file in the `app/locales` directory.
+
+```ruby
+UltraSettings::ApplicationView.new(locale: "es").render
+```
 
 #### Inline Editing with SuperSettings
 
