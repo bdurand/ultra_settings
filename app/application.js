@@ -285,47 +285,39 @@ document.addEventListener("DOMContentLoaded", () => {
   // ══════════════════════════════════════════
   const ssApiPath = root ? root.dataset.ssApiPath : null;
   if (ssApiPath) {
-    // Check access to the SuperSettings API via GET request
-    fetch(ssApiPath + "/authorized", {method: "GET", credentials: "same-origin"})
-      .then(resp => {
-        if (!resp.ok) {
-          console.log("SuperSettings: access check returned " + resp.status + ", editing disabled");
-          return;
-        }
-        const auth = resp.headers.get("super-settings-permission");
-        if (auth !== "read-write") {
-          console.log("SuperSettings: authorization is '" + auth + "', editing disabled (requires read-write)");
-          return;
-        }
-        loadSuperSettingsApi();
-      })
-      .catch(err => {
-        console.log("SuperSettings: access check failed, editing disabled", err);
-      });
+    // Load the SuperSettings api.js client library and check access
+    const apiBaseEl = document.createElement("div");
+    apiBaseEl.className = "super-settings";
+    apiBaseEl.dataset.apiBaseUrl = ssApiPath;
+    apiBaseEl.style.display = "none";
+    document.body.appendChild(apiBaseEl);
 
-    // Load the SuperSettings api.js client library
-    const loadSuperSettingsApi = () => {
-      // Insert a hidden element so api.js can find its base URL
-      const apiBaseEl = document.createElement("div");
-      apiBaseEl.className = "super-settings";
-      apiBaseEl.dataset.apiBaseUrl = ssApiPath;
-      apiBaseEl.style.display = "none";
-      document.body.appendChild(apiBaseEl);
+    const script = document.createElement("script");
+    script.src = ssApiPath + "/api.js";
+    script.onload = () => {
+      if (!window.SuperSettingsAPI || !SuperSettingsAPI.authorized) {
+        console.log("SuperSettings: api.js loaded but SuperSettingsAPI not available");
+        return;
+      }
 
-      const script = document.createElement("script");
-      script.src = ssApiPath + "/api.js";
-      script.onload = () => {
-        if (!window.SuperSettingsAPI) {
-          console.log("SuperSettings: api.js loaded but SuperSettingsAPI not available");
-          return;
+      SuperSettingsAPI.baseUrl = ssApiPath;
+      SuperSettingsAPI.authorized(
+        (permission) => {
+          if (permission !== "read-write") {
+            console.log("SuperSettings: authorization is '" + permission + "', editing disabled (requires read-write)");
+            return;
+          }
+          enableSuperSettingsUI();
+        },
+        (err) => {
+          console.log("SuperSettings: access check failed, editing disabled", err);
         }
-        enableSuperSettingsUI();
-      };
-      script.onerror = () => {
-        console.log("SuperSettings: failed to load api.js, editing disabled");
-      };
-      document.head.appendChild(script);
+      );
     };
+    script.onerror = () => {
+      console.log("SuperSettings: failed to load api.js, editing disabled");
+    };
+    document.head.appendChild(script);
 
     // Enable the editing UI after api.js is loaded and access is confirmed
     const enableSuperSettingsUI = () => {
@@ -475,27 +467,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Save a setting via the SuperSettings API
       const saveSetting = (params, callback) => {
-        fetch(ssApiPath + "/settings", {
-          method: "POST",
-          credentials: "same-origin",
-          headers: {"Content-Type": "application/json", "Accept": "application/json"},
-          body: JSON.stringify({settings: [params]})
-        })
-          .then(resp => {
-            return resp.json()
-              .then(data => ({status: resp.status, ok: resp.ok, data}))
-              .catch(() => ({status: resp.status, ok: resp.ok, data: null}));
-          })
-          .then(result => {
-            if (!result.ok && !result.data) {
-              result.data = {success: false, errors: {_http: [t("edit.http_error").replace("${status}", result.status)]}};
-            }
-            callback(result);
-          })
-          .catch(err => {
-            console.error("SuperSettings: error saving setting", err);
+        SuperSettingsAPI.updateSettings(
+          {settings: [params]},
+          (data) => {
+            callback({status: 200, ok: true, data: data});
+          },
+          (error) => {
+            console.error("SuperSettings: error saving setting", error);
             callback({status: 0, ok: false, data: {success: false, errors: {_http: [t("edit.network_error")]}}});
-          });
+          }
+        );
       };
 
       // Open the edit panel

@@ -417,14 +417,14 @@ You can specify the color scheme by setting by providing the `color_scheme` opti
 UltraSettings::RackApp.new(color_scheme: :dark)
 ```
 
-#### Embedding the Settings View in Admin Tools
+#### Embedding Into Application Views
 
 If you prefer to embed the settings view directly into your own admin tools or dashboard, you can use the `UltraSettings::ApplicationView` class to render the settings interface within your existing views:
 
 ```erb
 <h1>Configuration</h1>
 
-<%= UltraSettings::WebView.new.render %>
+<%= UltraSettings::ApplicationView.new.render %>
 ```
 
 This approach allows for seamless integration of the settings UI into your application's admin interface, leveraging your existing authentication and authorization mechanisms. The settings are rendered with navigation handled by an HTML select element. You can specify the CSS classes for the select element to match your own application styles..
@@ -459,7 +459,7 @@ You can specify the language to render the application in with the `locale` opti
 UltraSettings::ApplicationView.new(locale: "es").render
 ```
 
-#### Inline Editing with SuperSettings
+#### Inline Editing With SuperSettings
 
 If you are using the [super_settings](https://github.com/bdurand/super_settings) gem for runtime settings, you can enable inline editing of runtime settings directly in the web UI. This adds edit buttons next to runtime settings fields that open a panel for creating or updating settings through the SuperSettings API.
 

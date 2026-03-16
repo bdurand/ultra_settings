@@ -338,12 +338,12 @@ module UltraSettings
       if name.respond_to?(:classify)
         name.classify
       else
-        name.split("_").map(&:capitalize).join.gsub("/", "::")
+        name.to_s.split("_").map(&:capitalize).join.gsub("/", "::")
       end
     end
 
     def constantize(class_name)
-      class_name.split("::").reduce(Object) do |mod, name|
+      class_name.to_s.split("::").reduce(Object) do |mod, name|
         mod.const_get(name)
       end
     end
