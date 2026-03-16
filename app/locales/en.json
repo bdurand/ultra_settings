@@ -68,6 +68,16 @@
   "edit.http_error": "The server returned an error (HTTP ${status}). Please try again.",
   "edit.network_error": "Unable to reach the server. Please check your connection and try again.",
 
+  "edit.view_history": "View history",
+  "edit.back_to_edit": "\u2190 Back to editing",
+  "edit.history_empty": "No history found for this setting.",
+  "edit.history_loading": "Loading history\u2026",
+  "edit.history_prev": "\u2190 Newer",
+  "edit.history_next": "Older \u2192",
+  "edit.history_by": "by",
+  "edit.history_deleted": "Deleted",
+  "edit.history_created": "Created",
+
   "language.label": "Language",
   "language.name": "English",
 

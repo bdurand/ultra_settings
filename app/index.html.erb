@@ -137,14 +137,18 @@
           <div class="ultra-settings-ss-field" id="ultra-settings-ss-datetime-field" style="display:none;">
             <label class="ultra-settings-ss-label"><%= t('edit.value_label') %></label>
             <div class="ultra-settings-ss-datetime-row">
-              <input type="datetime-local" step="1" id="ultra-settings-ss-datetime-value" class="ultra-settings-ss-input">
+              <input type="datetime-local" step="1" id="ultra-settings-ss-datetime-value" class="ultra-settings-ss-input" autocomplete="off">
               <span class="ultra-settings-ss-tz-label" id="ultra-settings-ss-tz-label"></span>
             </div>
           </div>
 
           <div class="ultra-settings-ss-field">
             <label class="ultra-settings-ss-label" for="ultra-settings-ss-description"><%= t('edit.description_label') %></label>
-            <textarea id="ultra-settings-ss-description" class="ultra-settings-ss-input" rows="2"></textarea>
+            <textarea id="ultra-settings-ss-description" class="ultra-settings-ss-input" rows="4"></textarea>
+          </div>
+
+          <div class="ultra-settings-ss-history-link-wrap">
+            <a href="#" id="ultra-settings-ss-history-link" class="ultra-settings-ss-history-link"><%= t('edit.view_history') %></a>
           </div>
 
           <div class="ultra-settings-ss-errors" id="ultra-settings-ss-errors" style="display:none;"></div>
@@ -154,6 +158,15 @@
             <button type="button" class="ultra-settings-ss-btn ultra-settings-ss-btn-save" id="ultra-settings-ss-save"><%= t('edit.save') %></button>
           </div>
         </form>
+
+        <div id="ultra-settings-ss-history" class="ultra-settings-ss-history" style="display:none;">
+          <a href="#" id="ultra-settings-ss-history-back" class="ultra-settings-ss-history-link"><%= t('edit.back_to_edit') %></a>
+          <div id="ultra-settings-ss-history-entries"></div>
+          <div id="ultra-settings-ss-history-pagination" class="ultra-settings-ss-history-pagination" style="display:none;">
+            <button type="button" class="ultra-settings-ss-btn ultra-settings-ss-btn-cancel" id="ultra-settings-ss-history-prev" disabled><%= t('edit.history_prev') %></button>
+            <button type="button" class="ultra-settings-ss-btn ultra-settings-ss-btn-cancel" id="ultra-settings-ss-history-next" disabled><%= t('edit.history_next') %></button>
+          </div>
+        </div>
       </div>
     </div>
   <% end %>

@@ -196,11 +196,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dpMeta) dpMeta.innerHTML = t("detail.type_label") + " <span>" + escapeHtml(type.toUpperCase()) + "</span>" + (isSecret === "true" ? ' \u00B7 <span style="color:var(--badge-secret-text)">' + t("detail.secret_badge") + "</span>" : "");
     if (panelBg) panelBg.classList.add("open");
     if (detailPanel) detailPanel.classList.add("open");
+    document.body.style.overflow = "hidden";
   };
 
   const closePanel = () => {
     if (panelBg) panelBg.classList.remove("open");
     if (detailPanel) detailPanel.classList.remove("open");
+    document.body.style.overflow = "";
   };
 
   if (panelBg) panelBg.addEventListener("click", closePanel);
@@ -245,6 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const ssP = document.getElementById("ultra-settings-ss-panel");
       if (ssBg) ssBg.classList.remove("open");
       if (ssP) ssP.classList.remove("open");
+      document.body.style.overflow = "";
     }
   });
 
@@ -516,8 +519,12 @@ document.addEventListener("DOMContentLoaded", () => {
           ssExternalLink.style.display = "none";
         }
 
+        // Reset history view (always start on edit form)
+        if (ssHistoryContainer) ssHistoryContainer.style.display = "none";
+
         ssPanelBg.classList.add("open");
         ssPanel.classList.add("open");
+        document.body.style.overflow = "hidden";
 
         // Fetch existing setting
         fetchSetting(key, (setting) => {
@@ -554,6 +561,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const closeSsPanel = () => {
         if (ssPanelBg) ssPanelBg.classList.remove("open");
         if (ssPanel) ssPanel.classList.remove("open");
+        document.body.style.overflow = "";
       };
 
       // Handle save
@@ -628,6 +636,152 @@ document.addEventListener("DOMContentLoaded", () => {
       ssCancelBtn.addEventListener("click", closeSsPanel);
       ssCloseBtn.addEventListener("click", closeSsPanel);
       if (ssPanelBg) ssPanelBg.addEventListener("click", closeSsPanel);
+
+      // ── History view ──
+      const ssHistoryLink = document.getElementById("ultra-settings-ss-history-link");
+      const ssHistoryContainer = document.getElementById("ultra-settings-ss-history");
+      const ssHistoryEntries = document.getElementById("ultra-settings-ss-history-entries");
+      const ssHistoryPagination = document.getElementById("ultra-settings-ss-history-pagination");
+      const ssHistoryPrevBtn = document.getElementById("ultra-settings-ss-history-prev");
+      const ssHistoryNextBtn = document.getElementById("ultra-settings-ss-history-next");
+      const ssHistoryBackLink = document.getElementById("ultra-settings-ss-history-back");
+      let ssHistoryCurrentKey = null;
+
+      const formatHistoryTime = (timestamp) => {
+        if (!timestamp) return "";
+        let str = String(timestamp).trim();
+        str = str.replace(/ UTC$/, "Z").replace(/ /, "T");
+        if (!str.endsWith("Z") && !/[+-]\d{2}:?\d{2}$/.test(str)) {
+          str += "Z";
+        }
+        const d = new Date(str);
+        if (isNaN(d.getTime())) return String(timestamp);
+        return d.toLocaleString();
+      };
+
+      const renderHistoryEntries = (entries) => {
+        ssHistoryEntries.innerHTML = "";
+        if (!entries || entries.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "ultra-settings-ss-history-empty";
+          empty.textContent = t("edit.history_empty");
+          ssHistoryEntries.appendChild(empty);
+          return;
+        }
+        entries.forEach((entry) => {
+          const div = document.createElement("div");
+          div.className = "ultra-settings-ss-history-entry";
+
+          const header = document.createElement("div");
+          header.className = "ultra-settings-ss-history-entry-header";
+
+          const timeSpan = document.createElement("span");
+          timeSpan.className = "ultra-settings-ss-history-entry-time";
+          timeSpan.textContent = formatHistoryTime(entry.created_at);
+          header.appendChild(timeSpan);
+
+          if (entry.changed_by) {
+            const bySpan = document.createElement("span");
+            bySpan.textContent = t("edit.history_by") + " " + entry.changed_by;
+            bySpan.className = "ultra-settings-ss-history-entry-who";
+            header.appendChild(bySpan);
+          }
+
+          if (entry.deleted) {
+            const badge = document.createElement("span");
+            badge.className = "ultra-settings-ss-history-entry-badge deleted";
+            badge.textContent = t("edit.history_deleted");
+            header.appendChild(badge);
+          } else if (entries.indexOf(entry) === entries.length - 1) {
+            const badge = document.createElement("span");
+            badge.className = "ultra-settings-ss-history-entry-badge created";
+            badge.textContent = t("edit.history_created");
+            header.appendChild(badge);
+          }
+
+          div.appendChild(header);
+
+          if (!entry.deleted) {
+            const val = document.createElement("div");
+            val.className = "ultra-settings-ss-history-entry-value";
+            if (entry.value == null) {
+              val.classList.add("nil");
+              val.textContent = "nil";
+            } else {
+              val.textContent = String(entry.value);
+            }
+            div.appendChild(val);
+          }
+
+          ssHistoryEntries.appendChild(div);
+        });
+      };
+
+      const HISTORY_LIMIT = 25;
+
+      const loadHistory = (key, offset) => {
+        ssHistoryEntries.innerHTML = "";
+        const loading = document.createElement("div");
+        loading.className = "ultra-settings-ss-history-empty";
+        loading.textContent = t("edit.history_loading");
+        ssHistoryEntries.appendChild(loading);
+        ssHistoryPagination.style.display = "none";
+
+        const params = {key: key, limit: HISTORY_LIMIT, offset: offset};
+
+        SuperSettingsAPI.fetchHistory(params, (data) => {
+          const entries = data.histories || data.history || [];
+          renderHistoryEntries(entries);
+
+          // Pagination based on whether we have a previous or next page
+          const hasPrev = offset > 0;
+          const hasNext = entries.length >= HISTORY_LIMIT;
+
+          if (hasPrev || hasNext) {
+            ssHistoryPagination.style.display = "";
+            ssHistoryPrevBtn.disabled = !hasPrev;
+            ssHistoryNextBtn.disabled = !hasNext;
+
+            ssHistoryPrevBtn.onclick = () => { loadHistory(key, Math.max(0, offset - HISTORY_LIMIT)); };
+            ssHistoryNextBtn.onclick = () => { loadHistory(key, offset + HISTORY_LIMIT); };
+          } else {
+            ssHistoryPagination.style.display = "none";
+          }
+        }, () => {
+          ssHistoryEntries.innerHTML = "";
+          const err = document.createElement("div");
+          err.className = "ultra-settings-ss-history-empty";
+          err.textContent = t("edit.history_empty");
+          ssHistoryEntries.appendChild(err);
+          ssHistoryPagination.style.display = "none";
+        });
+      };
+
+      const showHistory = (key) => {
+        ssHistoryCurrentKey = key;
+        ssForm.style.display = "none";
+        ssHistoryContainer.style.display = "";
+        loadHistory(key, 0);
+      };
+
+      const hideHistory = () => {
+        ssHistoryContainer.style.display = "none";
+        ssForm.style.display = "";
+      };
+
+      if (ssHistoryLink) {
+        ssHistoryLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          showHistory(ssKeyInput.value);
+        });
+      }
+
+      if (ssHistoryBackLink) {
+        ssHistoryBackLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          hideHistory();
+        });
+      }
 
       // Delegate clicks on edit buttons
       document.addEventListener("click", (e) => {

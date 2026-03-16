@@ -1085,6 +1085,112 @@ input[type="number"].ultra-settings-ss-input::-webkit-outer-spin-button {
   vertical-align: middle;
 }
 
+/* ── History view inside edit panel ── */
+.ultra-settings-ss-history-link-wrap {
+  padding-top: 2px;
+}
+
+.ultra-settings-ss-history-link {
+  font-size: 0.8125rem;
+  color: var(--accent);
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.ultra-settings-ss-history-link:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
+.ultra-settings-ss-history {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ultra-settings-ss-history-entry {
+  background: var(--bg-code);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.ultra-settings-ss-history-entry:last-child {
+  margin-bottom: 0;
+}
+
+.ultra-settings-ss-history-entry-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-tertiary);
+  font-size: 0.75rem;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.ultra-settings-ss-history-entry-time {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.ultra-settings-ss-history-entry-who {
+  color: var(--text-secondary);
+}
+
+.ultra-settings-ss-history-entry-badge {
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.ultra-settings-ss-history-entry-badge.deleted {
+  background: rgba(220,53,69,0.1);
+  color: #dc3545;
+  border: 1px solid rgba(220,53,69,0.3);
+}
+
+.ultra-settings-ss-history-entry-badge.created {
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.ultra-settings-ss-history-entry-value {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.ultra-settings-ss-history-entry-value.nil {
+  color: var(--text-tertiary);
+  font-style: italic;
+  font-family: var(--font-ui);
+}
+
+.ultra-settings-ss-history-empty {
+  text-align: center;
+  padding: 24px 16px;
+  color: var(--text-tertiary);
+  font-size: 0.875rem;
+}
+
+.ultra-settings-ss-history-pagination {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 4px;
+}
+
 /* ══════════════════════════════════════════
    RESPONSIVE
    ══════════════════════════════════════════ */
