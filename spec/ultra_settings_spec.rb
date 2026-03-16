@@ -4,6 +4,12 @@ require "spec_helper"
 require "rack"
 
 RSpec.describe UltraSettings do
+  describe "VERSION" do
+    it "has a version number" do
+      expect(UltraSettings::VERSION).not_to be_nil
+    end
+  end
+
   describe "adding configurations" do
     it "can add configurations to the root namespace" do
       expect(UltraSettings.test).to be_a(TestConfiguration)
