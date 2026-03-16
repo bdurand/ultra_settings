@@ -29,7 +29,7 @@ module UltraSettings
   autoload :UninitializedRuntimeSettings, File.join(__dir__, "ultra_settings/uninitialized_runtime_settings")
   autoload :YamlConfig, File.join(__dir__, "ultra_settings/yaml_config")
 
-  VERSION = File.read(File.join(__dir__, "..", "VERSION")).strip
+  VERSION = File.read(File.join(__dir__, "..", "VERSION")).strip.freeze
 
   VALID_NAME__PATTERN = /\A[a-z_][a-zA-Z0-9_]*\z/
 

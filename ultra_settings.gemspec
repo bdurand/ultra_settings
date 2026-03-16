@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name = "ultra_settings"
-  spec.version = File.read(File.expand_path("../VERSION", __FILE__)).strip.freeze
+  spec.version = File.read(File.expand_path("../VERSION", __FILE__)).strip
   spec.authors = ["Brian Durand"]
   spec.email = ["bbdurand@gmail.com"]
 
