@@ -22,7 +22,7 @@ module UltraSettings
     # @param request [Rack::Request, nil] The current Rack request for access control.
     # @param locale [String] The locale code for translations.
     # @return [String] The rendered HTML page.
-    def render_settings(request = nil, locale: UltraSettings::I18n::DEFAULT_LOCALE)
+    def render_settings(request = nil, locale: UltraSettings::MiniI18n::DEFAULT_LOCALE)
       @request = request
       @locale = locale
       refresh_super_settings!
@@ -35,7 +35,7 @@ module UltraSettings
     def content
       UltraSettings::ApplicationView.new(
         color_scheme: @color_scheme,
-        locale: @locale || UltraSettings::I18n::DEFAULT_LOCALE
+        locale: @locale || UltraSettings::MiniI18n::DEFAULT_LOCALE
       ).render
     end
 
@@ -44,14 +44,14 @@ module UltraSettings
     # @param key [String] dotted translation key
     # @return [String]
     def t(key)
-      UltraSettings::I18n.t(key, locale: @locale || UltraSettings::I18n::DEFAULT_LOCALE)
+      UltraSettings::MiniI18n.t(key, locale: @locale || UltraSettings::MiniI18n::DEFAULT_LOCALE)
     end
 
     # Return the text direction (+"ltr"+ or +"rtl"+) for the current locale.
     #
     # @return [String]
     def text_direction
-      UltraSettings::I18n.text_direction(@locale || UltraSettings::I18n::DEFAULT_LOCALE)
+      UltraSettings::MiniI18n.text_direction(@locale || UltraSettings::MiniI18n::DEFAULT_LOCALE)
     end
 
     private

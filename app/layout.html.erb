@@ -30,11 +30,11 @@
     <main class="ultra-settings-page-content">
       <%= content %>
     </main>
-    <% locales = UltraSettings::I18n.available_locales %>
+    <% locales = UltraSettings::MiniI18n.available_locales %>
     <% if locales.size > 1 %>
       <footer class="ultra-settings-page-footer">
-        <% locale = @locale || UltraSettings::I18n::DEFAULT_LOCALE %>
-        <% current_locale_name = UltraSettings::I18n.t("language.name", locale: locale) %>
+        <% locale = @locale || UltraSettings::MiniI18n::DEFAULT_LOCALE %>
+        <% current_locale_name = UltraSettings::MiniI18n.t("language.name", locale: locale) %>
         <details class="ultra-settings-language-menu" id="ultra-settings-language-menu">
           <summary class="ultra-settings-language-trigger" aria-label="<%= t('language.label') %>" aria-haspopup="menu">
             <span class="ultra-settings-language-trigger-icon" aria-hidden="true">
@@ -56,7 +56,7 @@
 
           <menu class="ultra-settings-language-popup" role="menu" aria-label="<%= t('language.label') %>">
             <% locales.each do |loc| %>
-              <% language_name = UltraSettings::I18n.t('language.name', locale: loc) %>
+              <% language_name = UltraSettings::MiniI18n.t('language.name', locale: loc) %>
               <% active = loc == locale %>
               <li>
                 <button

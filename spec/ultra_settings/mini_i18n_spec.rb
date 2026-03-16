@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe UltraSettings::I18n do
+RSpec.describe UltraSettings::MiniI18n do
   before do
     described_class.clear_cache!
   end

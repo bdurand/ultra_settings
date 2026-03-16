@@ -38,7 +38,7 @@ module UltraSettings
     # 3. Accept-Language header
     # 4. Default locale
     def resolve_locale(request)
-      available = UltraSettings::I18n.available_locales
+      available = UltraSettings::MiniI18n.available_locales
 
       # 1. Explicit query parameter
       lang = request.params["lang"] if request.respond_to?(:params)
@@ -50,7 +50,7 @@ module UltraSettings
 
       # 3. Accept-Language header
       accept = request.env["HTTP_ACCEPT_LANGUAGE"] if request.respond_to?(:env)
-      locale_from_accept_language(accept.to_s, available) || UltraSettings::I18n::DEFAULT_LOCALE
+      locale_from_accept_language(accept.to_s, available) || UltraSettings::MiniI18n::DEFAULT_LOCALE
     end
 
     # Parse the Accept-Language header and return the best matching locale.

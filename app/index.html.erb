@@ -172,7 +172,7 @@
   <% end %>
 </div>
 
-<script>window.__ultraSettingsI18n = <%= translations_json %>;window.__ultraSettingsDir = "<%= UltraSettings::I18n.text_direction(locale) %>";</script>
+<script>window.__ultraSettingsI18n = <%= translations_json %>;window.__ultraSettingsDir = "<%= UltraSettings::MiniI18n.text_direction(locale) %>";</script>
 <script>
   <%= javascript %>
 </script>

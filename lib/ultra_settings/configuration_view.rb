@@ -17,7 +17,7 @@ module UltraSettings
     #
     # @param configuration [UltraSettings::Configuration] The configuration instance to display.
     # @param locale [String] The locale code for translations.
-    def initialize(configuration, locale: UltraSettings::I18n::DEFAULT_LOCALE)
+    def initialize(configuration, locale: UltraSettings::MiniI18n::DEFAULT_LOCALE)
       @configuration = configuration
       @locale = locale
     end
@@ -58,7 +58,7 @@ module UltraSettings
     # @param key [String] dotted translation key
     # @return [String]
     def t(key)
-      UltraSettings::I18n.t(key, locale: @locale)
+      UltraSettings::MiniI18n.t(key, locale: @locale)
     end
 
     def display_value(value)
