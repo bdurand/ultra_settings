@@ -8,25 +8,6 @@ require "singleton"
 require "digest"
 require "uri"
 
-require_relative "ultra_settings/configuration"
-require_relative "ultra_settings/coerce"
-require_relative "ultra_settings/config_helper"
-require_relative "ultra_settings/field"
-require_relative "ultra_settings/mini_i18n"
-require_relative "ultra_settings/rack_app"
-require_relative "ultra_settings/view_helper"
-require_relative "ultra_settings/render_helper"
-require_relative "ultra_settings/web_view"
-require_relative "ultra_settings/application_view"
-require_relative "ultra_settings/configuration_view"
-require_relative "ultra_settings/uninitialized_runtime_settings"
-require_relative "ultra_settings/yaml_config"
-require_relative "ultra_settings/version"
-
-if defined?(Rails::Railtie)
-  require_relative "ultra_settings/railtie"
-end
-
 # This is the root namespace for UltraSettings. You can add configurations to
 # this namespace using the add method.
 #
@@ -34,6 +15,22 @@ end
 #   UltraSettings.add(:test)
 #   UltraSettings.test # => TestConfiguration.instance
 module UltraSettings
+  autoload :Configuration, File.join(__dir__, "ultra_settings/configuration")
+  autoload :Coerce, File.join(__dir__, "ultra_settings/coerce")
+  autoload :ConfigHelper, File.join(__dir__, "ultra_settings/config_helper")
+  autoload :Field, File.join(__dir__, "ultra_settings/field")
+  autoload :MiniI18n, File.join(__dir__, "ultra_settings/mini_i18n")
+  autoload :RackApp, File.join(__dir__, "ultra_settings/rack_app")
+  autoload :ViewHelper, File.join(__dir__, "ultra_settings/view_helper")
+  autoload :RenderHelper, File.join(__dir__, "ultra_settings/render_helper")
+  autoload :WebView, File.join(__dir__, "ultra_settings/web_view")
+  autoload :ApplicationView, File.join(__dir__, "ultra_settings/application_view")
+  autoload :ConfigurationView, File.join(__dir__, "ultra_settings/configuration_view")
+  autoload :UninitializedRuntimeSettings, File.join(__dir__, "ultra_settings/uninitialized_runtime_settings")
+  autoload :YamlConfig, File.join(__dir__, "ultra_settings/yaml_config")
+
+  VERSION = File.read(File.join(__dir__, "..", "VERSION")).strip
+
   VALID_NAME__PATTERN = /\A[a-z_][a-zA-Z0-9_]*\z/
 
   @configurations = {}
@@ -348,4 +345,8 @@ module UltraSettings
       end
     end
   end
+end
+
+if defined?(Rails::Railtie)
+  require_relative "ultra_settings/railtie"
 end
