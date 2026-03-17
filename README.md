@@ -473,6 +473,9 @@ This will automatically set `SuperSettings` as the runtime settings store. The w
 
 All authorization is handled by the SuperSettings API — the same permissions that control the SuperSettings web UI will apply to inline editing in UltraSettings. Configure access control in your `SuperSettings::RackApplication` or Rails controller as usual.
 
+> [!IMPORTANT]
+> You will need to have the SuperSettings API mounted and properly locked down with authentication. If the API is not accessible, then the edit buttons will not be shown. Check the browser console for any errors if you expect the buttons to be shown but they are not appearing.
+
 ##### Embedding with Edit Support
 
 When embedding the settings view using `UltraSettings::ApplicationView`, you can pass the `super_settings_api_path` option to enable the inline editing UI:
