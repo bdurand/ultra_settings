@@ -76,6 +76,9 @@ document.addEventListener("DOMContentLoaded", () => {
       history.replaceState(null, "", "#" + configName);
     }
 
+    // Scroll to top
+    window.scrollTo(0, 0);
+
     // Animate list → detail
     if (configList && configDetail && !initialLoad) {
       if (configList.style.display === "none") {
