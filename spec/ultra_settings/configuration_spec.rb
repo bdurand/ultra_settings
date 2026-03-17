@@ -321,6 +321,11 @@ RSpec.describe UltraSettings::Configuration do
       expect(config.__available_sources__(:host)).to match_array [:env, :settings, :yaml]
       expect(config.__available_sources__(:port)).to match_array [:env, :settings, :yaml, :default]
     end
+
+    it "does not include runtime settings for static fields", settings: {"test.static" => "value"} do
+      config = TestConfiguration.instance
+      expect(config.__available_sources__(:static)).not_to include(:settings)
+    end
   end
 
   describe "__value_from_source__" do

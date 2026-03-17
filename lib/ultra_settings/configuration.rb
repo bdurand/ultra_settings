@@ -560,7 +560,7 @@ module UltraSettings
 
       sources = []
       sources << :env if field.env_var
-      sources << :settings if field.runtime_setting && UltraSettings.__runtime_settings__
+      sources << :settings if !field.static? && field.runtime_setting && UltraSettings.__runtime_settings__
       sources << :yaml if field.yaml_key && self.class.configuration_file
       sources << :default unless field.default.nil?
       sources

@@ -238,8 +238,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ── Keyboard Shortcuts ──
+  let ssSubmittingRef = () => false;
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
+      if (ssSubmittingRef()) return;
       closeLanguageMenu();
       closePanel();
       // Close SuperSettings edit panel if open
@@ -558,7 +560,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       };
 
+      let ssSubmitting = false;
+      ssSubmittingRef = () => ssSubmitting;
+
       const closeSsPanel = () => {
+        if (ssSubmitting) return;
         if (ssPanelBg) ssPanelBg.classList.remove("open");
         if (ssPanel) ssPanel.classList.remove("open");
         document.body.style.overflow = "";
@@ -573,14 +579,15 @@ document.addEventListener("DOMContentLoaded", () => {
           description: ssDescriptionInput.value
         };
 
+        ssSubmitting = true;
         ssSaveBtn.disabled = true;
         ssCancelBtn.disabled = true;
+        if (ssCloseBtn) ssCloseBtn.style.display = "none";
         ssSaveBtn.innerHTML = '<svg class="ultra-settings-spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="31.4 31.4" /></svg>';
         ssErrors.style.display = "none";
 
         saveSetting(params, (result) => {
           if (result.data && result.data.success) {
-            closeSsPanel();
             // Store selected config so we can restore it after reload
             if (selectedConfigId) {
               sessionStorage.setItem("ultra-settings-selected-config", selectedConfigId);
@@ -592,8 +599,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             window.location.reload();
           } else {
+            ssSubmitting = false;
             ssSaveBtn.disabled = false;
             ssCancelBtn.disabled = false;
+            if (ssCloseBtn) ssCloseBtn.style.display = "";
             ssSaveBtn.textContent = t("edit.save");
 
             // Collect all error messages from the response
