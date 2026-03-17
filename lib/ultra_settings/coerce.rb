@@ -39,12 +39,6 @@ module UltraSettings
           array(value).map(&:to_s)
         when :symbol
           value.to_s.to_sym
-        when :rollout
-          if numeric?(value)
-            value.to_f
-          else
-            boolean(value)
-          end
         else
           value.to_s
         end

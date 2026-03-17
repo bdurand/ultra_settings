@@ -182,7 +182,7 @@ module UltraSettings
 
           @configuration_file = default_configuration_file
         end
-        return nil? unless @configuration_file
+        return nil unless @configuration_file
 
         path = @configuration_file
         if path.relative? && yaml_config_path
@@ -592,7 +592,8 @@ module UltraSettings
       field = self.class.send(:defined_fields)[name]
       return nil unless field
 
-      use_override = @ultra_settings_override_values[Thread.current.object_id]&.include?(name)
+      override_values = @ultra_settings_mutex.synchronize { @ultra_settings_override_values[Thread.current.object_id] }
+      use_override = override_values&.include?(name)
 
       if field.static? && !use_override && @ultra_settings_memoized_values.include?(name)
         return @ultra_settings_memoized_values[name]
@@ -600,7 +601,7 @@ module UltraSettings
 
       value = nil
       if use_override
-        value = field.coerce(@ultra_settings_override_values[Thread.current.object_id][name])
+        value = field.coerce(override_values[name])
       else
         env = ENV if field.env_var
         settings = UltraSettings.__runtime_settings__ if field.runtime_setting

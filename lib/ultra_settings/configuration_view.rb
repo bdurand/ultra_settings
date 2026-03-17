@@ -27,7 +27,7 @@ module UltraSettings
     # @param table_class [String] @deprecated CSS class for the table element (maintained for backwards compatibility).
     # @return [String] The rendered HTML.
     def render(table_class: "")
-      configuration = @configuration
+      configuration = @configuration # used by ERB template via binding
       html = ViewHelper.erb_template("configuration.html.erb").result(binding)
       html = html.html_safe if html.respond_to?(:html_safe)
       html

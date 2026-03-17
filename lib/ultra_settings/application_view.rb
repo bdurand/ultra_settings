@@ -31,7 +31,7 @@ module UltraSettings
     # @param table_class [String] @deprecated; no longer used.
     # @return [String] The rendered HTML.
     def render(select_class: nil, table_class: nil)
-      locale = @locale
+      locale = @locale # used by ERB template via binding
       html = ViewHelper.erb_template("index.html.erb").result(binding)
       html = html.html_safe if html.respond_to?(:html_safe)
       html

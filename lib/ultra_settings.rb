@@ -30,7 +30,7 @@ module UltraSettings
   autoload :YamlConfig, File.join(__dir__, "ultra_settings/yaml_config")
   autoload :VERSION, File.join(__dir__, "ultra_settings/version")
 
-  VALID_NAME__PATTERN = /\A[a-z_][a-zA-Z0-9_]*\z/
+  VALID_NAME_PATTERN = /\A[a-z_][a-zA-Z0-9_]*\z/
 
   @configurations = {}
   @mutex = Mutex.new
@@ -50,7 +50,7 @@ module UltraSettings
     # @return [void]
     def add(name, klass = nil)
       name = name.to_s
-      unless name.match?(VALID_NAME__PATTERN)
+      unless name.match?(VALID_NAME_PATTERN)
         raise ArgumentError.new("Invalid configuration name: #{name.inspect}")
       end
 
