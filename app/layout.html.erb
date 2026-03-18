@@ -11,6 +11,73 @@
     </style>
   </head>
   <body>
-    <%= content %>
+    <header class="ultra-settings-page-header">
+      <div class="ultra-settings-page-header-inner">
+        <div class="ultra-settings-page-header-brand">
+          <div class="ultra-settings-page-header-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="ultra-settings-page-header-title"><%= t("page.brand_title") %></h1>
+            <p class="ultra-settings-page-header-subtitle"><%= t("page.brand_subtitle") %></p>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="ultra-settings-page-content">
+      <%= content %>
+    </main>
+    <% locales = UltraSettings::MiniI18n.available_locales %>
+    <% if locales.size > 1 %>
+      <footer class="ultra-settings-page-footer">
+        <% locale = @locale || UltraSettings::MiniI18n::DEFAULT_LOCALE %>
+        <% current_locale_name = UltraSettings::MiniI18n.t("language.name", locale: locale) %>
+        <details class="ultra-settings-language-menu" id="ultra-settings-language-menu">
+          <summary class="ultra-settings-language-trigger" aria-label="<%= t('language.label') %>" aria-haspopup="menu">
+            <span class="ultra-settings-language-trigger-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M3.6 9h16.8"></path>
+                <path d="M3.6 15h16.8"></path>
+                <path d="M12 3a14 14 0 0 1 0 18"></path>
+                <path d="M12 3a14 14 0 0 0 0 18"></path>
+              </svg>
+            </span>
+            <span class="ultra-settings-language-trigger-current"><%= html_escape(current_locale_name) %></span>
+            <span class="ultra-settings-language-trigger-caret" aria-hidden="true">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m4 6 4 4 4-4"></path>
+              </svg>
+            </span>
+          </summary>
+
+          <menu class="ultra-settings-language-popup" role="menu" aria-label="<%= t('language.label') %>">
+            <% locales.each do |loc| %>
+              <% language_name = UltraSettings::MiniI18n.t('language.name', locale: loc) %>
+              <% active = loc == locale %>
+              <li>
+                <button
+                  type="button"
+                  class="ultra-settings-language-option<%= ' is-active' if active %>"
+                  role="menuitemradio"
+                  aria-checked="<%= active %>"
+                  data-locale="<%= html_escape(loc) %>"
+                >
+                  <span class="ultra-settings-language-option-name"><%= html_escape(language_name) %></span>
+                  <span class="ultra-settings-language-option-check" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m3.5 8 3 3 6-6"></path>
+                    </svg>
+                  </span>
+                </button>
+              </li>
+            <% end %>
+          </menu>
+        </details>
+      </footer>
+    <% end %>
   </body>
 </html>

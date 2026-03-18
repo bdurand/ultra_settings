@@ -10,6 +10,11 @@
   "sidebar.configurations_label": "Configurations",
   "sidebar.config_nav": "Configuration navigation",
 
+  "search.placeholder": "Search configurations…",
+  "search.filter_aria_label": "Search configurations",
+  "search.clear_aria": "Clear selection and return to list",
+  "config_list.fields": "fields",
+
   "field.secret": "Secret",
   "field.static": "Static",
   "field.nil": "nil",
@@ -60,6 +65,18 @@
   "edit.placeholder_float": "Enter a number",
   "edit.placeholder_datetime": "Enter a datetime (e.g. 2025-01-15T10:30:00Z)",
   "edit.save_error": "Failed to save setting.",
+  "edit.http_error": "The server returned an error (HTTP ${status}). Please try again.",
+  "edit.network_error": "Unable to reach the server. Please check your connection and try again.",
+
+  "edit.view_history": "View history",
+  "edit.back_to_edit": "\u2190 Back to editing",
+  "edit.history_empty": "No history found for this setting.",
+  "edit.history_loading": "Loading history\u2026",
+  "edit.history_prev": "\u2190 Newer",
+  "edit.history_next": "Older \u2192",
+  "edit.history_by": "by",
+  "edit.history_deleted": "Deleted",
+  "edit.history_created": "Created",
 
   "language.label": "Language",
   "language.name": "English",

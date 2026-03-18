@@ -4,6 +4,12 @@ require "spec_helper"
 require "rack"
 
 RSpec.describe UltraSettings do
+  describe "VERSION" do
+    it "has a version number" do
+      expect(UltraSettings::VERSION).not_to be_nil
+    end
+  end
+
   describe "adding configurations" do
     it "can add configurations to the root namespace" do
       expect(UltraSettings.test).to be_a(TestConfiguration)
@@ -75,77 +81,56 @@ RSpec.describe UltraSettings do
     end
   end
 
-  describe "super_settings_editing" do
+  describe "super_settings_api_path" do
     around do |example|
-      save_val = UltraSettings.instance_variable_get(:@super_settings_editing)
+      save_val = UltraSettings.instance_variable_get(:@super_settings_api_path)
       save_runtime = UltraSettings.instance_variable_get(:@runtime_settings)
       begin
         example.run
       ensure
-        UltraSettings.instance_variable_set(:@super_settings_editing, save_val)
+        UltraSettings.instance_variable_set(:@super_settings_api_path, save_val)
         UltraSettings.runtime_settings = save_runtime
       end
     end
 
-    it "returns false by default" do
-      stub_const("SuperSettings", Class.new {
-        def self.[](key)
-          nil
-        end
-      })
-      UltraSettings.super_settings_editing = false
-      UltraSettings.runtime_settings = nil
-      expect(UltraSettings.can_edit_super_settings?).to be(false)
+    it "returns nil by default" do
+      UltraSettings.instance_variable_set(:@super_settings_api_path, nil)
+      expect(UltraSettings.super_settings_api_path).to be_nil
     end
 
-    it "returns false when enabled but SuperSettings is not defined" do
-      # Simulate the editing flag being set without SuperSettings defined
-      UltraSettings.instance_variable_set(:@super_settings_editing, true)
-      UltraSettings.runtime_settings = TestRuntimeSetings.new
+    it "stores a valid path" do
+      stub_const("SuperSettings", Class.new)
+      UltraSettings.super_settings_api_path = "/super_settings"
+      expect(UltraSettings.super_settings_api_path).to eq("/super_settings")
+    end
+
+    it "strips trailing slashes from the path" do
+      stub_const("SuperSettings", Class.new)
+      UltraSettings.super_settings_api_path = "/super_settings/"
+      expect(UltraSettings.super_settings_api_path).to eq("/super_settings")
+    end
+
+    it "raises an error if the path does not start with /" do
+      stub_const("SuperSettings", Class.new)
+      expect { UltraSettings.super_settings_api_path = "super_settings" }.to raise_error(ArgumentError)
+    end
+
+    it "raises an error if SuperSettings is not defined" do
       hide_const("SuperSettings")
-      expect(UltraSettings.can_edit_super_settings?).to be(false)
+      expect { UltraSettings.super_settings_api_path = "/super_settings" }.to raise_error(RuntimeError)
     end
 
-    it "returns false when enabled but runtime_settings is nil" do
+    it "sets runtime_settings to SuperSettings when a path is provided" do
       stub_const("SuperSettings", Class.new)
-      UltraSettings.super_settings_editing = true
-      UltraSettings.runtime_settings = nil
-      expect(UltraSettings.can_edit_super_settings?).to be(false)
-    end
-
-    it "returns true when enabled, SuperSettings is defined, and runtime_settings is set" do
-      stub_const("SuperSettings", Class.new)
-      UltraSettings.super_settings_editing = true
-      UltraSettings.runtime_settings = TestRuntimeSetings.new
-      expect(UltraSettings.can_edit_super_settings?).to be(true)
-    end
-
-    it "accepts a lambda and evaluates it with the request" do
-      stub_const("SuperSettings", Class.new)
-      UltraSettings.super_settings_editing = ->(request) { request&.path == "/admin" }
-      UltraSettings.runtime_settings = TestRuntimeSetings.new
-
-      admin_request = Rack::Request.new(Rack::MockRequest.env_for("/admin"))
-      other_request = Rack::Request.new(Rack::MockRequest.env_for("/public"))
-
-      expect(UltraSettings.can_edit_super_settings?(admin_request)).to be(true)
-      expect(UltraSettings.can_edit_super_settings?(other_request)).to be(false)
-    end
-
-    it "accepts a proc and evaluates it with the request" do
-      stub_const("SuperSettings", Class.new)
-      UltraSettings.super_settings_editing = proc { |request| request&.path == "/settings" }
-      UltraSettings.runtime_settings = TestRuntimeSetings.new
-
-      settings_request = Rack::Request.new(Rack::MockRequest.env_for("/settings"))
-      expect(UltraSettings.can_edit_super_settings?(settings_request)).to be(true)
-      expect(UltraSettings.can_edit_super_settings?(nil)).to be(false)
-    end
-
-    it "always sets runtime_settings to SuperSettings when a callable is provided" do
-      stub_const("SuperSettings", Class.new)
-      UltraSettings.super_settings_editing = ->(request) { true }
+      UltraSettings.super_settings_api_path = "/super_settings"
       expect(UltraSettings.instance_variable_get(:@runtime_settings)).to eq(SuperSettings)
+    end
+
+    it "can be set to nil to disable" do
+      stub_const("SuperSettings", Class.new)
+      UltraSettings.super_settings_api_path = "/super_settings"
+      UltraSettings.super_settings_api_path = nil
+      expect(UltraSettings.super_settings_api_path).to be_nil
     end
   end
 end

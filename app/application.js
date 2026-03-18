@@ -3,13 +3,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const _i18n = window.__ultraSettingsI18n || {};
   const t = (key) => _i18n[key] || key;
 
-  const sidebar = document.getElementById("ultra-settings-sidebar");
-  const sidebarOverlay = document.getElementById("ultra-settings-sidebar-overlay");
-  const hamburger = document.getElementById("ultra-settings-hamburger");
-  const mainContent = document.getElementById("ultra-settings-main");
-  const navItems = document.querySelectorAll(".ultra-settings-nav-item");
-  const sections = document.querySelectorAll(".ultra-settings-config-section");
+  const root = document.querySelector(".ultra-settings");
   const searchInput = document.getElementById("ultra-settings-search-input");
+  const searchClear = document.getElementById("ultra-settings-search-clear");
+  const configList = document.getElementById("ultra-settings-config-list");
+  const configDetail = document.getElementById("ultra-settings-config-detail");
+  const configListItems = document.querySelectorAll(".ultra-settings-config-list-item");
+  const sections = document.querySelectorAll(".ultra-settings-config-section");
   const panelBg = document.getElementById("ultra-settings-panel-bg");
   const detailPanel = document.getElementById("ultra-settings-detail-panel");
   const dpTitle = document.getElementById("ultra-settings-dp-title");
@@ -23,86 +23,184 @@ document.addEventListener("DOMContentLoaded", () => {
     if (languageMenu) languageMenu.removeAttribute("open");
   };
 
-  if (!sidebar || !mainContent) return;
+  if (!root) return;
 
-  let activeConfigId = navItems.length > 0 ? navItems[0].dataset.configId : null;
+  const singleConfig = root.dataset.singleConfig || null;
+  let selectedConfigId = null;
+  let initialLoad = true;
 
-  // ── Sidebar Navigation ──
-  const selectConfig = (id) => {
-    activeConfigId = id;
-    navItems.forEach(el => el.classList.toggle("active", el.dataset.configId === id));
-    const section = document.getElementById(id);
-    if (section) section.scrollIntoView({ block: "start" });
-    if (window.innerWidth <= 768) closeSidebar();
+  // ── View transition helper ──
+  let animating = false;
+  const animateView = (outEl, inEl, callback) => {
+    if (animating) return;
+    if (!outEl || !inEl) { if (callback) callback(); return; }
+
+    // Skip animations entirely when duration is forced to 0 (e.g. in tests)
+    const duration = parseFloat(getComputedStyle(outEl).animationDuration);
+    if (duration === 0) {
+      outEl.style.display = "none";
+      inEl.style.display = "";
+      if (callback) callback();
+      return;
+    }
+
+    animating = true;
+    // Ensure the incoming element is hidden until the exit animation finishes
+    inEl.style.display = "none";
+    outEl.classList.add("ultra-settings-view-exit");
+    outEl.addEventListener("animationend", function handler() {
+      outEl.removeEventListener("animationend", handler);
+      outEl.classList.remove("ultra-settings-view-exit");
+      outEl.style.display = "none";
+      inEl.style.display = "";
+      inEl.classList.add("ultra-settings-view-enter");
+      inEl.addEventListener("animationend", function handler2() {
+        inEl.removeEventListener("animationend", handler2);
+        inEl.classList.remove("ultra-settings-view-enter");
+        animating = false;
+      }, { once: true });
+      if (callback) callback();
+    }, { once: true });
   };
 
-  navItems.forEach(item => {
+  // ── Config Selection ──
+  const selectConfig = (configId) => {
+    selectedConfigId = configId;
+
+    // Show only the selected section
+    sections.forEach(s => {
+      s.style.display = (s.dataset.configId === configId) ? "" : "none";
+    });
+
+    // Update search field
+    if (searchInput) {
+      const configName = configId.replace(/^section-/, "");
+      searchInput.value = configName;
+      searchInput.readOnly = true;
+    }
+    if (searchClear) searchClear.classList.add("visible");
+
+    // Update hash
+    const configName = configId.replace(/^section-/, "");
+    if (window.location.hash !== "#" + configName) {
+      history.replaceState(null, "", "#" + configName);
+    }
+
+    // Scroll to top
+    window.scrollTo(0, 0);
+
+    // Animate list → detail
+    if (configList && configDetail && !initialLoad) {
+      if (configList.style.display === "none") {
+        // Already showing detail, just swap content
+        configDetail.classList.add("active");
+      } else {
+        configDetail.classList.add("active");
+        animateView(configList, configDetail);
+      }
+    } else {
+      if (configList) configList.style.display = "none";
+      if (configDetail) configDetail.classList.add("active");
+    }
+  };
+
+  const clearSelection = () => {
+    selectedConfigId = null;
+
+    // Hide all sections
+    sections.forEach(s => { s.style.display = "none"; });
+
+    // Reset search field
+    if (searchInput) {
+      searchInput.value = "";
+      searchInput.readOnly = false;
+    }
+    if (searchClear) searchClear.classList.remove("visible");
+
+    // Show all list items (clear any filter)
+    configListItems.forEach(item => item.classList.remove("hidden"));
+
+    // Clear hash
+    history.replaceState(null, "", window.location.pathname + window.location.search);
+
+    // Animate detail → list
+    if (configDetail && configList) {
+      animateView(configDetail, configList, () => {
+        // Clean up: let CSS classes control display again
+        configDetail.classList.remove("active");
+        configDetail.style.display = "";
+        configList.style.display = "";
+      });
+    } else {
+      if (configList) configList.style.display = "";
+      if (configDetail) configDetail.classList.remove("active");
+    }
+  };
+
+  // ── Config List Item Handlers ──
+  configListItems.forEach(item => {
     item.addEventListener("click", () => selectConfig(item.dataset.configId));
     item.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectConfig(item.dataset.configId); }
     });
   });
 
-  // ── Scroll Spy ──
-  if (mainContent && sections.length > 0) {
-    mainContent.addEventListener("scroll", () => {
-      let current = activeConfigId;
-      sections.forEach(s => {
-        if (s.getBoundingClientRect().top <= 160) current = s.dataset.configId;
-      });
-      if (current !== activeConfigId) {
-        activeConfigId = current;
-        navItems.forEach(el => el.classList.toggle("active", el.dataset.configId === current));
-      }
-    });
-  }
-
-  // ── Hamburger Menu ──
-  const openSidebar = () => {
-    if (sidebar) sidebar.classList.add("open");
-    if (sidebarOverlay) sidebarOverlay.classList.add("open");
-  };
-
-  const closeSidebar = () => {
-    if (sidebar) sidebar.classList.remove("open");
-    if (sidebarOverlay) sidebarOverlay.classList.remove("open");
-    closeLanguageMenu();
-  };
-
-  if (hamburger) hamburger.addEventListener("click", () => {
-    sidebar.classList.contains("open") ? closeSidebar() : openSidebar();
-  });
-
-  if (sidebarOverlay) sidebarOverlay.addEventListener("click", closeSidebar);
-
-  // ── Inline Search Filter ──
+  // ── Search Filter (list view) ──
   if (searchInput) {
     searchInput.addEventListener("input", function() {
+      if (selectedConfigId) return; // Don't filter when a config is selected
+
       const q = this.value.toLowerCase().trim();
-
-      sections.forEach(section => {
-        const configId = section.dataset.configId;
-        const navItem = document.querySelector('.ultra-settings-nav-item[data-config-id="' + configId + '"]');
-        const configSearch = navItem ? (navItem.dataset.search || "") : "";
-        const configMatch = !q || configSearch.includes(q);
-        const cards = section.querySelectorAll(".ultra-settings-field-card");
-        let anyFieldMatch = false;
-
-        cards.forEach(card => {
-          const fieldSearch = (card.dataset.fieldSearch || "");
-          const fieldMatch = configMatch || !q || fieldSearch.includes(q);
-          card.classList.toggle("hidden", !fieldMatch);
-          if (fieldMatch) anyFieldMatch = true;
-        });
-
-        const showSection = configMatch || anyFieldMatch;
-        section.classList.toggle("hidden", !showSection);
-
-        // Sync nav item visibility with section
-        if (navItem) navItem.classList.toggle("hidden", !showSection);
+      configListItems.forEach(item => {
+        const searchData = item.dataset.search || "";
+        const match = !q || searchData.includes(q);
+        item.classList.toggle("hidden", !match);
       });
     });
   }
+
+  // ── Clear Button ──
+  if (searchClear) {
+    searchClear.addEventListener("click", clearSelection);
+  }
+
+  // ── Hash-based Navigation ──
+  const handleHash = () => {
+    const hash = window.location.hash.replace(/^#/, "");
+    if (hash) {
+      const configId = "section-" + hash;
+      const exists = Array.from(sections).some(s => s.dataset.configId === configId);
+      if (exists) {
+        selectConfig(configId);
+        return;
+      }
+    }
+    // No valid hash — if not single config, show list
+    if (!singleConfig && selectedConfigId) {
+      clearSelection();
+    }
+  };
+
+  window.addEventListener("hashchange", handleHash);
+
+  // ── Single Config Auto-Select ──
+  if (singleConfig) {
+    selectConfig(singleConfig);
+  } else {
+    // Check for stored config (after SuperSettings save reload)
+    const storedConfig = sessionStorage.getItem("ultra-settings-selected-config");
+    if (storedConfig) {
+      sessionStorage.removeItem("ultra-settings-selected-config");
+      const exists = Array.from(sections).some(s => s.dataset.configId === storedConfig);
+      if (exists) {
+        selectConfig(storedConfig);
+      }
+    } else {
+      handleHash();
+    }
+  }
+
+  initialLoad = false;
 
   // ── Detail Panel ──
   const openPanel = (name, value, type, isSecret) => {
@@ -111,11 +209,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dpMeta) dpMeta.innerHTML = t("detail.type_label") + " <span>" + escapeHtml(type.toUpperCase()) + "</span>" + (isSecret === "true" ? ' \u00B7 <span style="color:var(--badge-secret-text)">' + t("detail.secret_badge") + "</span>" : "");
     if (panelBg) panelBg.classList.add("open");
     if (detailPanel) detailPanel.classList.add("open");
+    document.body.style.overflow = "hidden";
   };
 
   const closePanel = () => {
     if (panelBg) panelBg.classList.remove("open");
     if (detailPanel) detailPanel.classList.remove("open");
+    document.body.style.overflow = "";
   };
 
   if (panelBg) panelBg.addEventListener("click", closePanel);
@@ -151,8 +251,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ── Keyboard Shortcuts ──
+  let ssSubmittingRef = () => false;
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
+      if (ssSubmittingRef()) return;
       closeLanguageMenu();
       closePanel();
       // Close SuperSettings edit panel if open
@@ -160,21 +262,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const ssP = document.getElementById("ultra-settings-ss-panel");
       if (ssBg) ssBg.classList.remove("open");
       if (ssP) ssP.classList.remove("open");
+      document.body.style.overflow = "";
     }
   });
-
-  // ── Hash-based navigation ──
-  const handleHash = () => {
-    const hash = window.location.hash.replace(/^#/, "");
-    if (hash) {
-      const configId = "section-" + hash;
-      const exists = Array.from(navItems).some(item => item.dataset.configId === configId);
-      if (exists) selectConfig(configId);
-    }
-  };
-
-  window.addEventListener("hashchange", handleHash);
-  handleHash();
 
   // ── Equalize chip widths ──
   const equalizeChipWidths = () => {
@@ -190,13 +280,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   equalizeChipWidths();
 
-  // ── Restore scroll & flash after setting save ──
-  const savedScroll = sessionStorage.getItem("ultra-settings-scroll");
+  // ── Restore selection & flash after setting save ──
   const changedKey = sessionStorage.getItem("ultra-settings-changed-key");
-  if (savedScroll != null) {
-    mainContent.scrollTop = parseInt(savedScroll, 10);
-    sessionStorage.removeItem("ultra-settings-scroll");
-  }
   if (changedKey) {
     sessionStorage.removeItem("ultra-settings-changed-key");
     const changedSection = sessionStorage.getItem("ultra-settings-changed-section");
@@ -216,319 +301,523 @@ document.addEventListener("DOMContentLoaded", () => {
   // ══════════════════════════════════════════
   // SuperSettings Inline Editing
   // ══════════════════════════════════════════
-  const ssContainer = document.querySelector(".ultra-settings[data-ss-editing]");
-  if (ssContainer) {
-    const ssPanel = document.getElementById("ultra-settings-ss-panel");
-    const ssPanelBg = document.getElementById("ultra-settings-ss-panel-bg");
-    const ssForm = document.getElementById("ultra-settings-ss-form");
-    const ssLoading = document.getElementById("ultra-settings-ss-loading");
-    const ssErrors = document.getElementById("ultra-settings-ss-errors");
-    const ssKeyInput = document.getElementById("ultra-settings-ss-key");
-    const ssTitle = document.getElementById("ultra-settings-ss-title");
-    const ssValueTypeSelect = document.getElementById("ultra-settings-ss-value-type");
-    const ssValueTextarea = document.getElementById("ultra-settings-ss-value");
-    const ssValueField = document.getElementById("ultra-settings-ss-value-field");
-    const ssIntegerField = document.getElementById("ultra-settings-ss-integer-field");
-    const ssIntegerInput = document.getElementById("ultra-settings-ss-integer-value");
-    const ssFloatField = document.getElementById("ultra-settings-ss-float-field");
-    const ssFloatInput = document.getElementById("ultra-settings-ss-float-value");
-    const ssBooleanField = document.getElementById("ultra-settings-ss-boolean-field");
-    const ssBooleanCheckbox = document.getElementById("ultra-settings-ss-boolean-value");
-    const ssDatetimeField = document.getElementById("ultra-settings-ss-datetime-field");
-    const ssDatetimeInput = document.getElementById("ultra-settings-ss-datetime-value");
-    const ssTzLabel = document.getElementById("ultra-settings-ss-tz-label");
-    const ssDescriptionInput = document.getElementById("ultra-settings-ss-description");
-    const ssSaveBtn = document.getElementById("ultra-settings-ss-save");
-    const ssCancelBtn = document.getElementById("ultra-settings-ss-cancel");
-    const ssCloseBtn = document.getElementById("ultra-settings-ss-panel-close");
-    const ssExternalLink = document.getElementById("ultra-settings-ss-external-link");
-    const ssRuntimeUrlTemplate = ssContainer.dataset.runtimeSettingsUrl || "";
+  const ssApiPath = root ? root.dataset.ssApiPath : null;
+  if (ssApiPath) {
+    // Load the SuperSettings api.js client library and check access
+    const apiBaseEl = document.createElement("div");
+    apiBaseEl.className = "super-settings";
+    apiBaseEl.dataset.apiBaseUrl = ssApiPath;
+    apiBaseEl.style.display = "none";
+    document.body.appendChild(apiBaseEl);
 
-    // Determine API base URL from current page
-    const getApiBase = () => {
-      let base = window.location.pathname.replace(/\/+$/, "");
-      return base;
-    };
-
-    // Fetch a setting from the SuperSettings API
-    const fetchSetting = (key, callback) => {
-      const url = getApiBase() + "/super_settings/setting?key=" + encodeURIComponent(key);
-      fetch(url, {credentials: "same-origin"})
-        .then(resp => {
-          if (resp.ok) return resp.json();
-          if (resp.status === 404) return null;
-          throw new Error(resp.status + " " + resp.statusText);
-        })
-        .then(callback)
-        .catch(err => {
-          console.error("Error fetching setting:", err);
-          callback(null);
-        });
-    };
-
-    // Save a setting via the SuperSettings API
-    const saveSetting = (params, callback) => {
-      const url = getApiBase() + "/super_settings/setting";
-      fetch(url, {
-        method: "POST",
-        credentials: "same-origin",
-        headers: {"Content-Type": "application/json", "Accept": "application/json"},
-        body: JSON.stringify({settings: [params]})
-      })
-        .then(resp => resp.json().then(data => ({status: resp.status, data})))
-        .then(callback)
-        .catch(err => {
-          console.error("Error saving setting:", err);
-          callback({status: 500, data: {error: err.message}});
-        });
-    };
-
-    // Get the local timezone name for display
-    const localTz = (() => {
-      try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e) { return "UTC"; }
-    })();
-    if (ssTzLabel) ssTzLabel.textContent = localTz;
-
-    // Show/hide value fields based on type
-    const updateValueField = (type) => {
-      ssValueField.style.display = "none";
-      ssIntegerField.style.display = "none";
-      ssFloatField.style.display = "none";
-      ssBooleanField.style.display = "none";
-      ssDatetimeField.style.display = "none";
-
-      if (type === "boolean") {
-        ssBooleanField.style.display = "";
-      } else if (type === "integer") {
-        ssIntegerField.style.display = "";
-      } else if (type === "float") {
-        ssFloatField.style.display = "";
-      } else if (type === "datetime") {
-        ssDatetimeField.style.display = "";
-      } else if (type === "array") {
-        ssValueField.style.display = "";
-        ssValueTextarea.rows = 6;
-        ssValueTextarea.placeholder = t("edit.placeholder_array");
-      } else {
-        ssValueField.style.display = "";
-        ssValueTextarea.rows = 3;
-        ssValueTextarea.placeholder = "";
-      }
-    };
-
-    ssValueTypeSelect.addEventListener("change", () => {
-      updateValueField(ssValueTypeSelect.value);
-    });
-
-    // Enforce integer-only input: strip non-integer characters as the user types
-    if (ssIntegerInput) {
-      ssIntegerInput.addEventListener("input", () => {
-        const raw = ssIntegerInput.value;
-        // Allow empty, sole minus sign while typing, or valid integer
-        if (raw === "" || raw === "-") return;
-        const parsed = parseInt(raw, 10);
-        if (isNaN(parsed)) {
-          ssIntegerInput.value = "";
-        } else if (String(parsed) !== raw) {
-          ssIntegerInput.value = parsed;
-        }
-      });
-    }
-
-    // Convert the datetime-local input value (local time) to a UTC ISO 8601 string
-    const datetimeToISO = () => {
-      const localVal = ssDatetimeInput.value; // e.g. "2025-01-15T10:30:00"
-      if (!localVal) return "";
-      const d = new Date(localVal);
-      if (isNaN(d.getTime())) return localVal;
-      return d.toISOString();
-    };
-
-    // Parse a UTC ISO 8601 string and populate the datetime-local input in local time
-    const populateDatetime = (isoStr) => {
-      if (!isoStr) {
-        ssDatetimeInput.value = "";
+    const script = document.createElement("script");
+    script.src = ssApiPath + "/api.js";
+    script.onload = () => {
+      if (!window.SuperSettingsAPI || !SuperSettingsAPI.authorized) {
+        console.log("SuperSettings: api.js loaded but SuperSettingsAPI not available");
         return;
       }
-      let str = String(isoStr).trim();
-      // Normalize Ruby Time#to_json format ("2026-03-20 01:07:56 UTC") to ISO 8601
-      str = str.replace(/ UTC$/, "Z").replace(/ /, "T");
-      // Ensure the string is treated as UTC if no timezone indicator present
-      if (!str.endsWith("Z") && !/[+-]\d{2}:?\d{2}$/.test(str)) {
-        str += "Z";
-      }
-      const d = new Date(str);
-      if (isNaN(d.getTime())) {
-        ssDatetimeInput.value = "";
-        return;
-      }
-      // Format as local datetime-local value: YYYY-MM-DDTHH:MM:SS
-      const pad = (n) => String(n).padStart(2, "0");
-      ssDatetimeInput.value = d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) +
-        "T" + pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
-    };
 
-    const getFormValue = () => {
-      if (ssValueTypeSelect.value === "boolean") {
-        return ssBooleanCheckbox.checked ? "true" : "false";
-      }
-      if (ssValueTypeSelect.value === "integer") {
-        return ssIntegerInput.value;
-      }
-      if (ssValueTypeSelect.value === "float") {
-        return ssFloatInput.value;
-      }
-      if (ssValueTypeSelect.value === "datetime") {
-        return datetimeToISO();
-      }
-      return ssValueTextarea.value;
-    };
-
-    // Open the edit panel
-    const openSsPanel = (key, defaultType, defaultDescription) => {
-      if (!ssPanel) return;
-
-      // Close the detail panel if open
-      closePanel();
-
-      // Reset form
-      ssKeyInput.value = key;
-      if (ssTitle) ssTitle.textContent = key;
-      ssValueTextarea.value = "";
-      ssIntegerInput.value = "";
-      ssFloatInput.value = "";
-      ssDatetimeInput.value = "";
-      ssBooleanCheckbox.checked = false;
-      ssDescriptionInput.value = defaultDescription || "";
-      ssValueTypeSelect.value = defaultType || "string";
-      updateValueField(ssValueTypeSelect.value);
-      ssErrors.style.display = "none";
-      ssErrors.textContent = "";
-      ssForm.style.display = "none";
-      ssLoading.style.display = "";
-      ssSaveBtn.disabled = false;
-      ssSaveBtn.textContent = t("edit.save");
-
-      // Build and show external link if runtime_settings_url is configured
-      if (ssExternalLink && ssRuntimeUrlTemplate) {
-        const externalUrl = ssRuntimeUrlTemplate
-          .replace("${name}", encodeURIComponent(key))
-          .replace("${type}", encodeURIComponent(defaultType || ""))
-          .replace("${description}", encodeURIComponent(defaultDescription || ""));
-        ssExternalLink.href = externalUrl;
-        ssExternalLink.style.display = "";
-      } else if (ssExternalLink) {
-        ssExternalLink.style.display = "none";
-      }
-
-      ssPanelBg.classList.add("open");
-      ssPanel.classList.add("open");
-
-      // Fetch existing setting
-      fetchSetting(key, (setting) => {
-        if (setting && !setting.error) {
-          // Existing setting — populate form with current values
-          ssValueTypeSelect.value = setting.value_type || defaultType || "string";
-          updateValueField(ssValueTypeSelect.value);
-
-          if (setting.value_type === "boolean") {
-            ssBooleanCheckbox.checked = (setting.value === true || setting.value === "true");
-          } else if (setting.value_type === "integer") {
-            ssIntegerInput.value = (setting.value != null) ? String(setting.value) : "";
-          } else if (setting.value_type === "float") {
-            ssFloatInput.value = (setting.value != null) ? String(setting.value) : "";
-          } else if (setting.value_type === "datetime") {
-            populateDatetime((setting.value != null) ? String(setting.value) : "");
-          } else if (setting.value_type === "array" && Array.isArray(setting.value)) {
-            ssValueTextarea.value = setting.value.join("\n");
-          } else {
-            ssValueTextarea.value = (setting.value != null) ? String(setting.value) : "";
+      SuperSettingsAPI.baseUrl = ssApiPath;
+      SuperSettingsAPI.authorized(
+        (permission) => {
+          if (permission !== "read-write") {
+            console.log("SuperSettings: authorization is '" + permission + "', editing disabled (requires read-write)");
+            return;
           }
-
-          if (setting.description) {
-            ssDescriptionInput.value = setting.description;
-          }
+          enableSuperSettingsUI();
+        },
+        (err) => {
+          console.log("SuperSettings: access check failed, editing disabled", err);
         }
-        // If not found, defaults already applied
+      );
+    };
+    script.onerror = () => {
+      console.log("SuperSettings: failed to load api.js, editing disabled");
+    };
+    document.head.appendChild(script);
 
-        ssLoading.style.display = "none";
-        ssForm.style.display = "";
+    // Enable the editing UI after api.js is loaded and access is confirmed
+    const enableSuperSettingsUI = () => {
+      const ssPanel = document.getElementById("ultra-settings-ss-panel");
+      const ssPanelBg = document.getElementById("ultra-settings-ss-panel-bg");
+      const ssForm = document.getElementById("ultra-settings-ss-form");
+      const ssLoading = document.getElementById("ultra-settings-ss-loading");
+      const ssErrors = document.getElementById("ultra-settings-ss-errors");
+      const ssKeyInput = document.getElementById("ultra-settings-ss-key");
+      const ssTitle = document.getElementById("ultra-settings-ss-title");
+      const ssValueTypeSelect = document.getElementById("ultra-settings-ss-value-type");
+      const ssValueTextarea = document.getElementById("ultra-settings-ss-value");
+      const ssValueField = document.getElementById("ultra-settings-ss-value-field");
+      const ssIntegerField = document.getElementById("ultra-settings-ss-integer-field");
+      const ssIntegerInput = document.getElementById("ultra-settings-ss-integer-value");
+      const ssFloatField = document.getElementById("ultra-settings-ss-float-field");
+      const ssFloatInput = document.getElementById("ultra-settings-ss-float-value");
+      const ssBooleanField = document.getElementById("ultra-settings-ss-boolean-field");
+      const ssBooleanCheckbox = document.getElementById("ultra-settings-ss-boolean-value");
+      const ssDatetimeField = document.getElementById("ultra-settings-ss-datetime-field");
+      const ssDatetimeInput = document.getElementById("ultra-settings-ss-datetime-value");
+      const ssTzLabel = document.getElementById("ultra-settings-ss-tz-label");
+      const ssDescriptionInput = document.getElementById("ultra-settings-ss-description");
+      const ssSaveBtn = document.getElementById("ultra-settings-ss-save");
+      const ssCancelBtn = document.getElementById("ultra-settings-ss-cancel");
+      const ssCloseBtn = document.getElementById("ultra-settings-ss-panel-close");
+      const ssExternalLink = document.getElementById("ultra-settings-ss-external-link");
+      const ssRuntimeUrlTemplate = root.dataset.runtimeSettingsUrl || "";
+
+      // Show all edit buttons (they are rendered hidden by default)
+      document.querySelectorAll(".ultra-settings-ss-edit-btn").forEach(btn => {
+        btn.style.display = "";
       });
-    };
 
-    const closeSsPanel = () => {
-      if (ssPanelBg) ssPanelBg.classList.remove("open");
-      if (ssPanel) ssPanel.classList.remove("open");
-    };
+      // Get the local timezone name for display
+      const localTz = (() => {
+        try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e) { return "UTC"; }
+      })();
+      if (ssTzLabel) ssTzLabel.textContent = localTz;
 
-    // Handle save
-    ssSaveBtn.addEventListener("click", () => {
-      const params = {
-        key: ssKeyInput.value,
-        value: getFormValue(),
-        value_type: ssValueTypeSelect.value,
-        description: ssDescriptionInput.value
+      // Show/hide value fields based on type
+      const updateValueField = (type) => {
+        ssValueField.style.display = "none";
+        ssIntegerField.style.display = "none";
+        ssFloatField.style.display = "none";
+        ssBooleanField.style.display = "none";
+        ssDatetimeField.style.display = "none";
+
+        if (type === "boolean") {
+          ssBooleanField.style.display = "";
+        } else if (type === "integer") {
+          ssIntegerField.style.display = "";
+        } else if (type === "float") {
+          ssFloatField.style.display = "";
+        } else if (type === "datetime") {
+          ssDatetimeField.style.display = "";
+        } else if (type === "array") {
+          ssValueField.style.display = "";
+          ssValueTextarea.rows = 6;
+          ssValueTextarea.placeholder = t("edit.placeholder_array");
+        } else {
+          ssValueField.style.display = "";
+          ssValueTextarea.rows = 3;
+          ssValueTextarea.placeholder = "";
+        }
       };
 
-      ssSaveBtn.disabled = true;
-      ssSaveBtn.textContent = t("edit.saving");
-      ssErrors.style.display = "none";
+      ssValueTypeSelect.addEventListener("change", () => {
+        updateValueField(ssValueTypeSelect.value);
+      });
 
-      saveSetting(params, (result) => {
-        if (result.status === 200 && result.data.success) {
-          closeSsPanel();
-          // Preserve scroll position and flash the changed row after reload
-          if (mainContent) {
-            sessionStorage.setItem("ultra-settings-scroll", mainContent.scrollTop);
+      // Enforce integer-only input: strip non-integer characters as the user types
+      if (ssIntegerInput) {
+        ssIntegerInput.addEventListener("input", () => {
+          const raw = ssIntegerInput.value;
+          // Allow empty, sole minus sign while typing, or valid integer
+          if (raw === "" || raw === "-") return;
+          const parsed = parseInt(raw, 10);
+          if (isNaN(parsed)) {
+            ssIntegerInput.value = "";
+          } else if (String(parsed) !== raw) {
+            ssIntegerInput.value = parsed;
           }
-          sessionStorage.setItem("ultra-settings-changed-key", params.key);
-          if (ssContainer._activeSectionId) {
-            sessionStorage.setItem("ultra-settings-changed-section", ssContainer._activeSectionId);
-          }
-          window.location.reload();
-        } else {
-          ssSaveBtn.disabled = false;
-          ssSaveBtn.textContent = t("edit.save");
+        });
+      }
 
-          let errorMsg = t("edit.save_error");
-          if (result.data && result.data.errors) {
+      // Convert the datetime-local input value (local time) to a UTC ISO 8601 string
+      const datetimeToISO = () => {
+        const localVal = ssDatetimeInput.value; // e.g. "2025-01-15T10:30:00"
+        if (!localVal) return "";
+        const d = new Date(localVal);
+        if (isNaN(d.getTime())) return localVal;
+        return d.toISOString();
+      };
+
+      // Parse a UTC ISO 8601 string and populate the datetime-local input in local time
+      const populateDatetime = (isoStr) => {
+        if (!isoStr) {
+          ssDatetimeInput.value = "";
+          return;
+        }
+        let str = String(isoStr).trim();
+        // Normalize Ruby Time#to_json format ("2026-03-20 01:07:56 UTC") to ISO 8601
+        str = str.replace(/ UTC$/, "Z").replace(/ /, "T");
+        // Ensure the string is treated as UTC if no timezone indicator present
+        if (!str.endsWith("Z") && !/[+-]\d{2}:?\d{2}$/.test(str)) {
+          str += "Z";
+        }
+        const d = new Date(str);
+        if (isNaN(d.getTime())) {
+          ssDatetimeInput.value = "";
+          return;
+        }
+        // Format as local datetime-local value: YYYY-MM-DDTHH:MM:SS
+        const pad = (n) => String(n).padStart(2, "0");
+        ssDatetimeInput.value = d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) +
+          "T" + pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+      };
+
+      const getFormValue = () => {
+        if (ssValueTypeSelect.value === "boolean") {
+          return ssBooleanCheckbox.checked ? "true" : "false";
+        }
+        if (ssValueTypeSelect.value === "integer") {
+          return ssIntegerInput.value;
+        }
+        if (ssValueTypeSelect.value === "float") {
+          return ssFloatInput.value;
+        }
+        if (ssValueTypeSelect.value === "datetime") {
+          return datetimeToISO();
+        }
+        return ssValueTextarea.value;
+      };
+
+      // Fetch a setting using the SuperSettings API client
+      const fetchSetting = (key, callback) => {
+        SuperSettingsAPI.fetchSetting(key, callback, (status) => {
+          if (status === 404) {
+            callback(null);
+          } else {
+            console.error("SuperSettings: error fetching setting, status " + status);
+            callback(null);
+          }
+        });
+      };
+
+      // Save a setting via the SuperSettings API
+      const saveSetting = (params, callback) => {
+        SuperSettingsAPI.updateSettings(
+          {settings: [params]},
+          (data) => {
+            callback({status: 200, ok: true, data: data});
+          },
+          (error) => {
+            console.error("SuperSettings: error saving setting", error);
+            callback({status: 0, ok: false, data: {success: false, errors: {_http: [t("edit.network_error")]}}});
+          }
+        );
+      };
+
+      // Open the edit panel
+      const openSsPanel = (key, defaultType, defaultDescription) => {
+        if (!ssPanel) return;
+
+        // Close the detail panel if open
+        closePanel();
+
+        // Reset form
+        ssKeyInput.value = key;
+        if (ssTitle) ssTitle.textContent = key;
+        ssValueTextarea.value = "";
+        ssIntegerInput.value = "";
+        ssFloatInput.value = "";
+        ssDatetimeInput.value = "";
+        ssBooleanCheckbox.checked = false;
+        ssDescriptionInput.value = defaultDescription || "";
+        ssValueTypeSelect.value = defaultType || "string";
+        updateValueField(ssValueTypeSelect.value);
+        ssErrors.style.display = "none";
+        ssErrors.textContent = "";
+        ssForm.style.display = "none";
+        ssLoading.style.display = "";
+        ssSaveBtn.disabled = false;
+        ssSaveBtn.textContent = t("edit.save");
+
+        // Build and show external link if runtime_settings_url is configured
+        if (ssExternalLink && ssRuntimeUrlTemplate) {
+          const externalUrl = ssRuntimeUrlTemplate
+            .replace("${name}", encodeURIComponent(key))
+            .replace("${type}", encodeURIComponent(defaultType || ""))
+            .replace("${description}", encodeURIComponent(defaultDescription || ""));
+          ssExternalLink.href = externalUrl;
+          ssExternalLink.style.display = "";
+        } else if (ssExternalLink) {
+          ssExternalLink.style.display = "none";
+        }
+
+        // Reset history view (always start on edit form)
+        if (ssHistoryContainer) ssHistoryContainer.style.display = "none";
+
+        ssPanelBg.classList.add("open");
+        ssPanel.classList.add("open");
+        document.body.style.overflow = "hidden";
+
+        // Fetch existing setting
+        fetchSetting(key, (setting) => {
+          if (setting && !setting.error) {
+            // Existing setting — populate form with current values
+            ssValueTypeSelect.value = setting.value_type || defaultType || "string";
+            updateValueField(ssValueTypeSelect.value);
+
+            if (setting.value_type === "boolean") {
+              ssBooleanCheckbox.checked = (setting.value === true || setting.value === "true");
+            } else if (setting.value_type === "integer") {
+              ssIntegerInput.value = (setting.value != null) ? String(setting.value) : "";
+            } else if (setting.value_type === "float") {
+              ssFloatInput.value = (setting.value != null) ? String(setting.value) : "";
+            } else if (setting.value_type === "datetime") {
+              populateDatetime((setting.value != null) ? String(setting.value) : "");
+            } else if (setting.value_type === "array" && Array.isArray(setting.value)) {
+              ssValueTextarea.value = setting.value.join("\n");
+            } else {
+              ssValueTextarea.value = (setting.value != null) ? String(setting.value) : "";
+            }
+
+            if (setting.description) {
+              ssDescriptionInput.value = setting.description;
+            }
+          }
+          // If not found, defaults already applied
+
+          ssLoading.style.display = "none";
+          ssForm.style.display = "";
+        });
+      };
+
+      let ssSubmitting = false;
+      ssSubmittingRef = () => ssSubmitting;
+
+      const closeSsPanel = () => {
+        if (ssSubmitting) return;
+        if (ssPanelBg) ssPanelBg.classList.remove("open");
+        if (ssPanel) ssPanel.classList.remove("open");
+        document.body.style.overflow = "";
+      };
+
+      // Handle save
+      ssSaveBtn.addEventListener("click", () => {
+        const params = {
+          key: ssKeyInput.value,
+          value: getFormValue(),
+          value_type: ssValueTypeSelect.value,
+          description: ssDescriptionInput.value
+        };
+
+        ssSubmitting = true;
+        ssSaveBtn.disabled = true;
+        ssCancelBtn.disabled = true;
+        if (ssCloseBtn) ssCloseBtn.style.display = "none";
+        ssSaveBtn.innerHTML = '<svg class="ultra-settings-spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="31.4 31.4" /></svg>';
+        ssErrors.style.display = "none";
+
+        saveSetting(params, (result) => {
+          if (result.data && result.data.success) {
+            // Store selected config so we can restore it after reload
+            if (selectedConfigId) {
+              sessionStorage.setItem("ultra-settings-selected-config", selectedConfigId);
+            }
+            sessionStorage.setItem("ultra-settings-changed-key", params.key);
+            const activeSection = document.querySelector(".ultra-settings-config-section[style='']");
+            if (activeSection) {
+              sessionStorage.setItem("ultra-settings-changed-section", activeSection.id);
+            }
+            window.location.reload();
+          } else {
+            ssSubmitting = false;
+            ssSaveBtn.disabled = false;
+            ssCancelBtn.disabled = false;
+            if (ssCloseBtn) ssCloseBtn.style.display = "";
+            ssSaveBtn.textContent = t("edit.save");
+
+            // Collect all error messages from the response
             const msgs = [];
-            Object.entries(result.data.errors).forEach(([field, errs]) => {
-              if (Array.isArray(errs)) {
-                errs.forEach(e => msgs.push(e));
-              } else {
-                msgs.push(String(errs));
-              }
-            });
-            if (msgs.length > 0) errorMsg = msgs.join("; ");
-          } else if (result.data && result.data.error) {
-            errorMsg = result.data.error;
+            if (result.data && result.data.errors) {
+              Object.entries(result.data.errors).forEach(([key, errs]) => {
+                if (Array.isArray(errs)) {
+                  errs.forEach(e => msgs.push(String(e)));
+                } else {
+                  msgs.push(String(errs));
+                }
+              });
+            } else if (result.data && result.data.error) {
+              msgs.push(String(result.data.error));
+            }
+
+            // Build the alert content
+            ssErrors.innerHTML = "";
+            if (msgs.length === 0) {
+              msgs.push(t("edit.save_error"));
+            }
+            if (msgs.length === 1) {
+              ssErrors.textContent = msgs[0];
+            } else {
+              const ul = document.createElement("ul");
+              ul.className = "ultra-settings-ss-error-list";
+              msgs.forEach(msg => {
+                const li = document.createElement("li");
+                li.textContent = msg;
+                ul.appendChild(li);
+              });
+              ssErrors.appendChild(ul);
+            }
+            ssErrors.style.display = "";
           }
-          ssErrors.textContent = errorMsg;
-          ssErrors.style.display = "";
+        });
+      });
+
+      // Handle cancel / close
+      ssCancelBtn.addEventListener("click", closeSsPanel);
+      ssCloseBtn.addEventListener("click", closeSsPanel);
+      if (ssPanelBg) ssPanelBg.addEventListener("click", closeSsPanel);
+
+      // ── History view ──
+      const ssHistoryLink = document.getElementById("ultra-settings-ss-history-link");
+      const ssHistoryContainer = document.getElementById("ultra-settings-ss-history");
+      const ssHistoryEntries = document.getElementById("ultra-settings-ss-history-entries");
+      const ssHistoryPagination = document.getElementById("ultra-settings-ss-history-pagination");
+      const ssHistoryPrevBtn = document.getElementById("ultra-settings-ss-history-prev");
+      const ssHistoryNextBtn = document.getElementById("ultra-settings-ss-history-next");
+      const ssHistoryBackLink = document.getElementById("ultra-settings-ss-history-back");
+      let ssHistoryCurrentKey = null;
+
+      const formatHistoryTime = (timestamp) => {
+        if (!timestamp) return "";
+        let str = String(timestamp).trim();
+        str = str.replace(/ UTC$/, "Z").replace(/ /, "T");
+        if (!str.endsWith("Z") && !/[+-]\d{2}:?\d{2}$/.test(str)) {
+          str += "Z";
+        }
+        const d = new Date(str);
+        if (isNaN(d.getTime())) return String(timestamp);
+        return d.toLocaleString();
+      };
+
+      const renderHistoryEntries = (entries) => {
+        ssHistoryEntries.innerHTML = "";
+        if (!entries || entries.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "ultra-settings-ss-history-empty";
+          empty.textContent = t("edit.history_empty");
+          ssHistoryEntries.appendChild(empty);
+          return;
+        }
+        entries.forEach((entry) => {
+          const div = document.createElement("div");
+          div.className = "ultra-settings-ss-history-entry";
+
+          const header = document.createElement("div");
+          header.className = "ultra-settings-ss-history-entry-header";
+
+          const timeSpan = document.createElement("span");
+          timeSpan.className = "ultra-settings-ss-history-entry-time";
+          timeSpan.textContent = formatHistoryTime(entry.created_at);
+          header.appendChild(timeSpan);
+
+          if (entry.changed_by) {
+            const bySpan = document.createElement("span");
+            bySpan.textContent = t("edit.history_by") + " " + entry.changed_by;
+            bySpan.className = "ultra-settings-ss-history-entry-who";
+            header.appendChild(bySpan);
+          }
+
+          if (entry.deleted) {
+            const badge = document.createElement("span");
+            badge.className = "ultra-settings-ss-history-entry-badge deleted";
+            badge.textContent = t("edit.history_deleted");
+            header.appendChild(badge);
+          } else if (entries.indexOf(entry) === entries.length - 1) {
+            const badge = document.createElement("span");
+            badge.className = "ultra-settings-ss-history-entry-badge created";
+            badge.textContent = t("edit.history_created");
+            header.appendChild(badge);
+          }
+
+          div.appendChild(header);
+
+          if (!entry.deleted) {
+            const val = document.createElement("div");
+            val.className = "ultra-settings-ss-history-entry-value";
+            if (entry.value == null) {
+              val.classList.add("nil");
+              val.textContent = "nil";
+            } else {
+              val.textContent = String(entry.value);
+            }
+            div.appendChild(val);
+          }
+
+          ssHistoryEntries.appendChild(div);
+        });
+      };
+
+      const HISTORY_LIMIT = 25;
+
+      const loadHistory = (key, offset) => {
+        ssHistoryEntries.innerHTML = "";
+        const loading = document.createElement("div");
+        loading.className = "ultra-settings-ss-history-empty";
+        loading.textContent = t("edit.history_loading");
+        ssHistoryEntries.appendChild(loading);
+        ssHistoryPagination.style.display = "none";
+
+        const params = {key: key, limit: HISTORY_LIMIT, offset: offset};
+
+        SuperSettingsAPI.fetchHistory(params, (data) => {
+          const entries = data.histories || data.history || [];
+          renderHistoryEntries(entries);
+
+          // Pagination based on whether we have a previous or next page
+          const hasPrev = offset > 0;
+          const hasNext = entries.length >= HISTORY_LIMIT;
+
+          if (hasPrev || hasNext) {
+            ssHistoryPagination.style.display = "";
+            ssHistoryPrevBtn.disabled = !hasPrev;
+            ssHistoryNextBtn.disabled = !hasNext;
+
+            ssHistoryPrevBtn.onclick = () => { loadHistory(key, Math.max(0, offset - HISTORY_LIMIT)); };
+            ssHistoryNextBtn.onclick = () => { loadHistory(key, offset + HISTORY_LIMIT); };
+          } else {
+            ssHistoryPagination.style.display = "none";
+          }
+        }, () => {
+          ssHistoryEntries.innerHTML = "";
+          const err = document.createElement("div");
+          err.className = "ultra-settings-ss-history-empty";
+          err.textContent = t("edit.history_empty");
+          ssHistoryEntries.appendChild(err);
+          ssHistoryPagination.style.display = "none";
+        });
+      };
+
+      const showHistory = (key) => {
+        ssHistoryCurrentKey = key;
+        ssForm.style.display = "none";
+        ssHistoryContainer.style.display = "";
+        loadHistory(key, 0);
+      };
+
+      const hideHistory = () => {
+        ssHistoryContainer.style.display = "none";
+        ssForm.style.display = "";
+      };
+
+      if (ssHistoryLink) {
+        ssHistoryLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          showHistory(ssKeyInput.value);
+        });
+      }
+
+      if (ssHistoryBackLink) {
+        ssHistoryBackLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          hideHistory();
+        });
+      }
+
+      // Delegate clicks on edit buttons
+      document.addEventListener("click", (e) => {
+        const btn = e.target.closest(".ultra-settings-ss-edit-btn");
+        if (btn) {
+          e.preventDefault();
+          openSsPanel(
+            btn.dataset.ssKey || "",
+            btn.dataset.ssDefaultType || "string",
+            btn.dataset.ssDefaultDescription || ""
+          );
         }
       });
-    });
-
-    // Handle cancel / close
-    ssCancelBtn.addEventListener("click", closeSsPanel);
-    ssCloseBtn.addEventListener("click", closeSsPanel);
-    if (ssPanelBg) ssPanelBg.addEventListener("click", closeSsPanel);
-
-    // Delegate clicks on edit buttons
-    document.addEventListener("click", (e) => {
-      const btn = e.target.closest(".ultra-settings-ss-edit-btn");
-      if (btn) {
-        e.preventDefault();
-        const section = btn.closest(".ultra-settings-config-section");
-        ssContainer._activeSectionId = section ? section.id : null;
-        openSsPanel(
-          btn.dataset.ssKey || "",
-          btn.dataset.ssDefaultType || "string",
-          btn.dataset.ssDefaultDescription || ""
-        );
-      }
-    });
+    };
   }
 
   // ── Language Menu ──

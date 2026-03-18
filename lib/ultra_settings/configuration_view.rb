@@ -16,11 +16,9 @@ module UltraSettings
     # Initialize the configuration view with a configuration instance.
     #
     # @param configuration [UltraSettings::Configuration] The configuration instance to display.
-    # @param can_edit_super_settings [Boolean] Whether SuperSettings inline editing is enabled.
     # @param locale [String] The locale code for translations.
-    def initialize(configuration, can_edit_super_settings: false, locale: UltraSettings::I18n::DEFAULT_LOCALE)
+    def initialize(configuration, locale: UltraSettings::MiniI18n::DEFAULT_LOCALE)
       @configuration = configuration
-      @can_edit_super_settings = can_edit_super_settings
       @locale = locale
     end
 
@@ -29,8 +27,7 @@ module UltraSettings
     # @param table_class [String] @deprecated CSS class for the table element (maintained for backwards compatibility).
     # @return [String] The rendered HTML.
     def render(table_class: "")
-      configuration = @configuration
-      can_edit_super_settings = @can_edit_super_settings
+      configuration = @configuration # used by ERB template via binding
       html = ViewHelper.erb_template("configuration.html.erb").result(binding)
       html = html.html_safe if html.respond_to?(:html_safe)
       html
@@ -61,7 +58,7 @@ module UltraSettings
     # @param key [String] dotted translation key
     # @return [String]
     def t(key)
-      UltraSettings::I18n.t(key, locale: @locale)
+      UltraSettings::MiniI18n.t(key, locale: @locale)
     end
 
     def display_value(value)
@@ -210,10 +207,10 @@ module UltraSettings
 
     def warning_icon(size = 16)
       <<~HTML
-        <svg width="#{size}" height="#{size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-          <line x1="12" y1="9" x2="12" y2="13"/>
-          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        <svg width="#{size}" height="#{size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke-width="2" stroke-linejoin="round"/>
+          <line x1="12" y1="10" x2="12" y2="14" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="12" cy="17" r="1" fill="currentColor"/>
         </svg>
       HTML
     end

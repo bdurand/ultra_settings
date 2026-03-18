@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Sample App — <%= title %></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <%= UltraSettings::ApplicationView.new(color_scheme: color_scheme).style_tag %>
+    <style type="text/css">
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { font-size: 16px; }
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        background: #f0f2f5;
+        color: #1f2937;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        grid-template-columns: 220px 1fr;
+        grid-template-areas:
+          "header  header"
+          "sidebar main"
+          "footer  footer";
+        min-height: 100vh;
+      }
+      .app-header {
+        grid-area: header;
+        background: #1e293b;
+        color: #f8fafc;
+        padding: 0 24px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        z-index: 10;
+      }
+      .app-header h1 { font-size: 1.125rem; font-weight: 600; letter-spacing: -0.01em; }
+      .app-header nav { display: flex; gap: 20px; }
+      .app-header nav a {
+        color: rgba(248,250,252,0.7);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: color 0.15s;
+      }
+      .app-header nav a:hover { color: #f8fafc; }
+      .app-sidebar {
+        grid-area: sidebar;
+        background: #ffffff;
+        border-right: 1px solid #e5e7eb;
+        padding: 24px 16px;
+        overflow-y: auto;
+      }
+      .app-sidebar h2 {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #9ca3af;
+        margin-bottom: 12px;
+      }
+      .app-sidebar ul { list-style: none; }
+      .app-sidebar li { margin-bottom: 2px; }
+      .app-sidebar a {
+        display: block;
+        padding: 8px 12px;
+        border-radius: 6px;
+        color: #374151;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: background 0.15s;
+      }
+      .app-sidebar a:hover { background: #f3f4f6; }
+      .app-sidebar a.active { background: #eff6ff; color: #2563eb; }
+      .app-main {
+        grid-area: main;
+        padding: 32px;
+        overflow-y: auto;
+      }
+      .app-main h2 {
+        font-size: 1.375rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 8px;
+      }
+      .app-main .subtitle {
+        color: #6b7280;
+        font-size: 0.9375rem;
+        margin-bottom: 24px;
+      }
+      .app-footer {
+        grid-area: footer;
+        background: #ffffff;
+        border-top: 1px solid #e5e7eb;
+        padding: 12px 24px;
+        font-size: 0.8125rem;
+        color: #9ca3af;
+        display: flex;
+        justify-content: space-between;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Sample Application</h1>
+      <nav>
+        <a href="/">Standalone</a>
+        <a href="/embedded">Embedded</a>
+        <a href="/test_configuration">Test Config</a>
+      </nav>
+    </header>
+
+    <aside class="app-sidebar">
+      <h2>Navigation</h2>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/embedded" class="<%= 'active' if title == 'Embedded Settings' %>">All Settings</a></li>
+        <li><a href="/test_configuration" class="<%= 'active' if title == 'Test Configuration' %>">Test Configuration</a></li>
+      </ul>
+    </aside>
+
+    <main class="app-main">
+      <%= content %>
+    </main>
+
+    <footer class="app-footer">
+      <span>&copy; 2026 Sample Application</span>
+      <span>Powered by UltraSettings</span>
+    </footer>
+  </body>
+</html>

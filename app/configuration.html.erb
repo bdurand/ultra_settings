@@ -73,19 +73,19 @@
         <div class="ultra-settings-field-sources">
           <% sources = configuration.__available_sources__(field.name) %>
           <% if sources.include?(:env) %>
-            <%= render_partial "data_source", configuration: configuration, field: field, source: :env, current_source: source, can_edit_super_settings: can_edit_super_settings %>
+            <%= render_partial "data_source", configuration: configuration, field: field, source: :env, current_source: source %>
           <% end %>
 
           <% if sources.include?(:settings) %>
-            <%= render_partial "data_source", configuration: configuration, field: field, source: :settings, current_source: source, can_edit_super_settings: can_edit_super_settings %>
+            <%= render_partial "data_source", configuration: configuration, field: field, source: :settings, current_source: source, super_settings_api_path: UltraSettings.super_settings_api_path %>
           <% end %>
 
           <% if sources.include?(:yaml) %>
-            <%= render_partial "data_source", configuration: configuration, field: field, source: :yaml, current_source: source, can_edit_super_settings: can_edit_super_settings %>
+            <%= render_partial "data_source", configuration: configuration, field: field, source: :yaml, current_source: source %>
           <% end %>
 
           <% if sources.include?(:default) %>
-            <%= render_partial "data_source", configuration: configuration, field: field, source: :default, current_source: source, can_edit_super_settings: can_edit_super_settings %>
+            <%= render_partial "data_source", configuration: configuration, field: field, source: :default, current_source: source %>
           <% end %>
         </div>
       </div>

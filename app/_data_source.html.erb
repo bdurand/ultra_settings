@@ -19,10 +19,11 @@
   <% end %>
 
   <% if source == :settings %>
-    <% if can_edit_super_settings %>
+    <% if defined?(super_settings_api_path) && super_settings_api_path %>
       <button
         type="button"
         class="ultra-settings-edit-link ultra-settings-ss-edit-btn"
+        style="display:none"
         title="<%= html_escape(t('config.edit_tooltip').gsub('${name}', field.runtime_setting)) %>"
         data-ss-key="<%= html_escape(field.runtime_setting) %>"
         data-ss-default-type="<%= html_escape(super_settings_value_type(field.type)) %>"

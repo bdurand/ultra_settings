@@ -34,6 +34,14 @@ class TestRuntimeSetings
   end
 end
 
+begin
+  require "super_settings"
+  require "super_settings/storage/test_storage"
+  SuperSettings::Setting.storage = SuperSettings::Storage::TestStorage
+rescue LoadError
+  # super_settings gem is not available
+end
+
 RSpec.configure do |config|
   config.warnings = true
   config.disable_monkey_patching!

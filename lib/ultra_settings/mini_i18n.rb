@@ -6,10 +6,10 @@ module UltraSettings
   # Internationalization support for the web UI. Translations are stored as
   # JSON files in +app/locales/+ with one file per locale (e.g. +en.json+).
   #
-  # Ruby templates use {#t} to look up a dotted key. JavaScript receives the
+  # Ruby templates use `#t` to look up a dotted key. JavaScript receives the
   # full translation hash inlined via a +<script>+ tag so that the same JSON
   # file drives both server-side and client-side strings.
-  module I18n
+  module MiniI18n
     DEFAULT_LOCALE = "en"
 
     @cache = {}
