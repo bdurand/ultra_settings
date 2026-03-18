@@ -8,14 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Significant redesign of the web UI.
-- Added support for inline editing of SuperSettings from the web UI via `super_settings_api_path`. Authorization is delegated to the SuperSettings API.
-- Internationalized the web UI with support for multiple languages.
-- Added support for aliasing configuration names in the ConfigHelper module to allow for a class to reference multiple configurations with different names.
+- Significant redesign of the web UI with a cleaner, more modern layout.
+- Internationalized the web UI with translations into 29 languages. The locale is detected from the browser's `Accept-Language` header.
+- Added support for inline editing of SuperSettings runtime settings directly from the web UI. Set `UltraSettings.super_settings_api_path` to the path where the SuperSettings API is mounted to enable this feature. Authorization is delegated entirely to the SuperSettings API.
+- Added `config_alias` option to `ConfigHelper.configuration_class` to allow a class that includes `ConfigHelper` to reference the configuration with a custom method name instead of the default `config`.
+- Switched to `autoload` for lazy loading of internal classes to improve load time when only a subset of the gem's features are used.
 
-### Changed
+### Fixed
 
-- Replaced `super_settings_editing` with `super_settings_api_path` for SuperSettings integration. The new approach delegates all authorization to the SuperSettings API endpoint rather than proxying requests through UltraSettings.
+- Static fields are no longer shown as having a runtime settings source in the web UI.
+- Fixed a bug where calling `return nil?` instead of `return nil` could cause an error when a configuration file is not set.
 
 ## 2.8.1
 
