@@ -34,6 +34,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const animateView = (outEl, inEl, callback) => {
     if (animating) return;
     if (!outEl || !inEl) { if (callback) callback(); return; }
+
+    // Skip animations entirely when duration is forced to 0 (e.g. in tests)
+    const duration = parseFloat(getComputedStyle(outEl).animationDuration);
+    if (duration === 0) {
+      outEl.style.display = "none";
+      inEl.style.display = "";
+      if (callback) callback();
+      return;
+    }
+
     animating = true;
     // Ensure the incoming element is hidden until the exit animation finishes
     inEl.style.display = "none";
