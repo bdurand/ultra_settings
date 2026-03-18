@@ -3,6 +3,8 @@
 module UltraSettings
   # Helper class for rendering the settings information in an HTML page.
   class WebView
+    include RenderHelper
+
     attr_reader :layout_css
 
     # Initialize a new WebView with the specified color scheme.
@@ -17,8 +19,13 @@ module UltraSettings
 
     # Render the complete settings page HTML.
     #
+    # @param request [Rack::Request, nil] The current Rack request for access control.
+    # @param locale [String] The locale code for translations.
     # @return [String] The rendered HTML page.
-    def render_settings
+    def render_settings(request = nil, locale: UltraSettings::MiniI18n::DEFAULT_LOCALE)
+      @request = request
+      @locale = locale
+      refresh_super_settings!
       @layout_template.result(binding)
     end
 
@@ -26,7 +33,25 @@ module UltraSettings
     #
     # @return [String] The HTML content for the settings.
     def content
-      UltraSettings::ApplicationView.new(color_scheme: @color_scheme).render
+      UltraSettings::ApplicationView.new(
+        color_scheme: @color_scheme,
+        locale: @locale || UltraSettings::MiniI18n::DEFAULT_LOCALE
+      ).render
+    end
+
+    # Look up a translation key for the current locale.
+    #
+    # @param key [String] dotted translation key
+    # @return [String]
+    def t(key)
+      UltraSettings::MiniI18n.t(key, locale: @locale || UltraSettings::MiniI18n::DEFAULT_LOCALE)
+    end
+
+    # Return the text direction (+"ltr"+ or +"rtl"+) for the current locale.
+    #
+    # @return [String]
+    def text_direction
+      UltraSettings::MiniI18n.text_direction(@locale || UltraSettings::MiniI18n::DEFAULT_LOCALE)
     end
 
     private
@@ -35,6 +60,12 @@ module UltraSettings
       vars = ViewHelper.erb_template("layout_vars.css.erb").result(binding)
       css = ViewHelper.read_app_file("layout.css")
       "#{vars}\n#{css}"
+    end
+
+    def refresh_super_settings!
+      return unless defined?(SuperSettings) && UltraSettings.__runtime_settings__ == SuperSettings
+
+      SuperSettings.refresh_settings
     end
   end
 end

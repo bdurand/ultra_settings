@@ -1,34 +1,178 @@
 <%= style_tag %>
 
-<div class="ultra-settings">
-  <div class="ultra-settings-nav">
-    <% configurations = UltraSettings.__configurations__.reject { |config| config.class.fields.empty? }.sort_by { |config| config.class.name.downcase } %>
+<% configurations = UltraSettings.__configurations__.reject { |config| config.class.fields.empty? }.sort_by { |config| config.class.name.downcase } %>
+<% single_config = configurations.size == 1 %>
 
-    <% if configurations.size == 1 %>
-      <h2 class="ultra-settings-title">
-        <%= html_escape(configurations.first.class.name) %>
-      </h2>
-    <% else %>
-      <%= render_partial "select_menu", configurations: configurations %>
+<div class="ultra-settings"<% if UltraSettings.super_settings_api_path %> data-ss-api-path="<%= html_escape(UltraSettings.super_settings_api_path) %>"<% end %><% raw_url = UltraSettings.instance_variable_get(:@runtime_settings_url).to_s %><% unless raw_url.empty? %> data-runtime-settings-url="<%= html_escape(raw_url) %>"<% end %><% if single_config %> data-single-config="section-<%= html_escape(configurations.first.class.name) %>"<% end %>>
+
+  <% unless single_config %>
+    <div class="ultra-settings-topbar" id="ultra-settings-topbar">
+      <div class="ultra-settings-search-wrap">
+        <svg class="ultra-settings-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="ultra-settings-search-input" placeholder="<%= html_escape(t('search.placeholder')) %>" autocomplete="off" aria-label="<%= t('search.filter_aria_label') %>">
+        <button type="button" class="ultra-settings-search-clear" id="ultra-settings-search-clear" aria-label="<%= t('search.clear_aria') %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="ultra-settings-config-list" id="ultra-settings-config-list">
+    <% configurations.each do |config| %>
+      <%
+        config_text = [config.class.name, config.class.description]
+        config.class.fields.each do |field|
+          config_text << field.name
+          config_text << field.description
+          config_text << field.env_var
+          config_text << field.runtime_setting
+        end
+        search_text = config_text.compact.join(" ").downcase
+      %>
+      <div
+        class="ultra-settings-config-list-item"
+        data-config-id="section-<%= html_escape(config.class.name) %>"
+        data-search="<%= html_escape(search_text) %>"
+        role="button"
+        tabindex="0"
+      >
+        <div class="ultra-settings-config-list-name"><%= html_escape(config.class.name) %></div>
+        <% if config.class.description %>
+          <div class="ultra-settings-config-list-desc"><%= html_escape(config.class.description) %></div>
+        <% end %>
+        <span class="ultra-settings-config-list-count"><%= config.class.fields.size %> <%= t('config_list.fields') %></span>
+      </div>
     <% end %>
   </div>
 
-  <% if configurations.size == 1 %>
-    <%= UltraSettings::ConfigurationView.new(configurations.first).render(table_class: table_class) %>
-  <% else %>
-    <%= render_partial "config_list", configurations: configurations %>
+  <div class="ultra-settings-config-detail" id="ultra-settings-config-detail">
     <% configurations.each do |configuration| %>
-      <div
-        class="ultra-settings-configuration"
-        id="config-<%= html_escape(configuration.class.name) %>"
-        style="display:none;"
+      <section
+        class="ultra-settings-config-section"
+        id="section-<%= html_escape(configuration.class.name) %>"
+        data-config-id="section-<%= html_escape(configuration.class.name) %>"
+        style="display:none"
       >
-        <%= UltraSettings::ConfigurationView.new(configuration).render(table_class: table_class) %>
-      </div>
+        <%= UltraSettings::ConfigurationView.new(configuration, locale: locale).render %>
+      </section>
     <% end %>
+  </div>
+
+  <!-- Detail Panel -->
+  <div class="ultra-settings-panel-bg" id="ultra-settings-panel-bg"></div>
+  <div class="ultra-settings-detail-panel" id="ultra-settings-detail-panel" role="dialog" aria-label="<%= t('detail.field_detail') %>">
+    <div class="ultra-settings-dp-header">
+      <h3 id="ultra-settings-dp-title"></h3>
+      <button class="ultra-settings-dp-close" id="ultra-settings-dp-close" aria-label="<%= t('detail.close_panel') %>">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="ultra-settings-dp-body">
+      <div class="ultra-settings-dp-value" id="ultra-settings-dp-value"></div>
+      <div class="ultra-settings-dp-meta" id="ultra-settings-dp-meta"></div>
+    </div>
+  </div>
+
+  <% if UltraSettings.super_settings_api_path %>
+    <!-- SuperSettings Edit Panel (slide-out) -->
+    <div class="ultra-settings-ss-panel-bg" id="ultra-settings-ss-panel-bg"></div>
+    <div class="ultra-settings-ss-panel" id="ultra-settings-ss-panel" role="dialog" aria-label="<%= t('edit.edit_setting') %>">
+      <div class="ultra-settings-dp-header">
+        <div>
+          <h3 id="ultra-settings-ss-title"><%= t('edit.title') %></h3>
+          <a id="ultra-settings-ss-external-link" class="ultra-settings-ss-external-link" href="#" target="_blank" rel="noopener" style="display:none;"><%= t('edit.open_dashboard') %></a>
+        </div>
+        <button class="ultra-settings-dp-close" id="ultra-settings-ss-panel-close" aria-label="<%= t('edit.close_panel') %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="ultra-settings-dp-body">
+        <div class="ultra-settings-ss-loading" id="ultra-settings-ss-loading">
+          <%= t('edit.loading') %>
+        </div>
+
+        <form id="ultra-settings-ss-form" class="ultra-settings-ss-form" style="display:none;" onsubmit="return false;">
+          <div class="ultra-settings-ss-field">
+            <label class="ultra-settings-ss-label"><%= t('edit.key_label') %></label>
+            <input type="text" id="ultra-settings-ss-key" class="ultra-settings-ss-input" readonly>
+          </div>
+
+          <div class="ultra-settings-ss-field">
+            <label class="ultra-settings-ss-label" for="ultra-settings-ss-value-type"><%= t('edit.value_type_label') %></label>
+            <select id="ultra-settings-ss-value-type" class="ultra-settings-ss-input">
+              <option value="string"><%= t('edit.type_string') %></option>
+              <option value="integer"><%= t('edit.type_integer') %></option>
+              <option value="float"><%= t('edit.type_float') %></option>
+              <option value="boolean"><%= t('edit.type_boolean') %></option>
+              <option value="datetime"><%= t('edit.type_datetime') %></option>
+              <option value="array"><%= t('edit.type_array') %></option>
+            </select>
+          </div>
+
+          <div class="ultra-settings-ss-field" id="ultra-settings-ss-value-field">
+            <label class="ultra-settings-ss-label" for="ultra-settings-ss-value"><%= t('edit.value_label') %></label>
+            <textarea id="ultra-settings-ss-value" class="ultra-settings-ss-input" rows="3"></textarea>
+          </div>
+
+          <div class="ultra-settings-ss-field" id="ultra-settings-ss-integer-field" style="display:none;">
+            <label class="ultra-settings-ss-label" for="ultra-settings-ss-integer-value"><%= t('edit.value_label') %></label>
+            <input type="number" step="1" id="ultra-settings-ss-integer-value" class="ultra-settings-ss-input" placeholder="<%= t('edit.placeholder_integer') %>">
+          </div>
+
+          <div class="ultra-settings-ss-field" id="ultra-settings-ss-float-field" style="display:none;">
+            <label class="ultra-settings-ss-label" for="ultra-settings-ss-float-value"><%= t('edit.value_label') %></label>
+            <input type="number" step="any" id="ultra-settings-ss-float-value" class="ultra-settings-ss-input" placeholder="<%= t('edit.placeholder_float') %>">
+          </div>
+
+          <div class="ultra-settings-ss-field" id="ultra-settings-ss-boolean-field" style="display:none;">
+            <label class="ultra-settings-ss-label"><%= t('edit.value_label') %></label>
+            <label class="ultra-settings-ss-checkbox-label">
+              <input type="checkbox" id="ultra-settings-ss-boolean-value"> <%= t('edit.enabled') %>
+            </label>
+          </div>
+
+          <div class="ultra-settings-ss-field" id="ultra-settings-ss-datetime-field" style="display:none;">
+            <label class="ultra-settings-ss-label"><%= t('edit.value_label') %></label>
+            <div class="ultra-settings-ss-datetime-row">
+              <input type="datetime-local" step="1" id="ultra-settings-ss-datetime-value" class="ultra-settings-ss-input" autocomplete="off">
+              <span class="ultra-settings-ss-tz-label" id="ultra-settings-ss-tz-label"></span>
+            </div>
+          </div>
+
+          <div class="ultra-settings-ss-field">
+            <label class="ultra-settings-ss-label" for="ultra-settings-ss-description"><%= t('edit.description_label') %></label>
+            <textarea id="ultra-settings-ss-description" class="ultra-settings-ss-input" rows="4"></textarea>
+          </div>
+
+          <div class="ultra-settings-ss-history-link-wrap">
+            <a href="#" id="ultra-settings-ss-history-link" class="ultra-settings-ss-history-link"><%= t('edit.view_history') %></a>
+          </div>
+
+          <div class="ultra-settings-ss-errors" id="ultra-settings-ss-errors" style="display:none;"></div>
+
+          <div class="ultra-settings-ss-actions">
+            <button type="button" class="ultra-settings-ss-btn ultra-settings-ss-btn-cancel" id="ultra-settings-ss-cancel"><%= t('edit.cancel') %></button>
+            <button type="button" class="ultra-settings-ss-btn ultra-settings-ss-btn-save" id="ultra-settings-ss-save"><%= t('edit.save') %></button>
+          </div>
+        </form>
+
+        <div id="ultra-settings-ss-history" class="ultra-settings-ss-history" style="display:none;">
+          <a href="#" id="ultra-settings-ss-history-back" class="ultra-settings-ss-history-link"><%= t('edit.back_to_edit') %></a>
+          <div id="ultra-settings-ss-history-entries"></div>
+          <div id="ultra-settings-ss-history-pagination" class="ultra-settings-ss-history-pagination" style="display:none;">
+            <button type="button" class="ultra-settings-ss-btn ultra-settings-ss-btn-cancel" id="ultra-settings-ss-history-prev" disabled><%= t('edit.history_prev') %></button>
+            <button type="button" class="ultra-settings-ss-btn ultra-settings-ss-btn-cancel" id="ultra-settings-ss-history-next" disabled><%= t('edit.history_next') %></button>
+          </div>
+        </div>
+      </div>
+    </div>
   <% end %>
 </div>
 
+<script>window.__ultraSettingsI18n = <%= translations_json %>;window.__ultraSettingsDir = "<%= UltraSettings::MiniI18n.text_direction(locale) %>";</script>
 <script>
   <%= javascript %>
 </script>

@@ -1,8 +1,21 @@
-# Changelog
+  # Changelog
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## 2.9.0
+
+### Added
+
+- Significant redesign of the web UI.
+- Added support for inline editing of SuperSettings from the web UI via `super_settings_api_path`. Authorization is delegated to the SuperSettings API.
+- Internationalized the web UI with support for multiple languages.
+- Added support for aliasing configuration names in the ConfigHelper module to allow for a class to reference multiple configurations with different names.
+
+### Changed
+
+- Replaced `super_settings_editing` with `super_settings_api_path` for SuperSettings integration. The new approach delegates all authorization to the SuperSettings API endpoint rather than proxying requests through UltraSettings.
 
 ## 2.8.1
 

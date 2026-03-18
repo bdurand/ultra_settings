@@ -8,24 +8,6 @@ require "singleton"
 require "digest"
 require "uri"
 
-require_relative "ultra_settings/configuration"
-require_relative "ultra_settings/coerce"
-require_relative "ultra_settings/config_helper"
-require_relative "ultra_settings/field"
-require_relative "ultra_settings/rack_app"
-require_relative "ultra_settings/view_helper"
-require_relative "ultra_settings/render_helper"
-require_relative "ultra_settings/web_view"
-require_relative "ultra_settings/application_view"
-require_relative "ultra_settings/configuration_view"
-require_relative "ultra_settings/uninitialized_runtime_settings"
-require_relative "ultra_settings/yaml_config"
-require_relative "ultra_settings/version"
-
-if defined?(Rails::Railtie)
-  require_relative "ultra_settings/railtie"
-end
-
 # This is the root namespace for UltraSettings. You can add configurations to
 # this namespace using the add method.
 #
@@ -33,13 +15,29 @@ end
 #   UltraSettings.add(:test)
 #   UltraSettings.test # => TestConfiguration.instance
 module UltraSettings
-  VALID_NAME__PATTERN = /\A[a-z_][a-zA-Z0-9_]*\z/
+  autoload :Configuration, File.join(__dir__, "ultra_settings/configuration")
+  autoload :Coerce, File.join(__dir__, "ultra_settings/coerce")
+  autoload :ConfigHelper, File.join(__dir__, "ultra_settings/config_helper")
+  autoload :Field, File.join(__dir__, "ultra_settings/field")
+  autoload :MiniI18n, File.join(__dir__, "ultra_settings/mini_i18n")
+  autoload :RackApp, File.join(__dir__, "ultra_settings/rack_app")
+  autoload :ViewHelper, File.join(__dir__, "ultra_settings/view_helper")
+  autoload :RenderHelper, File.join(__dir__, "ultra_settings/render_helper")
+  autoload :WebView, File.join(__dir__, "ultra_settings/web_view")
+  autoload :ApplicationView, File.join(__dir__, "ultra_settings/application_view")
+  autoload :ConfigurationView, File.join(__dir__, "ultra_settings/configuration_view")
+  autoload :UninitializedRuntimeSettings, File.join(__dir__, "ultra_settings/uninitialized_runtime_settings")
+  autoload :YamlConfig, File.join(__dir__, "ultra_settings/yaml_config")
+  autoload :VERSION, File.join(__dir__, "ultra_settings/version")
+
+  VALID_NAME_PATTERN = /\A[a-z_][a-zA-Z0-9_]*\z/
 
   @configurations = {}
   @mutex = Mutex.new
   @runtime_settings = nil
   @runtime_settings_url = nil
   @runtime_settings_secure = true
+  @super_settings_api_path = nil
 
   class << self
     # Adds a configuration to the root namespace. The configuration will be
@@ -52,7 +50,7 @@ module UltraSettings
     # @return [void]
     def add(name, klass = nil)
       name = name.to_s
-      unless name.match?(VALID_NAME__PATTERN)
+      unless name.match?(VALID_NAME_PATTERN)
         raise ArgumentError.new("Invalid configuration name: #{name.inspect}")
       end
 
@@ -219,6 +217,38 @@ module UltraSettings
       @runtime_settings_secure
     end
 
+    # Set the URL path where the SuperSettings API is mounted. When this is set,
+    # the web UI will check the SuperSettings API at this path for edit access
+    # and load the SuperSettings api.js client library to enable inline editing
+    # of runtime settings.
+    #
+    # The path must be a relative URL path starting with "/". Authorization is
+    # handled entirely by SuperSettings — the browser makes a GET request to
+    # the /authorized endpoint to check access and all API calls go directly
+    # to the SuperSettings endpoint.
+    #
+    # @param value [String, nil] The relative URL path where SuperSettings is mounted.
+    # @return [void]
+    def super_settings_api_path=(value)
+      raise "super_settings gem is required for super_settings_api_path" unless defined?(::SuperSettings)
+
+      if value.nil?
+        @super_settings_api_path = nil
+        return
+      end
+
+      value = value.to_s
+      raise ArgumentError, "super_settings_api_path must be a relative URL path starting with '/'" unless value.start_with?("/")
+
+      @super_settings_api_path = value.chomp("/")
+      self.runtime_settings = ::SuperSettings
+    end
+
+    # Get the URL path where the SuperSettings API is mounted.
+    #
+    # @return [String, nil]
+    attr_reader :super_settings_api_path
+
     # Set whether fields should be considered secret by default.
     #
     # @param value [Boolean] Whether fields should be secret by default.
@@ -304,14 +334,18 @@ module UltraSettings
       if name.respond_to?(:classify)
         name.classify
       else
-        name.split("_").map(&:capitalize).join.gsub("/", "::")
+        name.to_s.split("_").map(&:capitalize).join.gsub("/", "::")
       end
     end
 
     def constantize(class_name)
-      class_name.split("::").reduce(Object) do |mod, name|
+      class_name.to_s.split("::").reduce(Object) do |mod, name|
         mod.const_get(name)
       end
     end
   end
+end
+
+if defined?(Rails::Railtie)
+  require_relative "ultra_settings/railtie"
 end

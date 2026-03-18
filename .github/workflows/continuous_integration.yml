@@ -26,10 +26,13 @@ jobs:
           - ruby: "ruby"
             standardrb: true
             yard: true
+          - ruby: "ruby"
+            appraisal: "without_super_settings"
           - ruby: "3.0"
           - ruby: "2.5"
+            appraisal: "without_super_settings"
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Set up Ruby ${{ matrix.ruby }}
       uses: ruby/setup-ruby@v1
       with:
@@ -37,7 +40,6 @@ jobs:
     - name: Install packages
       run: |
         sudo apt-get update
-        sudo apt-get install libsqlite3-dev
     - name: Setup bundler
       if: matrix.bundler != ''
       run: |
@@ -50,7 +52,7 @@ jobs:
         bundle config set gemfile "gemfiles/${{ matrix.appraisal }}.gemfile"
     - name: Install gems
       run: |
-        bundle update
+        bundle update --all
     - name: Run Tests
       run: bundle exec rake
     - name: standardrb

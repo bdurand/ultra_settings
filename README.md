@@ -417,7 +417,7 @@ You can specify the color scheme by setting by providing the `color_scheme` opti
 UltraSettings::RackApp.new(color_scheme: :dark)
 ```
 
-#### Embedding the Settings View in Admin Tools
+#### Embedding Into Application Views
 
 If you prefer to embed the settings view directly into your own admin tools or dashboard, you can use the `UltraSettings::ApplicationView` class to render the settings interface within your existing views:
 
@@ -443,6 +443,45 @@ You'll also need to include the CSS for the configuration view on your page.
 <head>
   <%= UltraSettings::ApplicationView.new.style_tag %>
 </head>
+```
+
+#### Customizing The Web UI
+
+You can specify the color scheme by setting by providing the `color_scheme` option to the `UltraSettings::ApplicationView` constructor. The default color scheme is `:light`. You can also set the scheme to `:dark` or `:system`.
+
+```ruby
+UltraSettings::ApplicationView.new(color_scheme: :dark)
+```
+
+You can specify the language to render the application in with the `locale` option to the `UltraSettings::ApplicationView` constructor. The default language is English but it can be changed to any language that has a corresponding JSON file in the `app/locales` directory.
+
+```ruby
+UltraSettings::ApplicationView.new(locale: "es").render
+```
+
+#### Inline Editing With SuperSettings
+
+If you are using the [super_settings](https://github.com/bdurand/super_settings) gem for runtime settings, you can enable inline editing of runtime settings directly in the web UI. This adds edit buttons next to runtime settings fields that open a panel for creating or updating settings through the SuperSettings API.
+
+To enable editing, set `super_settings_api_path` to the relative URL path where the SuperSettings API is mounted:
+
+```ruby
+UltraSettings.super_settings_api_path = "/super_settings"
+```
+
+This will automatically set `SuperSettings` as the runtime settings store. The web UI will check the SuperSettings API for edit access on page load by making a HEAD request. If the current user has read-write access (as determined by the SuperSettings authorization layer), edit buttons will appear next to runtime settings fields.
+
+All authorization is handled by the SuperSettings API — the same permissions that control the SuperSettings web UI will apply to inline editing in UltraSettings. Configure access control in your `SuperSettings::RackApplication` or Rails controller as usual.
+
+> [!IMPORTANT]
+> You will need to have the SuperSettings API mounted and properly locked down with authentication. If the API is not accessible, then the edit buttons will not be shown. Check the browser console for any errors if you expect the buttons to be shown but they are not appearing.
+
+##### Embedding with Edit Support
+
+When embedding the settings view using `UltraSettings::ApplicationView`, you can pass the `super_settings_api_path` option to enable the inline editing UI:
+
+```erb
+<%= UltraSettings::ApplicationView.new(super_settings_api_path: "/super_settings").render %>
 ```
 
 ### Testing With UltraSettings

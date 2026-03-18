@@ -18,4 +18,11 @@ RSpec.describe UltraSettings::WebView do
     doc = Nokogiri::HTML5(app.content)
     expect(doc.errors).to be_empty
   end
+
+  it "renders the language menu in the footer" do
+    html = UltraSettings::WebView.new.render_settings
+    expect(html).to include('id="ultra-settings-language-menu"')
+    expect(html).to include('class="ultra-settings-language-popup"')
+    expect(html).to match(/ultra-settings-page-footer.*ultra-settings-language-menu/m)
+  end
 end

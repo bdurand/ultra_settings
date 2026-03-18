@@ -1,8 +1,15 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require "rack"
 
 RSpec.describe UltraSettings do
+  describe "VERSION" do
+    it "has a version number" do
+      expect(UltraSettings::VERSION).not_to be_nil
+    end
+  end
+
   describe "adding configurations" do
     it "can add configurations to the root namespace" do
       expect(UltraSettings.test).to be_a(TestConfiguration)
@@ -71,6 +78,59 @@ RSpec.describe UltraSettings do
     it "returns the url with the ${description} placeholder replaced with the description argument" do
       UltraSettings.runtime_settings_url = "http://example.com/settings?filter=${description}"
       expect(UltraSettings.runtime_settings_url(name: "foo bar", type: "string", description: "A test setting")).to eq("http://example.com/settings?filter=A+test+setting")
+    end
+  end
+
+  describe "super_settings_api_path" do
+    around do |example|
+      save_val = UltraSettings.instance_variable_get(:@super_settings_api_path)
+      save_runtime = UltraSettings.instance_variable_get(:@runtime_settings)
+      begin
+        example.run
+      ensure
+        UltraSettings.instance_variable_set(:@super_settings_api_path, save_val)
+        UltraSettings.runtime_settings = save_runtime
+      end
+    end
+
+    it "returns nil by default" do
+      UltraSettings.instance_variable_set(:@super_settings_api_path, nil)
+      expect(UltraSettings.super_settings_api_path).to be_nil
+    end
+
+    it "stores a valid path" do
+      stub_const("SuperSettings", Class.new)
+      UltraSettings.super_settings_api_path = "/super_settings"
+      expect(UltraSettings.super_settings_api_path).to eq("/super_settings")
+    end
+
+    it "strips trailing slashes from the path" do
+      stub_const("SuperSettings", Class.new)
+      UltraSettings.super_settings_api_path = "/super_settings/"
+      expect(UltraSettings.super_settings_api_path).to eq("/super_settings")
+    end
+
+    it "raises an error if the path does not start with /" do
+      stub_const("SuperSettings", Class.new)
+      expect { UltraSettings.super_settings_api_path = "super_settings" }.to raise_error(ArgumentError)
+    end
+
+    it "raises an error if SuperSettings is not defined" do
+      hide_const("SuperSettings")
+      expect { UltraSettings.super_settings_api_path = "/super_settings" }.to raise_error(RuntimeError)
+    end
+
+    it "sets runtime_settings to SuperSettings when a path is provided" do
+      stub_const("SuperSettings", Class.new)
+      UltraSettings.super_settings_api_path = "/super_settings"
+      expect(UltraSettings.instance_variable_get(:@runtime_settings)).to eq(SuperSettings)
+    end
+
+    it "can be set to nil to disable" do
+      stub_const("SuperSettings", Class.new)
+      UltraSettings.super_settings_api_path = "/super_settings"
+      UltraSettings.super_settings_api_path = nil
+      expect(UltraSettings.super_settings_api_path).to be_nil
     end
   end
 end

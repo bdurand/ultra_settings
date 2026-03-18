@@ -1,0 +1,85 @@
+{
+  "page.title": "Application Configuration",
+  "page.brand_title": "UltraSettings",
+  "page.brand_subtitle": "Configuration Inspector",
+
+  "sidebar.open_nav_menu": "Open navigation menu",
+  "sidebar.config_list": "Configuration list",
+  "sidebar.filter_placeholder": "Filter configs & fields…",
+  "sidebar.filter_aria_label": "Filter configurations",
+  "sidebar.configurations_label": "Configurations",
+  "sidebar.config_nav": "Configuration navigation",
+
+  "search.placeholder": "Search configurations…",
+  "search.filter_aria_label": "Search configurations",
+  "search.clear_aria": "Clear selection and return to list",
+  "config_list.fields": "fields",
+
+  "field.secret": "Secret",
+  "field.static": "Static",
+  "field.nil": "nil",
+  "field.click_to_expand": "Click to expand",
+  "field.not_set": "not set",
+
+  "source.env": "ENV",
+  "source.setting": "SETTING",
+  "source.yaml": "YAML",
+  "source.default": "DEFAULT",
+  "source.active": "● Active",
+  "source.overridden": "Overridden",
+
+  "detail.field_detail": "Field detail",
+  "detail.close_panel": "Close panel",
+  "detail.type_label": "Type:",
+  "detail.secret_badge": "SECRET",
+  "detail.secret_value": "•••••••• (secret)",
+
+  "config.file_not_found": "(not found)",
+  "config.edit_tooltip": "Edit ${name}",
+
+  "edit.title": "Edit Runtime Setting",
+  "edit.open_dashboard": "Open in settings dashboard ↗",
+  "edit.loading": "Loading setting…",
+  "edit.close_panel": "Close panel",
+  "edit.edit_setting": "Edit runtime setting",
+
+  "edit.key_label": "Key",
+  "edit.value_type_label": "Value Type",
+  "edit.value_label": "Value",
+  "edit.description_label": "Description",
+
+  "edit.type_string": "string",
+  "edit.type_integer": "integer",
+  "edit.type_float": "float",
+  "edit.type_boolean": "boolean",
+  "edit.type_datetime": "datetime",
+  "edit.type_array": "array",
+
+  "edit.enabled": "Enabled",
+  "edit.cancel": "Cancel",
+  "edit.save": "Save",
+  "edit.saving": "Saving\u2026",
+
+  "edit.placeholder_array": "One entry per line",
+  "edit.placeholder_integer": "Enter an integer",
+  "edit.placeholder_float": "Enter a number",
+  "edit.placeholder_datetime": "Enter a datetime (e.g. 2025-01-15T10:30:00Z)",
+  "edit.save_error": "Failed to save setting.",
+  "edit.http_error": "The server returned an error (HTTP ${status}). Please try again.",
+  "edit.network_error": "Unable to reach the server. Please check your connection and try again.",
+
+  "edit.view_history": "View history",
+  "edit.back_to_edit": "\u2190 Back to editing",
+  "edit.history_empty": "No history found for this setting.",
+  "edit.history_loading": "Loading history\u2026",
+  "edit.history_prev": "\u2190 Newer",
+  "edit.history_next": "Older \u2192",
+  "edit.history_by": "by",
+  "edit.history_deleted": "Deleted",
+  "edit.history_created": "Created",
+
+  "language.label": "Language",
+  "language.name": "English",
+
+  "dir": "ltr"
+}
