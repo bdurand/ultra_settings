@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed a bug where the web UI showed runtime settings as valid data sources for secret fields even when `UltraSettings.runtime_settings_secure` was set to `false`.
+- Back button now works correctly in the web UI when navigating between list of configuations and individual configuration pages.
 
 ## 2.9.0
 
