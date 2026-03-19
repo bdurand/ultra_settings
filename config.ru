@@ -28,6 +28,7 @@ else
 end
 
 UltraSettings.fields_secret_by_default = false
+UltraSettings.runtime_settings_secure = false
 UltraSettings.yaml_config_path = File.join(__dir__, "spec", "config")
 UltraSettings.runtime_settings_url = ENV.fetch("RUNTIME_SETTINGS_URL", "http://localhost:9494#edit=${name}&type=${type}&description=${description}")
 
