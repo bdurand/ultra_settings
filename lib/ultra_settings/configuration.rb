@@ -560,7 +560,7 @@ module UltraSettings
 
       sources = []
       sources << :env if field.env_var
-      sources << :settings if !field.static? && field.runtime_setting && UltraSettings.__runtime_settings__
+      sources << :settings if __runtime_setting_allowed?(field)
       sources << :yaml if field.yaml_key && self.class.configuration_file
       sources << :default unless field.default.nil?
       sources
@@ -645,6 +645,15 @@ module UltraSettings
 
     def __yaml_config__
       @ultra_settings_yaml_config ||= self.class.load_yaml_config || {}
+    end
+
+    def __runtime_setting_allowed?(field)
+      return false unless UltraSettings.__runtime_settings__
+      return false if field.static?
+      return false unless field.runtime_setting
+      return false if field.secret? && !UltraSettings.runtime_settings_secure?
+
+      true
     end
   end
 end
