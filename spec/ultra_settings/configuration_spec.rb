@@ -326,6 +326,21 @@ RSpec.describe UltraSettings::Configuration do
       config = TestConfiguration.instance
       expect(config.__available_sources__(:static)).not_to include(:settings)
     end
+
+    it "does not include runtime settings for secret fields when runtime_settings_secure is false", settings: {"my_service.host" => "host"} do
+      config = MyServiceConfiguration.instance
+      expect(config.__available_sources__(:host)).to include(:settings)
+      UltraSettings.runtime_settings_secure = false
+      begin
+        # non-secret field still includes :settings
+        expect(config.__available_sources__(:host)).to include(:settings)
+        # secret field should exclude :settings when runtime_settings_secure is false
+        test_config = TestConfiguration.instance
+        expect(test_config.__available_sources__(:secret)).not_to include(:settings)
+      ensure
+        UltraSettings.runtime_settings_secure = true
+      end
+    end
   end
 
   describe "__value_from_source__" do
