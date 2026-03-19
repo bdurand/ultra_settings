@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // ── Config Selection ──
-  const selectConfig = (configId) => {
+  const selectConfig = (configId, pushState) => {
     selectedConfigId = configId;
 
     // Show only the selected section
@@ -83,7 +83,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update hash
     const configName = configId.replace(/^section-/, "");
     if (window.location.hash !== "#" + configName) {
-      history.replaceState(null, "", "#" + configName);
+      if (pushState === false) {
+        history.replaceState(null, "", "#" + configName);
+      } else {
+        history.pushState(null, "", "#" + configName);
+      }
     }
 
     // Scroll to top
@@ -104,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  const clearSelection = () => {
+  const clearSelection = (pushState) => {
     selectedConfigId = null;
 
     // Hide all sections
@@ -121,7 +125,11 @@ document.addEventListener("DOMContentLoaded", () => {
     configListItems.forEach(item => item.classList.remove("hidden"));
 
     // Clear hash
-    history.replaceState(null, "", window.location.pathname + window.location.search);
+    if (pushState === false) {
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+    } else {
+      history.pushState(null, "", window.location.pathname + window.location.search);
+    }
 
     // Animate detail → list
     if (configDetail && configList) {
@@ -165,23 +173,23 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ── Hash-based Navigation ──
-  const handleHash = () => {
+  const handleHash = (pushState) => {
     const hash = window.location.hash.replace(/^#/, "");
     if (hash) {
       const configId = "section-" + hash;
       const exists = Array.from(sections).some(s => s.dataset.configId === configId);
       if (exists) {
-        selectConfig(configId);
+        selectConfig(configId, pushState);
         return;
       }
     }
     // No valid hash — if not single config, show list
     if (!singleConfig && selectedConfigId) {
-      clearSelection();
+      clearSelection(pushState);
     }
   };
 
-  window.addEventListener("hashchange", handleHash);
+  window.addEventListener("popstate", () => handleHash(false));
 
   // ── Single Config Auto-Select ──
   if (singleConfig) {
@@ -196,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
         selectConfig(storedConfig);
       }
     } else {
-      handleHash();
+      handleHash(false);
     }
   }
 
