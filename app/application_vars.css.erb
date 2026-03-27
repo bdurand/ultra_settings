@@ -24,6 +24,9 @@
     --accent-light: rgba(13, 148, 136, 0.06);
     --accent-lighter: rgba(13, 148, 136, 0.03);
     --accent-glow: rgba(13, 148, 136, 0.12);
+    --btn-primary-text: #ffffff;
+    --btn-secondary-text: #4b5563;
+    --btn-secondary-hover-text: #111827;
 
     /* Source palette */
     --src-env: #2563eb;
@@ -73,8 +76,10 @@
 
 <% if color_scheme == :system %>
   @media (prefers-color-scheme: dark) {
+<% elsif dark_mode_selector %>
+  <%= dark_mode_selector %> {
 <% end %>
-<% if color_scheme == :system || color_scheme == :dark %>
+<% if color_scheme == :system || color_scheme == :dark || dark_mode_selector %>
   .ultra-settings, .ultra-settings-block {
     --font-ui: system-ui, -apple-system, sans-serif;
     --font-mono: "SF Mono", Menlo, Consolas, monospace;
@@ -100,6 +105,9 @@
     --accent-light: rgba(20, 184, 166, 0.10);
     --accent-lighter: rgba(20, 184, 166, 0.05);
     --accent-glow: rgba(20, 184, 166, 0.15);
+    --btn-primary-text: #04211d;
+    --btn-secondary-text: #c8cede;
+    --btn-secondary-hover-text: #e8ecf8;
 
     /* Source palette */
     --src-env: #60a5fa;
@@ -146,6 +154,6 @@
     --border-source-row: rgba(255,255,255,0.04);
   }
 <% end %>
-<% if color_scheme == :system %>
+<% if color_scheme == :system || dark_mode_selector %>
   }
 <% end %>

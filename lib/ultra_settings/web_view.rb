@@ -9,12 +9,14 @@ module UltraSettings
 
     # Initialize a new WebView with the specified color scheme.
     #
-    # @param color_scheme [Symbol] The color scheme to use in the UI. This can be `:light`,
-    #   `:dark`, or `:system`. The default is `:light`.
+    # @param color_scheme [Symbol, nil] The color scheme to use in the UI. This can be `:light`,
+    #   `:dark`, or `:system`. When `nil`, a toggle control is rendered and
+    #   `[data-theme=dark]` is used as the dark mode CSS selector.
     def initialize(color_scheme: :light)
-      @color_scheme = (color_scheme || :light).to_sym
+      @color_scheme = color_scheme&.to_sym
+      @dark_mode_selector = @color_scheme.nil? ? "[data-theme=dark]" : nil
       @layout_template = ViewHelper.erb_template("layout.html.erb")
-      @layout_css = scheme_layout_css(@color_scheme)
+      @layout_css = scheme_layout_css(@color_scheme, @dark_mode_selector)
     end
 
     # Render the complete settings page HTML.
@@ -34,7 +36,8 @@ module UltraSettings
     # @return [String] The HTML content for the settings.
     def content
       UltraSettings::ApplicationView.new(
-        color_scheme: @color_scheme,
+        color_scheme: @color_scheme || :light,
+        dark_mode_selector: @dark_mode_selector,
         locale: @locale || UltraSettings::MiniI18n::DEFAULT_LOCALE
       ).render
     end
@@ -56,7 +59,7 @@ module UltraSettings
 
     private
 
-    def scheme_layout_css(color_scheme)
+    def scheme_layout_css(color_scheme, dark_mode_selector)
       vars = ViewHelper.erb_template("layout_vars.css.erb").result(binding)
       css = ViewHelper.read_app_file("layout.css")
       "#{vars}\n#{css}"

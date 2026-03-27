@@ -1052,16 +1052,17 @@ input[type="number"].ultra-settings-ss-input::-webkit-outer-spin-button {
 
 .ultra-settings-ss-btn-cancel {
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--btn-secondary-text, var(--text-secondary));
 }
 
 .ultra-settings-ss-btn-cancel:hover {
   background: var(--bg-code);
+  color: var(--btn-secondary-hover-text, var(--text-primary));
 }
 
 .ultra-settings-ss-btn-save {
   background: var(--accent);
-  color: #fff;
+  color: var(--btn-primary-text, #fff);
   border-color: var(--accent);
 }
 

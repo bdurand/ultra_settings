@@ -453,6 +453,12 @@ You can specify the color scheme by setting by providing the `color_scheme` opti
 UltraSettings::ApplicationView.new(color_scheme: :dark)
 ```
 
+If your application already controls dark mode with a CSS selector (for example, a `data` attribute on the `<html>` element), you can pass a `dark_mode_selector` instead of a fixed color scheme. The settings UI will automatically switch to dark mode whenever the selector matches:
+
+```ruby
+UltraSettings::ApplicationView.new(dark_mode_selector: "[data-theme=dark]")
+```
+
 You can specify the language to render the application in with the `locale` option to the `UltraSettings::ApplicationView` constructor. The default language is English but it can be changed to any language that has a corresponding JSON file in the `app/locales` directory.
 
 ```ruby

@@ -84,6 +84,45 @@ body {
   justify-content: flex-end;
 }
 
+/* ── Theme toggle ── */
+
+.ultra-settings-theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-tertiary, #9ca3af);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.ultra-settings-theme-toggle:hover {
+  color: var(--accent, #0d9488);
+  border-color: var(--accent, #0d9488);
+}
+
+.ultra-settings-theme-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.ultra-settings-theme-icon-moon {
+  display: none;
+}
+
+[data-theme="dark"] .ultra-settings-theme-icon-sun {
+  display: none;
+}
+
+[data-theme="dark"] .ultra-settings-theme-icon-moon {
+  display: block;
+}
+
 @media (max-width: 640px) {
   .ultra-settings-page-header-inner {
     padding: 16px;

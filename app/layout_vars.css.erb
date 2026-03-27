@@ -19,9 +19,13 @@
 
 <% if color_scheme == :system %>
   @media (prefers-color-scheme: dark) {
-<% end %>
-<% if color_scheme == :system || color_scheme == :dark %>
+    :root {
+<% elsif dark_mode_selector %>
+  :root<%= dark_mode_selector %> {
+<% elsif color_scheme == :dark %>
   :root {
+<% end %>
+<% if color_scheme == :system || color_scheme == :dark || dark_mode_selector %>
     --font-ui: system-ui, -apple-system, sans-serif;
     --font-mono: "SF Mono", Menlo, Consolas, monospace;
     --bg-page: #0f1117;
