@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `dark_mode_selector` option to `UltraSettings::Application` to allow the web UI to automatically switch to dark mode based on a CSS selector in the host application.
 
+### Fixed
+
+- Fixed configurations showing up multiple times in the web UI when the configuration class is reloaded in Rails development mode.
+
 ## 2.9.1
 
 ### Fixed
