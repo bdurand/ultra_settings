@@ -18,9 +18,10 @@ module UltraSettings
     # Initialize the application view with a color scheme.
     #
     # @param color_scheme [Symbol] The color scheme to use (:light, :dark, or :system).
+    # @param dark_mode_selector [String, nil] The CSS selector for dark mode.
     # @param locale [String] The locale code for translations.
-    def initialize(color_scheme: :light, locale: UltraSettings::MiniI18n::DEFAULT_LOCALE)
-      @css = application_css(color_scheme)
+    def initialize(color_scheme: :light, dark_mode_selector: nil, locale: UltraSettings::MiniI18n::DEFAULT_LOCALE)
+      @css = application_css(color_scheme, dark_mode_selector)
       @css = @css.html_safe if @css.respond_to?(:html_safe)
       @locale = locale
     end
@@ -74,7 +75,7 @@ module UltraSettings
       ViewHelper.read_app_file("application.js")
     end
 
-    def application_css(color_scheme)
+    def application_css(color_scheme, dark_mode_selector)
       vars = ViewHelper.erb_template("application_vars.css.erb").result(binding).strip
       css = ViewHelper.read_app_file("application.css").strip
       "#{vars}\n#{css}"

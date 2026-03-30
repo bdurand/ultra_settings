@@ -6,6 +6,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="format-detection" content="telephone=no email=no date=no address=no">
+    <% if @dark_mode_selector %>
+    <script>
+      (function() {
+        if (localStorage.getItem("ultra_settings_theme") === "dark") {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      })();
+    </script>
+    <% end %>
     <style type="text/css">
       <%= layout_css %>
     </style>
@@ -25,6 +34,24 @@
             <p class="ultra-settings-page-header-subtitle"><%= t("page.brand_subtitle") %></p>
           </div>
         </div>
+        <% if @dark_mode_selector %>
+        <button type="button" class="ultra-settings-theme-toggle" id="ultra-settings-theme-toggle" aria-label="Toggle dark mode">
+          <svg class="ultra-settings-theme-icon ultra-settings-theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2"></path>
+            <path d="M12 20v2"></path>
+            <path d="m4.93 4.93 1.41 1.41"></path>
+            <path d="m17.66 17.66 1.41 1.41"></path>
+            <path d="M2 12h2"></path>
+            <path d="M20 12h2"></path>
+            <path d="m6.34 17.66-1.41 1.41"></path>
+            <path d="m19.07 4.93-1.41 1.41"></path>
+          </svg>
+          <svg class="ultra-settings-theme-icon ultra-settings-theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+        </button>
+        <% end %>
       </div>
     </header>
     <main class="ultra-settings-page-content">
@@ -78,6 +105,25 @@
           </menu>
         </details>
       </footer>
+    <% end %>
+    <% if @dark_mode_selector %>
+    <script>
+      (function() {
+        var toggle = document.getElementById("ultra-settings-theme-toggle");
+        if (!toggle) return;
+        var html = document.documentElement;
+        toggle.addEventListener("click", function() {
+          var isDark = html.getAttribute("data-theme") === "dark";
+          if (isDark) {
+            html.removeAttribute("data-theme");
+            localStorage.removeItem("ultra_settings_theme");
+          } else {
+            html.setAttribute("data-theme", "dark");
+            localStorage.setItem("ultra_settings_theme", "dark");
+          }
+        });
+      })();
+    </script>
     <% end %>
   </body>
 </html>

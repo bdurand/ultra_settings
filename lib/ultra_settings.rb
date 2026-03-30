@@ -299,7 +299,15 @@ module UltraSettings
         __load_config__(name, class_name)
       end
 
-      config_classes = ObjectSpace.each_object(Class).select { |klass| klass < Configuration }
+      config_classes = ObjectSpace.each_object(Class).select do |klass|
+        next false unless klass < Configuration
+        next false if klass.name.nil?
+        begin
+          constantize(klass.name).equal?(klass)
+        rescue NameError
+          false
+        end
+      end
       config_classes.collect(&:instance)
     end
 
