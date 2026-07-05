@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Fixed
+
+- YAML configuration files with anchors and aliases (e.g. `<<: *defaults`) and unquoted date or time values now load correctly on Ruby 3.1+ where `YAML.load` is safe by default.
+- Fixed a race condition where concurrent requests to the web UI could render with each other's locale because per request state was stored on a shared view instance.
+- Fixed a race condition where the web UI translation cache could return a partially loaded set of locales to concurrent requests while the cache was being populated.
+- The web UI template and translation caches now recognize `RAILS_ENV` in addition to `RACK_ENV` when determining if the app is running in development mode. Previously a Rails app running in production without `RACK_ENV` set would re-read templates and translations from disk on every request.
+- Fixed a memory leak where `Configuration#override!` retained an entry for every thread that had ever used it.
+- Fixed `AuditDataSources` treating a `false` YAML value as missing and falling back to the field default.
+- Static field memoization and configuration subclass tracking are now fully synchronized for Ruby runtimes without a global VM lock (JRuby, TruffleRuby).
+- Web UI asset, template, translation, and YAML configuration files are now always read as UTF-8 so the gem works when the default external encoding is not UTF-8 (e.g. when `LANG` is not set).
+- The web UI no longer raises an error when determining relative configuration file paths if the YAML configuration directory does not exist or is not set.
+
 ## 2.10.0
 
 ### Added

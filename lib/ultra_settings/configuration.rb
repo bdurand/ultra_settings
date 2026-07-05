@@ -7,6 +7,9 @@ module UltraSettings
     ALLOWED_NAME_PATTERN = /\A[a-z_][a-zA-Z0-9_]*\z/
     ALLOWED_TYPES = [:string, :symbol, :integer, :float, :boolean, :datetime, :array].freeze
 
+    DESCENDANTS_MUTEX = Mutex.new
+    private_constant :DESCENDANTS_MUTEX
+
     @env_var_prefix = nil
     @runtime_setting_prefix = nil
     @description = nil
@@ -373,10 +376,15 @@ module UltraSettings
 
       # Get all descendant configuration classes (subclasses and their subclasses, recursively).
       #
+      # Note that in Rails development mode this list can include stale classes from
+      # previous code reloads; callers that display the results should filter out
+      # classes that no longer resolve to a defined constant (see
+      # UltraSettings.__configurations__).
+      #
       # @return [Array<Class>] All classes that inherit from this class.
       def descendant_configurations
-        @descendants ||= []
-        @descendants.flat_map { |subclass| [subclass] + subclass.descendant_configurations }
+        descendants = DESCENDANTS_MUTEX.synchronize { (@descendants || []).dup }
+        descendants.flat_map { |subclass| [subclass] + subclass.descendant_configurations }
       end
 
       private
@@ -387,8 +395,10 @@ module UltraSettings
       # @return [void]
       def inherited(subclass)
         super
-        @descendants ||= []
-        @descendants << subclass
+        DESCENDANTS_MUTEX.synchronize do
+          @descendants ||= []
+          @descendants << subclass
+        end
       end
 
       def defined_fields
@@ -496,7 +506,8 @@ module UltraSettings
     end
 
     def override!(values, &block)
-      save_val = @ultra_settings_override_values[Thread.current.object_id]
+      thread_id = Thread.current.object_id
+      save_val = @ultra_settings_mutex.synchronize { @ultra_settings_override_values[thread_id] }
 
       temp_values = (save_val || {}).dup
       values.each do |key, value|
@@ -505,12 +516,18 @@ module UltraSettings
 
       begin
         @ultra_settings_mutex.synchronize do
-          @ultra_settings_override_values[Thread.current.object_id] = temp_values
+          @ultra_settings_override_values[thread_id] = temp_values
         end
         yield
       ensure
         @ultra_settings_mutex.synchronize do
-          @ultra_settings_override_values[Thread.current.object_id] = save_val
+          if save_val.nil?
+            # Remove the key entirely so the hash doesn't accumulate an entry
+            # for every thread that has ever used override!.
+            @ultra_settings_override_values.delete(thread_id)
+          else
+            @ultra_settings_override_values[thread_id] = save_val
+          end
         end
       end
     end
@@ -592,11 +609,20 @@ module UltraSettings
       field = self.class.send(:defined_fields)[name]
       return nil unless field
 
-      override_values = @ultra_settings_mutex.synchronize { @ultra_settings_override_values[Thread.current.object_id] }
+      override_values = nil
+      memoized = false
+      memoized_value = nil
+      @ultra_settings_mutex.synchronize do
+        override_values = @ultra_settings_override_values[Thread.current.object_id]
+        if field.static? && @ultra_settings_memoized_values.include?(name)
+          memoized = true
+          memoized_value = @ultra_settings_memoized_values[name]
+        end
+      end
       use_override = override_values&.include?(name)
 
-      if field.static? && !use_override && @ultra_settings_memoized_values.include?(name)
-        return @ultra_settings_memoized_values[name]
+      if memoized && !use_override
+        return memoized_value
       end
 
       value = nil

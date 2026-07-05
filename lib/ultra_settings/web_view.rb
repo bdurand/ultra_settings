@@ -17,17 +17,29 @@ module UltraSettings
       @dark_mode_selector = @color_scheme.nil? ? "[data-theme=dark]" : nil
       @layout_template = ViewHelper.erb_template("layout.html.erb")
       @layout_css = scheme_layout_css(@color_scheme, @dark_mode_selector)
+      @locale = nil
     end
 
     # Render the complete settings page HTML.
+    #
+    # This instance may be shared between concurrent requests, so per request
+    # state is set on a copy of the view rather than on the shared instance.
     #
     # @param request [Rack::Request, nil] The current Rack request for access control.
     # @param locale [String] The locale code for translations.
     # @return [String] The rendered HTML page.
     def render_settings(request = nil, locale: UltraSettings::MiniI18n::DEFAULT_LOCALE)
-      @request = request
-      @locale = locale
       refresh_super_settings!
+      renderer = dup
+      renderer.instance_variable_set(:@locale, locale)
+      renderer.render_layout
+    end
+
+    # Render the layout template in the context of this instance.
+    #
+    # @return [String] The rendered HTML page.
+    # @api private
+    def render_layout
       @layout_template.result(binding)
     end
 

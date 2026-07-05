@@ -105,4 +105,39 @@ RSpec.describe UltraSettings::MiniI18n do
       expect(described_class.text_direction).to eq("ltr")
     end
   end
+
+  describe "caching" do
+    it "caches locales when not in development mode" do
+      ClimateControl.modify(RAILS_ENV: "production", RACK_ENV: nil) do
+        described_class.clear_cache!
+        first = described_class.translations_for("en")
+        expect(File).not_to receive(:read)
+        expect(described_class.translations_for("en")).to equal(first)
+      end
+    end
+
+    it "treats RAILS_ENV=production as production even when RACK_ENV is not set" do
+      ClimateControl.modify(RAILS_ENV: "production", RACK_ENV: nil) do
+        expect(described_class.send(:development_mode?)).to be false
+      end
+    end
+
+    it "reloads locales in development mode" do
+      ClimateControl.modify(RAILS_ENV: nil, RACK_ENV: nil) do
+        expect(described_class.send(:development_mode?)).to be true
+      end
+    end
+
+    it "returns the full set of locales to concurrent readers" do
+      described_class.clear_cache!
+      expected = described_class.available_locales
+      described_class.clear_cache!
+
+      results = Array.new(8) do
+        Thread.new { described_class.available_locales }
+      end.map(&:value)
+
+      expect(results).to all(eq(expected))
+    end
+  end
 end

@@ -81,10 +81,19 @@ module UltraSettings
     def relative_path(path)
       root_path = Pathname.new(Dir.pwd)
       config_path = UltraSettings::Configuration.yaml_config_path
-      unless config_path.realpath.to_s.start_with?("#{root_path.realpath}#{File::SEPARATOR}")
-        root_path = config_path
+      if config_path
+        begin
+          unless config_path.realpath.to_s.start_with?("#{root_path.realpath}#{File::SEPARATOR}")
+            root_path = config_path
+          end
+        rescue Errno::ENOENT
+          root_path = config_path
+        end
       end
       path.relative_path_from(root_path)
+    rescue ArgumentError
+      # relative_path_from raises if the paths have no common root (e.g. different drives).
+      path
     end
 
     def source_chip_label(source)

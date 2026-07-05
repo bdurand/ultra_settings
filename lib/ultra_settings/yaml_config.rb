@@ -52,15 +52,23 @@ module UltraSettings
     private
 
     def load_yaml(path)
-      yaml = File.read(path)
+      yaml = File.read(path, encoding: Encoding::UTF_8)
 
       if yaml.include?("<%")
         yaml = ERB.new(yaml).result
       end
 
-      hash = YAML.load(yaml) # rubocop:disable Security/YAMLLoad
+      hash = parse_yaml(yaml)
       hash = {} unless hash.is_a?(Hash)
       hash
+    end
+
+    def parse_yaml(yaml)
+      YAML.load(yaml, aliases: true, permitted_classes: [Symbol, Date, Time]) # rubocop:disable Security/YAMLLoad
+    rescue ArgumentError
+      # Psych 3 does not support the aliases or permitted_classes options; its
+      # YAML.load already allows aliases and arbitrary classes.
+      YAML.load(yaml) # rubocop:disable Security/YAMLLoad
     end
 
     def environment_config(yaml, environment)

@@ -2,6 +2,7 @@
 
 require "erb"
 require "yaml"
+require "date"
 require "time"
 require "pathname"
 require "singleton"
