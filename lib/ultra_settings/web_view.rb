@@ -22,10 +22,12 @@ module UltraSettings
 
     # Render the complete settings page HTML.
     #
-    # This instance may be shared between concurrent requests, so per request
+    # This instance may be shared between concurrent requests, so per-request
     # state is set on a copy of the view rather than on the shared instance.
     #
-    # @param request [Rack::Request, nil] The current Rack request for access control.
+    # @param request [Rack::Request, nil] The current Rack request. It is accepted
+    #   for backward compatibility but is not used by the view; access control and
+    #   locale resolution are the caller's responsibility.
     # @param locale [String] The locale code for translations.
     # @return [String] The rendered HTML page.
     def render_settings(request = nil, locale: UltraSettings::MiniI18n::DEFAULT_LOCALE)

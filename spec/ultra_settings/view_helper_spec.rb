@@ -18,7 +18,7 @@ RSpec.describe UltraSettings::ViewHelper do
     end
 
     it "reloads templates in development mode" do
-      ClimateControl.modify(RAILS_ENV: nil, RACK_ENV: nil) do
+      ClimateControl.modify(RAILS_ENV: nil, RACK_ENV: nil, APP_ENV: nil) do
         template = described_class.erb_template("layout.html.erb")
         expect(described_class.erb_template("layout.html.erb")).not_to equal(template)
       end

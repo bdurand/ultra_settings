@@ -59,7 +59,7 @@ module UltraSettings
       #
       # @return [void]
       def clear_cache!
-        @cache = {}
+        @mutex.synchronize { @cache = {} }
       end
 
       private
@@ -98,6 +98,7 @@ module UltraSettings
           end
 
           @cache = cache
+          cache
         end
       end
 

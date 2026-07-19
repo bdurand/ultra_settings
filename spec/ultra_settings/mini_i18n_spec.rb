@@ -123,7 +123,7 @@ RSpec.describe UltraSettings::MiniI18n do
     end
 
     it "reloads locales in development mode" do
-      ClimateControl.modify(RAILS_ENV: nil, RACK_ENV: nil) do
+      ClimateControl.modify(RAILS_ENV: nil, RACK_ENV: nil, APP_ENV: nil) do
         expect(described_class.send(:development_mode?)).to be true
       end
     end
