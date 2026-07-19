@@ -27,8 +27,11 @@ module UltraSettings
     # @param table_class [String] @deprecated CSS class for the table element (maintained for backwards compatibility).
     # @return [String] The rendered HTML.
     def render(table_class: "")
-      configuration = @configuration # used by ERB template via binding
-      html = ViewHelper.erb_template("configuration.html.erb").result(binding)
+      # Expose configuration as a local for the ERB template without a direct
+      # assignment, which would emit an unused variable warning under ruby -w.
+      template_binding = binding
+      template_binding.local_variable_set(:configuration, @configuration)
+      html = ViewHelper.erb_template("configuration.html.erb").result(template_binding)
       html = html.html_safe if html.respond_to?(:html_safe)
       html
     end
