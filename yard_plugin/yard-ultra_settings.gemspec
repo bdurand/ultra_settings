@@ -41,6 +41,4 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "yard", ">= 0.9.0"
   spec.add_dependency "ultra_settings", ">= 2.0.0"
-
-  spec.add_development_dependency "bundler"
 end
