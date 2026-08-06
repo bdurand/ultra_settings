@@ -171,6 +171,8 @@ UltraSettings.runtime_settings = RedisRuntimeSettings.new
 
 The runtime settings implementation may also define an `array` method that takes a single parameter to return an array value. If this method is not implemented, then array values must be returned as single line CSV strings.
 
+The runtime settings implementation may also define a `load_settings` method. If it does, the web UI will call it before rendering so that values changed elsewhere are displayed immediately instead of whenever the implementation's own cache next refreshes. It should reload synchronously and return once the values are current. Errors raised from it are logged to stderr and do not prevent the page from rendering.
+
 > [!TIP]
 > If your runtime settings implementation does not securely store values, you should set `UltraSettings.runtime_settings_secure` to `false`. This will disable runtime settings on fields marked as secret to prevent leaking sensitive information.
 
@@ -481,6 +483,11 @@ All authorization is handled by the SuperSettings API — the same permissions t
 
 > [!IMPORTANT]
 > You will need to have the SuperSettings API mounted and properly locked down with authentication. If the API is not accessible, then the edit buttons will not be shown. Check the browser console for any errors if you expect the buttons to be shown but they are not appearing.
+
+`SuperSettings` responds to `load_settings`, so the web UI reloads the SuperSettings cache before each render and a setting saved from the edit panel is displayed as soon as the page reloads.
+
+> [!NOTE]
+> In a Rails application, `SuperSettings::Context::RackMiddleware` pins each setting's value for the remainder of a request once it has been read. This does not affect the standalone Rack app since the reload happens before any value is read. However, if you embed `UltraSettings::ApplicationView` in a page that already read a runtime setting earlier in the same request, that particular setting will still render with its pre-reload value.
 
 ##### Embedding with Edit Support
 

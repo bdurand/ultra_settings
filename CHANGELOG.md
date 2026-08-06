@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+
+- The web UI now fully reloads the runtime settings cache before rendering instead of requesting an incremental refresh. Previously a value changed from the UI could still render as its old value after the page reloaded, since the incremental refresh would silently do nothing if another thread was already refreshing, if the cache had never been loaded, or if the change had been saved by a different process. The reload is performed on any runtime settings object that responds to `load_settings` — including wrappers around `SuperSettings` — rather than only on `SuperSettings` itself, and an error raised while reloading is now reported to stderr instead of failing the page.
+- The reload is now performed by `UltraSettings::ApplicationView#render` and `UltraSettings::ConfigurationView#render` rather than only by the standalone Rack app, so views embedded in a host application also display current values. Rendering a page with many configurations still only reloads once.
+
 ### Fixed
 
 - YAML configuration files with anchors and aliases (e.g. `<<: *defaults`) and unquoted date or time values now load correctly on Ruby 3.1+ where `YAML.load` is safe by default.

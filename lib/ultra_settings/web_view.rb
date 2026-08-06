@@ -31,7 +31,6 @@ module UltraSettings
     # @param locale [String] The locale code for translations.
     # @return [String] The rendered HTML page.
     def render_settings(request = nil, locale: UltraSettings::MiniI18n::DEFAULT_LOCALE)
-      refresh_super_settings!
       renderer = dup
       renderer.instance_variable_set(:@locale, locale)
       renderer.render_layout
@@ -77,12 +76,6 @@ module UltraSettings
       vars = ViewHelper.erb_template("layout_vars.css.erb").result(binding)
       css = ViewHelper.read_app_file("layout.css")
       "#{vars}\n#{css}"
-    end
-
-    def refresh_super_settings!
-      return unless defined?(SuperSettings) && UltraSettings.__runtime_settings__ == SuperSettings
-
-      SuperSettings.refresh_settings
     end
   end
 end

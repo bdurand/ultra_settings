@@ -295,6 +295,35 @@ RSpec.describe "Web UI", type: :system do
     end
   end
 
+  describe "reloading runtime settings" do
+    # The SuperSettings cache only refreshes itself every few seconds, so without an
+    # explicit reload on render a value changed since the last page view would still
+    # display as its old value. SuperSettings is written to directly here rather than
+    # through SuperSettings.set, which pushes the new value straight into the cache
+    # and would hide a missing reload.
+    it "displays a runtime setting changed since the page was last rendered" do
+      SuperSettings::Setting.create!(key: "my_service.timeout", value: 2.5, value_type: "float")
+
+      visit "/"
+      select_config("MyServiceConfiguration")
+      within "#section-MyServiceConfiguration" do
+        within ".ultra-settings-field-card[data-field-name='timeout']" do
+          expect(page).to have_css(".ultra-settings-field-value", text: "2.5")
+        end
+      end
+
+      SuperSettings::Setting.find_by_key("my_service.timeout").update!(value: 7.5)
+
+      visit "/"
+      select_config("MyServiceConfiguration")
+      within "#section-MyServiceConfiguration" do
+        within ".ultra-settings-field-card[data-field-name='timeout']" do
+          expect(page).to have_css(".ultra-settings-field-value", text: "7.5")
+        end
+      end
+    end
+  end
+
   describe "editing a SuperSetting" do
     it "opens the edit panel and saves a new runtime setting" do
       visit "/"
