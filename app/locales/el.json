@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "Κάντε κλικ για ανάπτυξη",
   "field.not_set": "δεν έχει οριστεί",
+  "field.copy": "Αντιγραφή τιμής",
+  "field.copy_disabled": "Οι μυστικές τιμές δεν μπορούν να αντιγραφούν",
   "source.env": "ENV",
   "source.setting": "ΡΥΘΜΙΣΗ",
   "source.yaml": "YAML",

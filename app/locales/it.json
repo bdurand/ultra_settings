@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "Fai clic per espandere",
   "field.not_set": "non impostato",
+  "field.copy": "Copia valore",
+  "field.copy_disabled": "I valori segreti non possono essere copiati",
   "source.env": "ENV",
   "source.setting": "IMPOSTAZIONE",
   "source.yaml": "YAML",

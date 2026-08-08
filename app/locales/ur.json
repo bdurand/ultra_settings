@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "پھیلانے کے لیے کلک کریں",
   "field.not_set": "سیٹ نہیں",
+  "field.copy": "قدر کاپی کریں",
+  "field.copy_disabled": "خفیہ اقدار کاپی نہیں کی جا سکتیں",
   "source.env": "ENV",
   "source.setting": "ترتیب",
   "source.yaml": "YAML",

@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "クリックして展開",
   "field.not_set": "未設定",
+  "field.copy": "値をコピー",
+  "field.copy_disabled": "シークレットの値はコピーできません",
   "source.env": "ENV",
   "source.setting": "設定",
   "source.yaml": "YAML",

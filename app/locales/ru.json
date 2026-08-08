@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "Нажмите, чтобы развернуть",
   "field.not_set": "не задано",
+  "field.copy": "Копировать значение",
+  "field.copy_disabled": "Секретные значения нельзя копировать",
   "source.env": "ENV",
   "source.setting": "НАСТРОЙКА",
   "source.yaml": "YAML",

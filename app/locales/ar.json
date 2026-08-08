@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "انقر للتوسيع",
   "field.not_set": "غير مضبوط",
+  "field.copy": "نسخ القيمة",
+  "field.copy_disabled": "لا يمكن نسخ القيم السرية",
   "source.env": "ENV",
   "source.setting": "إعداد",
   "source.yaml": "YAML",

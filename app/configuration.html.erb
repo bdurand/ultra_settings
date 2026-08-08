@@ -61,6 +61,21 @@
                     tabindex="0"
                     role="button"><%= html_escape(display_value(configuration[field.name])) %></code>
             <% end %>
+
+            <% if field.secret? %>
+              <button type="button"
+                      class="ultra-settings-copy-btn"
+                      disabled
+                      title="<%= t('field.copy_disabled') %>"
+                      aria-label="<%= t('field.copy_disabled') %>"><%= copy_icon %><%= check_icon %></button>
+            <% else %>
+              <button type="button"
+                      class="ultra-settings-copy-btn"
+                      onclick="<%= html_escape(copy_value_script) %>"
+                      data-copy-value="<%= html_escape(copy_value(configuration[field.name])) %>"
+                      title="<%= t('field.copy') %>"
+                      aria-label="<%= t('field.copy') %>"><%= copy_icon %><%= check_icon %></button>
+            <% end %>
           </div>
         </div>
 

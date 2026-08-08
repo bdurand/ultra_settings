@@ -230,6 +230,44 @@ RSpec.describe "Web UI", type: :system do
       end
     end
 
+    it "copies a field value to the clipboard" do
+      visit "/"
+      select_config("MyServiceConfiguration")
+
+      within find("#section-MyServiceConfiguration") do
+        port_card = find(".ultra-settings-field-card[data-field-name='port']")
+        within port_card do
+          copy_button = find(".ultra-settings-copy-btn")
+          # The raw value is copied rather than the quoted value shown in the UI.
+          expect(copy_button["data-copy-value"]).to eq("80")
+
+          copy_button.click
+          # The button confirms the copy by swapping in a check mark.
+          expect(page).to have_css(".ultra-settings-copy-btn.copied")
+        end
+      end
+
+      # The detail panel should not have been opened by the copy button.
+      expect(page).not_to have_css("#ultra-settings-detail-panel.open")
+    end
+
+    it "disables the copy button for secret fields", env: {MY_SERVICE_TOKEN: "topsecret"} do
+      visit "/"
+      select_config("MyServiceConfiguration")
+
+      within find("#section-MyServiceConfiguration") do
+        token_card = find(".ultra-settings-field-card[data-field-name='auth_token']")
+        within token_card do
+          expect(find(".ultra-settings-copy-btn")).to be_disabled
+        end
+
+        port_card = find(".ultra-settings-field-card[data-field-name='port']")
+        within port_card do
+          expect(find(".ultra-settings-copy-btn")).not_to be_disabled
+        end
+      end
+    end
+
     it "opens a detail panel when clicking a field value" do
       visit "/"
       select_config("MyServiceConfiguration")

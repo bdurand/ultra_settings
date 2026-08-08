@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "विस्तार करने के लिए क्लिक करें",
   "field.not_set": "सेट नहीं",
+  "field.copy": "मान कॉपी करें",
+  "field.copy_disabled": "गुप्त मान कॉपी नहीं किए जा सकते",
   "source.env": "ENV",
   "source.setting": "सेटिंग",
   "source.yaml": "YAML",

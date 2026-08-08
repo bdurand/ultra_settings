@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "விரிவாக்க கிளிக் செய்யவும்",
   "field.not_set": "அமைக்கப்படவில்லை",
+  "field.copy": "மதிப்பை நகலெடு",
+  "field.copy_disabled": "ரகசிய மதிப்புகளை நகலெடுக்க முடியாது",
   "source.env": "ENV",
   "source.setting": "அமைப்பு",
   "source.yaml": "YAML",

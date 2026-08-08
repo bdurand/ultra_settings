@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "Briog gus leudachadh",
   "field.not_set": "gun suidheachadh",
+  "field.copy": "Dèan lethbhreac dhen luach",
+  "field.copy_disabled": "Cha ghabh luachan dìomhair a lethbhreacadh",
   "source.env": "ENV",
   "source.setting": "SUIDHEACHADH",
   "source.yaml": "YAML",

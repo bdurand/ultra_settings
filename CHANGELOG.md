@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Added a button to the web UI for copying the current value of a setting to the clipboard. The button is disabled for secret settings.
+
 ### Changed
 
 - The web UI now fully reloads the runtime settings cache before rendering instead of requesting an incremental refresh. Previously a value changed from the UI could still render as its old value after the page reloaded, since the incremental refresh would silently do nothing if another thread was already refreshing, if the cache had never been loaded, or if the change had been saved by a different process. The reload is performed on any runtime settings object that responds to `load_settings` — including wrappers around `SuperSettings` — rather than only on `SuperSettings` itself, and an error raised while reloading is now reported to stderr instead of failing the page.

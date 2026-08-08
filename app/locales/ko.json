@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "클릭하여 펼치기",
   "field.not_set": "설정되지 않음",
+  "field.copy": "값 복사",
+  "field.copy_disabled": "비밀 값은 복사할 수 없습니다",
   "source.env": "ENV",
   "source.setting": "설정",
   "source.yaml": "YAML",

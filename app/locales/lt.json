@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "Spustelėkite, kad išskleistumėte",
   "field.not_set": "nenustatyta",
+  "field.copy": "Kopijuoti reikšmę",
+  "field.copy_disabled": "Slaptų reikšmių kopijuoti negalima",
   "source.env": "ENV",
   "source.setting": "NUOSTATA",
   "source.yaml": "YAML",

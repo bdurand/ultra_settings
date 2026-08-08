@@ -20,6 +20,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "Click to expand",
   "field.not_set": "not set",
+  "field.copy": "Copy value",
+  "field.copy_disabled": "Secret values cannot be copied",
 
   "source.env": "ENV",
   "source.setting": "SETTING",

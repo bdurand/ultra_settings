@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "برای باز کردن کلیک کنید",
   "field.not_set": "تنظیم نشده",
+  "field.copy": "کپی کردن مقدار",
+  "field.copy_disabled": "مقادیر محرمانه قابل کپی کردن نیستند",
   "source.env": "ENV",
   "source.setting": "تنظیم",
   "source.yaml": "YAML",

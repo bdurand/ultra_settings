@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "Zum Aufklappen klicken",
   "field.not_set": "nicht gesetzt",
+  "field.copy": "Wert kopieren",
+  "field.copy_disabled": "Geheime Werte können nicht kopiert werden",
   "source.env": "ENV",
   "source.setting": "EINSTELLUNG",
   "source.yaml": "YAML",

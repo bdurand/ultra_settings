@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "Klikk for å utvide",
   "field.not_set": "ikke satt",
+  "field.copy": "Kopier verdi",
+  "field.copy_disabled": "Hemmelige verdier kan ikke kopieres",
   "source.env": "ENV",
   "source.setting": "INNSTILLING",
   "source.yaml": "YAML",

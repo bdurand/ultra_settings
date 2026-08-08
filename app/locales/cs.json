@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "Kliknutím rozbalíte",
   "field.not_set": "nenastaveno",
+  "field.copy": "Kopírovat hodnotu",
+  "field.copy_disabled": "Tajné hodnoty nelze kopírovat",
   "source.env": "ENV",
   "source.setting": "NASTAVENÍ",
   "source.yaml": "YAML",

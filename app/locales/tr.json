@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "Genişletmek için tıklayın",
   "field.not_set": "ayarlanmamış",
+  "field.copy": "Değeri kopyala",
+  "field.copy_disabled": "Gizli değerler kopyalanamaz",
   "source.env": "ENV",
   "source.setting": "AYAR",
   "source.yaml": "YAML",

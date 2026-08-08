@@ -79,6 +79,25 @@ module UltraSettings
       end
     end
 
+    # The text placed on the clipboard by the copy button. This is the raw value
+    # rather than the inspected value shown in the UI so that, for example, copying
+    # a string setting does not include the surrounding quotes.
+    #
+    # @param value [Object] The setting value.
+    # @return [String] The text to copy.
+    def copy_value(value)
+      case value
+      when nil
+        ""
+      when Time
+        value.iso8601
+      when Array
+        value.join("\n")
+      else
+        value.to_s
+      end
+    end
+
     def secret_value(value)
       if value.nil?
         t("field.nil")
@@ -164,6 +183,38 @@ module UltraSettings
       JAVASCRIPT
     end
 
+    # Inline script for the copy button. It is inlined on the element so that the
+    # button also works when the configuration view is embedded in a host
+    # application page that does not include the bundled JavaScript.
+    #
+    # @return [String] JavaScript source for an onclick attribute.
+    def copy_value_script
+      <<~JAVASCRIPT.gsub(/\s+/, " ").tr('"', "'")
+        var btn = this;
+        var text = btn.dataset.copyValue || '';
+        var flash = function() {
+          btn.classList.add('copied');
+          window.setTimeout(function() { btn.classList.remove('copied'); }, 1500);
+        };
+        var fallback = function() {
+          var input = document.createElement('textarea');
+          input.value = text;
+          input.setAttribute('readonly', '');
+          input.style.position = 'fixed';
+          input.style.opacity = '0';
+          document.body.appendChild(input);
+          input.select();
+          try { if (document.execCommand('copy')) { flash(); } } catch (e) {}
+          document.body.removeChild(input);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(flash, fallback);
+        } else {
+          fallback();
+        }
+      JAVASCRIPT
+    end
+
     def source_priority
       [:env, :settings, :yaml, :default]
     end
@@ -210,6 +261,23 @@ module UltraSettings
         <svg width="#{size}" height="#{size}" fill="currentColor" viewBox="0 0 16 16">
           <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
           <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+        </svg>
+      HTML
+    end
+
+    def copy_icon(size = 13)
+      <<~HTML
+        <svg class="ultra-settings-copy-icon" width="#{size}" height="#{size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+      HTML
+    end
+
+    def check_icon(size = 13)
+      <<~HTML
+        <svg class="ultra-settings-copy-check" width="#{size}" height="#{size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
         </svg>
       HTML
     end

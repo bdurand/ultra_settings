@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "点击展开",
   "field.not_set": "未设置",
+  "field.copy": "复制值",
+  "field.copy_disabled": "无法复制机密值",
   "source.env": "ENV",
   "source.setting": "设置",
   "source.yaml": "YAML",

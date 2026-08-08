@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "Натисніть, щоб розгорнути",
   "field.not_set": "не задано",
+  "field.copy": "Копіювати значення",
+  "field.copy_disabled": "Секретні значення не можна копіювати",
   "source.env": "ENV",
   "source.setting": "НАЛАШТУВАННЯ",
   "source.yaml": "YAML",

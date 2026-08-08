@@ -393,6 +393,8 @@ end
 
 UltraSettings provides a web UI via a mountable Rack application. You can use this to view the settings values and documentation. The UI will not display the value of any setting marked as secret.
 
+Each setting has a button for copying its current value to the clipboard. The copied text is the raw value rather than the quoted form shown on the page (arrays are copied as one entry per line). The button is disabled for secret settings since their values are never sent to the browser.
+
 ![Web UI](assets/web_ui.png)
 
 It is strongly recommended to secure the web UI with your application's authorization framework so that it is only visible to internal admin users.

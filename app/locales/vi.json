@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "Bấm để mở rộng",
   "field.not_set": "chưa đặt",
+  "field.copy": "Sao chép giá trị",
+  "field.copy_disabled": "Không thể sao chép giá trị bí mật",
   "source.env": "ENV",
   "source.setting": "CÀI ĐẶT",
   "source.yaml": "YAML",

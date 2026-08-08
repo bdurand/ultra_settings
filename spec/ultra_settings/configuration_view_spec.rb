@@ -20,6 +20,36 @@ RSpec.describe UltraSettings::ConfigurationView do
     expect(html).not_to include("secretvalue")
   end
 
+  describe "copy buttons" do
+    it "renders a copy button with the raw value for fields that are not secret", env: {TEST_STRING: "hello world"} do
+      html = UltraSettings::ConfigurationView.new(TestConfiguration.instance).render
+      doc = Nokogiri::HTML5(html)
+      button = doc.at_css('.ultra-settings-field-card[data-field-name="string"] .ultra-settings-copy-btn')
+      expect(button).not_to be_nil
+      expect(button["disabled"]).to be_nil
+      expect(button["data-copy-value"]).to eq("hello world")
+    end
+
+    it "renders a disabled copy button without a value for secret fields", env: {TEST_SECRET: "secretvalue"} do
+      html = UltraSettings::ConfigurationView.new(TestConfiguration.instance).render
+      doc = Nokogiri::HTML5(html)
+      button = doc.at_css('.ultra-settings-field-card[data-field-name="secret"] .ultra-settings-copy-btn')
+      expect(button).not_to be_nil
+      expect(button["disabled"]).not_to be_nil
+      expect(button["data-copy-value"]).to be_nil
+      expect(html).not_to include("secretvalue")
+    end
+
+    it "copies values without the quoting used for display", env: {TEST_ARRAY: "a,b", TEST_INT: "42"} do
+      view = UltraSettings::ConfigurationView.new(TestConfiguration.instance)
+      expect(view.send(:copy_value, "hello world")).to eq("hello world")
+      expect(view.send(:copy_value, 42)).to eq("42")
+      expect(view.send(:copy_value, ["a", "b"])).to eq("a\nb")
+      expect(view.send(:copy_value, nil)).to eq("")
+      expect(view.send(:copy_value, Time.utc(2025, 1, 15, 10, 30, 0))).to eq("2025-01-15T10:30:00Z")
+    end
+  end
+
   it "renders valid HTML", env: {TEST_STRING: "<script"} do
     html = UltraSettings::ConfigurationView.new(TestConfiguration.instance).render
     doc = Nokogiri::HTML5(html)

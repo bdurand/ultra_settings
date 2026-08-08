@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "לחץ כדי להרחיב",
   "field.not_set": "לא הוגדר",
+  "field.copy": "העתקת הערך",
+  "field.copy_disabled": "לא ניתן להעתיק ערכים סודיים",
   "source.env": "ENV",
   "source.setting": "הגדרה",
   "source.yaml": "YAML",

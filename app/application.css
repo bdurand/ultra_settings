@@ -535,6 +535,10 @@
   margin-inline-start: auto;
   flex-shrink: 0;
   max-width: 50%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
 }
 
 .ultra-settings-field-value {
@@ -547,6 +551,7 @@
   border-radius: 6px;
   border: 1px solid var(--border-light);
   max-width: 320px;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -564,6 +569,45 @@
   color: var(--text-tertiary);
   font-style: italic;
 }
+
+/* Copy value button */
+.ultra-settings-copy-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: color 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+
+.ultra-settings-copy-btn:hover:not(:disabled) {
+  color: var(--accent);
+  background: var(--accent-light);
+  border-color: var(--accent);
+}
+
+.ultra-settings-copy-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ultra-settings-copy-btn .ultra-settings-copy-check { display: none; }
+
+.ultra-settings-copy-btn.copied {
+  color: var(--active-color);
+  border-color: transparent;
+  background: var(--active-bg);
+}
+
+.ultra-settings-copy-btn.copied .ultra-settings-copy-icon { display: none; }
+.ultra-settings-copy-btn.copied .ultra-settings-copy-check { display: inline; }
 
 /* Description */
 .ultra-settings-field-description {

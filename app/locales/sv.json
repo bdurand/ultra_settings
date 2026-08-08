@@ -17,6 +17,8 @@
   "field.nil": "nil",
   "field.click_to_expand": "Klicka för att expandera",
   "field.not_set": "inte angivet",
+  "field.copy": "Kopiera värde",
+  "field.copy_disabled": "Hemliga värden kan inte kopieras",
   "source.env": "ENV",
   "source.setting": "INSTÄLLNING",
   "source.yaml": "YAML",
