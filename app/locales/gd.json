@@ -30,7 +30,7 @@
   "detail.type_label": "Seòrsa:",
   "detail.secret_badge": "DÌOMHAIR",
   "detail.secret_value": "•••••••• (dìomhair)",
-  "config.file_not_found": "(cha deach a lorg)",
+  "config.file_not_found": "(chan eil am faidhle ann)",
   "config.edit_tooltip": "Deasaich ${name}",
   "edit.title": "Deasaich suidheachadh ruith-ùine",
   "edit.open_dashboard": "Fosgail ann am deas-bhòrd nan suidheachaidhean ↗",

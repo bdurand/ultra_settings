@@ -30,7 +30,7 @@
   "detail.type_label": "Type :",
   "detail.secret_badge": "SECRET",
   "detail.secret_value": "•••••••• (secret)",
-  "config.file_not_found": "(introuvable)",
+  "config.file_not_found": "(le fichier n’existe pas)",
   "config.edit_tooltip": "Modifier ${name}",
   "edit.title": "Modifier le paramètre d’exécution",
   "edit.open_dashboard": "Ouvrir dans le tableau de bord des paramètres ↗",

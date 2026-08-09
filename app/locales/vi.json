@@ -30,7 +30,7 @@
   "detail.type_label": "Loại:",
   "detail.secret_badge": "BÍ MẬT",
   "detail.secret_value": "•••••••• (bí mật)",
-  "config.file_not_found": "(không tìm thấy)",
+  "config.file_not_found": "(tệp không tồn tại)",
   "config.edit_tooltip": "Chỉnh sửa ${name}",
   "edit.title": "Chỉnh sửa cài đặt runtime",
   "edit.open_dashboard": "Mở trong bảng điều khiển cài đặt ↗",

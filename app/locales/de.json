@@ -30,7 +30,7 @@
   "detail.type_label": "Typ:",
   "detail.secret_badge": "GEHEIM",
   "detail.secret_value": "•••••••• (geheim)",
-  "config.file_not_found": "(nicht gefunden)",
+  "config.file_not_found": "(Datei existiert nicht)",
   "config.edit_tooltip": "${name} bearbeiten",
   "edit.title": "Laufzeiteinstellung bearbeiten",
   "edit.open_dashboard": "Im Einstellungs-Dashboard öffnen ↗",

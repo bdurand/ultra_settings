@@ -30,7 +30,7 @@
   "detail.type_label": "نوع:",
   "detail.secret_badge": "محرمانه",
   "detail.secret_value": "•••••••• (محرمانه)",
-  "config.file_not_found": "(یافت نشد)",
+  "config.file_not_found": "(فایل وجود ندارد)",
   "config.edit_tooltip": "ویرایش ${name}",
   "edit.title": "ویرایش تنظیم زمان اجرا",
   "edit.open_dashboard": "باز کردن در داشبورد تنظیمات ↗",

@@ -30,7 +30,7 @@
   "detail.type_label": "Type:",
   "detail.secret_badge": "HEMMELIG",
   "detail.secret_value": "•••••••• (hemmelig)",
-  "config.file_not_found": "(ikke fundet)",
+  "config.file_not_found": "(filen findes ikke)",
   "config.edit_tooltip": "Rediger ${name}",
   "edit.title": "Rediger runtime-indstilling",
   "edit.open_dashboard": "Åbn i indstillingsdashboard ↗",

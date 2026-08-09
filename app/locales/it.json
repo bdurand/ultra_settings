@@ -30,7 +30,7 @@
   "detail.type_label": "Tipo:",
   "detail.secret_badge": "SEGRETO",
   "detail.secret_value": "•••••••• (segreto)",
-  "config.file_not_found": "(non trovato)",
+  "config.file_not_found": "(il file non esiste)",
   "config.edit_tooltip": "Modifica ${name}",
   "edit.title": "Modifica impostazione di runtime",
   "edit.open_dashboard": "Apri nel pannello delle impostazioni ↗",

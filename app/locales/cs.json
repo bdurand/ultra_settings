@@ -30,7 +30,7 @@
   "detail.type_label": "Typ:",
   "detail.secret_badge": "TAJNÉ",
   "detail.secret_value": "•••••••• (tajné)",
-  "config.file_not_found": "(nenalezeno)",
+  "config.file_not_found": "(soubor neexistuje)",
   "config.edit_tooltip": "Upravit ${name}",
   "edit.title": "Upravit runtime nastavení",
   "edit.open_dashboard": "Otevřít v panelu nastavení ↗",

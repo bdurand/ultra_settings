@@ -30,7 +30,7 @@
   "detail.type_label": "Tipas:",
   "detail.secret_badge": "SLAPTA",
   "detail.secret_value": "•••••••• (slapta)",
-  "config.file_not_found": "(nerasta)",
+  "config.file_not_found": "(failas neegzistuoja)",
   "config.edit_tooltip": "Redaguoti ${name}",
   "edit.title": "Redaguoti vykdymo metu naudojamą nustatymą",
   "edit.open_dashboard": "Atidaryti nustatymų skydelyje ↗",

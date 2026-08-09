@@ -30,7 +30,7 @@
   "detail.type_label": "Тип:",
   "detail.secret_badge": "СЕКРЕТНО",
   "detail.secret_value": "•••••••• (секретно)",
-  "config.file_not_found": "(не найдено)",
+  "config.file_not_found": "(файл не существует)",
   "config.edit_tooltip": "Изменить ${name}",
   "edit.title": "Изменить настройку времени выполнения",
   "edit.open_dashboard": "Открыть на панели настроек ↗",

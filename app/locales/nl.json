@@ -30,7 +30,7 @@
   "detail.type_label": "Type:",
   "detail.secret_badge": "GEHEIM",
   "detail.secret_value": "•••••••• (geheim)",
-  "config.file_not_found": "(niet gevonden)",
+  "config.file_not_found": "(bestand bestaat niet)",
   "config.edit_tooltip": "${name} bewerken",
   "edit.title": "Runtime-instelling bewerken",
   "edit.open_dashboard": "Openen in instellingen-dashboard ↗",

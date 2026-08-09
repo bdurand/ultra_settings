@@ -36,7 +36,7 @@
   "detail.secret_badge": "SECRET",
   "detail.secret_value": "•••••••• (secret)",
 
-  "config.file_not_found": "(not found)",
+  "config.file_not_found": "(file does not exist)",
   "config.edit_tooltip": "Edit ${name}",
 
   "edit.title": "Edit Runtime Setting",

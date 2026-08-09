@@ -30,7 +30,7 @@
   "detail.type_label": "Type:",
   "detail.secret_badge": "HEMMELIG",
   "detail.secret_value": "•••••••• (hemmelig)",
-  "config.file_not_found": "(ikke funnet)",
+  "config.file_not_found": "(filen finnes ikke)",
   "config.edit_tooltip": "Rediger ${name}",
   "edit.title": "Rediger kjøretidsinnstilling",
   "edit.open_dashboard": "Åpne i innstillingsdashboard ↗",

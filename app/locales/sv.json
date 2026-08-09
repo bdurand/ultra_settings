@@ -30,7 +30,7 @@
   "detail.type_label": "Typ:",
   "detail.secret_badge": "HEMLIG",
   "detail.secret_value": "•••••••• (hemlig)",
-  "config.file_not_found": "(hittades inte)",
+  "config.file_not_found": "(filen finns inte)",
   "config.edit_tooltip": "Redigera ${name}",
   "edit.title": "Redigera runtime-inställning",
   "edit.open_dashboard": "Öppna i inställningspanelen ↗",

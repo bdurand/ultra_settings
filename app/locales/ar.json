@@ -30,7 +30,7 @@
   "detail.type_label": "النوع:",
   "detail.secret_badge": "سري",
   "detail.secret_value": "•••••••• (سري)",
-  "config.file_not_found": "(غير موجود)",
+  "config.file_not_found": "(الملف غير موجود)",
   "config.edit_tooltip": "حرّر ${name}",
   "edit.title": "تحرير إعداد وقت التشغيل",
   "edit.open_dashboard": "افتح في لوحة الإعدادات ↗",

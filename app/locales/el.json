@@ -30,7 +30,7 @@
   "detail.type_label": "Τύπος:",
   "detail.secret_badge": "ΜΥΣΤΙΚΟ",
   "detail.secret_value": "•••••••• (μυστικό)",
-  "config.file_not_found": "(δεν βρέθηκε)",
+  "config.file_not_found": "(το αρχείο δεν υπάρχει)",
   "config.edit_tooltip": "Επεξεργασία ${name}",
   "edit.title": "Επεξεργασία ρύθμισης χρόνου εκτέλεσης",
   "edit.open_dashboard": "Άνοιγμα στον πίνακα ρυθμίσεων ↗",

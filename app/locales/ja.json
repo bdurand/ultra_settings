@@ -30,7 +30,7 @@
   "detail.type_label": "型:",
   "detail.secret_badge": "シークレット",
   "detail.secret_value": "•••••••• (シークレット)",
-  "config.file_not_found": "(見つかりません)",
+  "config.file_not_found": "(ファイルが存在しません)",
   "config.edit_tooltip": "${name} を編集",
   "edit.title": "ランタイム設定を編集",
   "edit.open_dashboard": "設定ダッシュボードで開く ↗",

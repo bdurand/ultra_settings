@@ -30,7 +30,7 @@
   "detail.type_label": "סוג:",
   "detail.secret_badge": "סודי",
   "detail.secret_value": "•••••••• (סודי)",
-  "config.file_not_found": "(לא נמצא)",
+  "config.file_not_found": "(הקובץ אינו קיים)",
   "config.edit_tooltip": "ערוך את ${name}",
   "edit.title": "עריכת הגדרת זמן ריצה",
   "edit.open_dashboard": "פתח בלוח ההגדרות ↗",

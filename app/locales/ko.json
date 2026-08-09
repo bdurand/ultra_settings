@@ -30,7 +30,7 @@
   "detail.type_label": "유형:",
   "detail.secret_badge": "비밀",
   "detail.secret_value": "•••••••• (비밀)",
-  "config.file_not_found": "(찾을 수 없음)",
+  "config.file_not_found": "(파일이 존재하지 않음)",
   "config.edit_tooltip": "${name} 편집",
   "edit.title": "런타임 설정 편집",
   "edit.open_dashboard": "설정 대시보드에서 열기 ↗",

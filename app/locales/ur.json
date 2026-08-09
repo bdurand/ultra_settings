@@ -30,7 +30,7 @@
   "detail.type_label": "قسم:",
   "detail.secret_badge": "خفیہ",
   "detail.secret_value": "•••••••• (خفیہ)",
-  "config.file_not_found": "(نہیں ملا)",
+  "config.file_not_found": "(فائل موجود نہیں ہے)",
   "config.edit_tooltip": "${name} میں ترمیم کریں",
   "edit.title": "رن ٹائم ترتیب میں ترمیم کریں",
   "edit.open_dashboard": "ترتیبات ڈیش بورڈ میں کھولیں ↗",

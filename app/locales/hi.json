@@ -30,7 +30,7 @@
   "detail.type_label": "प्रकार:",
   "detail.secret_badge": "गुप्त",
   "detail.secret_value": "•••••••• (गुप्त)",
-  "config.file_not_found": "(नहीं मिला)",
+  "config.file_not_found": "(फ़ाइल मौजूद नहीं है)",
   "config.edit_tooltip": "${name} संपादित करें",
   "edit.title": "रनटाइम सेटिंग संपादित करें",
   "edit.open_dashboard": "सेटिंग डैशबोर्ड में खोलें ↗",

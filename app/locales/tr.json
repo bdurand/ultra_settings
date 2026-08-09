@@ -30,7 +30,7 @@
   "detail.type_label": "Tür:",
   "detail.secret_badge": "GİZLİ",
   "detail.secret_value": "•••••••• (gizli)",
-  "config.file_not_found": "(bulunamadı)",
+  "config.file_not_found": "(dosya mevcut değil)",
   "config.edit_tooltip": "${name} öğesini düzenle",
   "edit.title": "Çalışma zamanı ayarını düzenle",
   "edit.open_dashboard": "Ayarlar panosunda aç ↗",

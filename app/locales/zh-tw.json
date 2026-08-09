@@ -30,7 +30,7 @@
   "detail.type_label": "類型：",
   "detail.secret_badge": "機密",
   "detail.secret_value": "•••••••• (機密)",
-  "config.file_not_found": "(找不到)",
+  "config.file_not_found": "(檔案不存在)",
   "config.edit_tooltip": "編輯 ${name}",
   "edit.title": "編輯執行階段設定",
   "edit.open_dashboard": "在設定儀表板中開啟 ↗",

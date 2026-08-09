@@ -30,7 +30,7 @@
   "detail.type_label": "வகை:",
   "detail.secret_badge": "ரகசியம்",
   "detail.secret_value": "•••••••• (ரகசியம்)",
-  "config.file_not_found": "(கண்டுபிடிக்கவில்லை)",
+  "config.file_not_found": "(கோப்பு இல்லை)",
   "config.edit_tooltip": "${name} ஐத் திருத்து",
   "edit.title": "இயக்கநேர அமைப்பைத் திருத்து",
   "edit.open_dashboard": "அமைப்புகள் டாஷ்போர்டில் திற ↗",
