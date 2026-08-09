@@ -64,7 +64,7 @@ module UltraSettings
         params[:name] = extract_symbol(first_param)
 
         # Process remaining parameters for keyword arguments
-        param_list[1..-1].each do |param|
+        param_list[1..].each do |param|
           next unless param
           next unless param.respond_to?(:type)
 

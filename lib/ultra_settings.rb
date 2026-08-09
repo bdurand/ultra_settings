@@ -303,7 +303,7 @@ module UltraSettings
       settings = settings.to_a
       config_name, values = settings.first
       config_name = config_name.to_s
-      other_settings = settings[1..-1]
+      other_settings = settings[1..]
 
       unless @configurations.include?(config_name)
         raise ArgumentError.new("Unknown configuration: #{config_name.inspect}")

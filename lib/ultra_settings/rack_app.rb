@@ -62,7 +62,7 @@ module UltraSettings
         parts = entry.strip.split(";")
         tag = parts[0].to_s.strip.downcase.tr("_", "-")
         q = 1.0
-        parts[1..-1].each do |p|
+        parts[1..].each do |p|
           if p.strip.start_with?("q=")
             q = p.strip.sub("q=", "").to_f
           end
