@@ -4,12 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 2.10.1
 
 ### Added
 
 - Added a button to the web UI for copying the current value of a setting to the clipboard. The button is disabled for secret settings.
-- Added a button to the web UI for showing and hiding the YAML keys of a configuration. The button is only shown when the YAML file does not exist, and the keys are hidden by default in that case since they are not used by the application.
+- Added a toggle switch to the web UI for showing and hiding the YAML keys of a configuration. The switch is only shown when the YAML file does not exist, and the keys are hidden by default in that case since they are not used by the application.
 
 ### Changed
 

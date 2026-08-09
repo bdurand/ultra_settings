@@ -37,8 +37,7 @@
   "detail.secret_value": "•••••••• (secret)",
 
   "config.file_not_found": "file does not exist",
-  "config.show_yaml_keys": "show YAML keys",
-  "config.hide_yaml_keys": "hide YAML keys",
+  "config.show_yaml_keys": "show keys",
   "config.edit_tooltip": "Edit ${name}",
 
   "edit.title": "Edit Runtime Setting",

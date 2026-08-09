@@ -58,7 +58,7 @@ RSpec.describe UltraSettings::ConfigurationView do
   end
 
   describe "YAML keys toggle" do
-    it "does not render the toggle button if the YAML file exists" do
+    it "does not render the toggle if the YAML file exists" do
       html = UltraSettings::ConfigurationView.new(TestConfiguration.instance).render
       doc = Nokogiri::HTML5(html)
       expect(TestConfiguration.configuration_file).to exist
@@ -66,11 +66,16 @@ RSpec.describe UltraSettings::ConfigurationView do
       expect(doc.at_css(".ultra-settings-block")["class"]).not_to include("ultra-settings-yaml-hidden")
     end
 
-    it "renders the toggle button with the YAML keys hidden if the YAML file does not exist" do
+    it "renders the toggle in the off state if the YAML file does not exist" do
       html = UltraSettings::ConfigurationView.new(Test::NamespaceConfiguration.instance).render
       doc = Nokogiri::HTML5(html)
       expect(Test::NamespaceConfiguration.configuration_file).not_to exist
-      expect(doc.at_css(".ultra-settings-yaml-toggle")).not_to be_nil
+
+      toggle = doc.at_css(".ultra-settings-yaml-toggle")
+      expect(toggle["role"]).to eq("switch")
+      expect(toggle["aria-checked"]).to eq("false")
+      expect(toggle.text.strip).to eq("show keys")
+
       expect(doc.at_css(".ultra-settings-block")["class"]).to include("ultra-settings-yaml-hidden")
       expect(doc.at_css('.ultra-settings-source-row[data-source="yaml"]')).not_to be_nil
     end

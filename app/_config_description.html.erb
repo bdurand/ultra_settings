@@ -25,9 +25,10 @@
         <button type="button"
                 class="ultra-settings-yaml-toggle"
                 onclick="<%= html_escape(toggle_yaml_keys_script) %>"
-                aria-pressed="false">
-          <span class="ultra-settings-yaml-toggle-show"><%= t('config.show_yaml_keys') %></span>
-          <span class="ultra-settings-yaml-toggle-hide"><%= t('config.hide_yaml_keys') %></span>
+                role="switch"
+                aria-checked="false">
+          <span class="ultra-settings-yaml-toggle-switch" aria-hidden="true"></span>
+          <%= t('config.show_yaml_keys') %>
         </button>
       <% end %>
     </div>

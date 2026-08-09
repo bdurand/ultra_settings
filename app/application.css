@@ -439,23 +439,47 @@
 .ultra-settings-config-file .ultra-settings-warn { color: var(--warn-color); font-size: 0.8125rem; }
 
 .ultra-settings-yaml-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-family: var(--font-ui);
   font-size: 0.8125rem;
-  color: var(--accent);
+  color: var(--text-tertiary);
   background: none;
   border: none;
   padding: 0;
   cursor: pointer;
-  text-decoration: underline;
   white-space: nowrap;
   transition: color 0.2s ease;
 }
 
 .ultra-settings-yaml-toggle:hover { color: var(--text-primary); }
 
-.ultra-settings-yaml-toggle .ultra-settings-yaml-toggle-show { display: none; }
-.ultra-settings-yaml-hidden .ultra-settings-yaml-toggle .ultra-settings-yaml-toggle-show { display: inline; }
-.ultra-settings-yaml-hidden .ultra-settings-yaml-toggle .ultra-settings-yaml-toggle-hide { display: none; }
+/* Switch showing whether the keys are visible. */
+.ultra-settings-yaml-toggle-switch {
+  position: relative;
+  width: 26px;
+  height: 14px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  background: var(--accent);
+  transition: background 0.15s ease;
+}
+
+.ultra-settings-yaml-toggle-switch::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  inset-inline-start: 14px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--btn-primary-text);
+  transition: inset-inline-start 0.15s ease;
+}
+
+.ultra-settings-yaml-hidden .ultra-settings-yaml-toggle-switch { background: var(--border-input); }
+.ultra-settings-yaml-hidden .ultra-settings-yaml-toggle-switch::before { inset-inline-start: 2px; }
 
 .ultra-settings-yaml-hidden .ultra-settings-source-row[data-source="yaml"] { display: none; }
 

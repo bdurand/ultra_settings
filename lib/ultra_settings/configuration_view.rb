@@ -217,7 +217,7 @@ module UltraSettings
         var block = this.closest('.ultra-settings-block');
         if (block) {
           var hidden = block.classList.toggle('ultra-settings-yaml-hidden');
-          this.setAttribute('aria-pressed', hidden ? 'false' : 'true');
+          this.setAttribute('aria-checked', hidden ? 'false' : 'true');
         }
       JAVASCRIPT
     end

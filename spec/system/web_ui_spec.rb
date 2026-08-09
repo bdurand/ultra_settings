@@ -210,12 +210,15 @@ RSpec.describe "Web UI", type: :system do
         yaml_row = ".ultra-settings-source-row[data-source='yaml']"
         expect(page).to have_css(yaml_row, visible: :hidden)
         expect(page).not_to have_css(yaml_row)
+        expect(page).to have_css(".ultra-settings-yaml-toggle[aria-checked='false']")
 
         find(".ultra-settings-yaml-toggle").click
         expect(page).to have_css(yaml_row)
+        expect(page).to have_css(".ultra-settings-yaml-toggle[aria-checked='true']")
 
         find(".ultra-settings-yaml-toggle").click
         expect(page).not_to have_css(yaml_row)
+        expect(page).to have_css(".ultra-settings-yaml-toggle[aria-checked='false']")
       end
     end
 
