@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require "tmpdir"
 
 RSpec.describe UltraSettings::ConfigurationView do
   it "renders the configuration as HTML" do
@@ -54,6 +55,77 @@ RSpec.describe UltraSettings::ConfigurationView do
     html = UltraSettings::ConfigurationView.new(TestConfiguration.instance).render
     doc = Nokogiri::HTML5(html)
     expect(doc.errors).to be_empty
+  end
+
+  describe "YAML keys toggle" do
+    it "does not render the toggle button if the YAML file exists" do
+      html = UltraSettings::ConfigurationView.new(TestConfiguration.instance).render
+      doc = Nokogiri::HTML5(html)
+      expect(TestConfiguration.configuration_file).to exist
+      expect(doc.at_css(".ultra-settings-yaml-toggle")).to be_nil
+      expect(doc.at_css(".ultra-settings-block")["class"]).not_to include("ultra-settings-yaml-hidden")
+    end
+
+    it "renders the toggle button with the YAML keys hidden if the YAML file does not exist" do
+      html = UltraSettings::ConfigurationView.new(Test::NamespaceConfiguration.instance).render
+      doc = Nokogiri::HTML5(html)
+      expect(Test::NamespaceConfiguration.configuration_file).not_to exist
+      expect(doc.at_css(".ultra-settings-yaml-toggle")).not_to be_nil
+      expect(doc.at_css(".ultra-settings-block")["class"]).to include("ultra-settings-yaml-hidden")
+      expect(doc.at_css('.ultra-settings-source-row[data-source="yaml"]')).not_to be_nil
+    end
+  end
+
+  describe "configuration file path" do
+    around do |example|
+      save_val = UltraSettings::Configuration.yaml_config_path
+      begin
+        example.run
+      ensure
+        UltraSettings::Configuration.yaml_config_path = save_val
+      end
+    end
+
+    it "shows the path relative to the working directory" do
+      view = UltraSettings::ConfigurationView.new(TestConfiguration.instance)
+      path = Pathname.new(Dir.pwd).join("config", "settings", "test.yml")
+      expect(view.send(:relative_path, path)).to eq("config/settings/test.yml")
+    end
+
+    it "shows the path relative to the configuration directory if it is outside the working directory" do
+      Dir.mktmpdir do |tmpdir|
+        config_dir = Pathname.new(File.realpath(tmpdir)).join("settings")
+        UltraSettings::Configuration.yaml_config_path = config_dir
+        view = UltraSettings::ConfigurationView.new(TestConfiguration.instance)
+        expect(view.send(:relative_path, config_dir.join("test.yml"))).to eq("test.yml")
+      end
+    end
+
+    it "does not show a relative prefix when the path goes through a symlinked directory" do
+      Dir.mktmpdir do |tmpdir|
+        tmp_path = Pathname.new(File.realpath(tmpdir))
+        app_dir = tmp_path.join("app")
+        app_dir.join("config").mkpath
+        link_dir = tmp_path.join("app_link")
+        File.symlink(app_dir.to_s, link_dir.to_s)
+
+        Dir.chdir(app_dir.to_s) do
+          UltraSettings::Configuration.yaml_config_path = link_dir.join("config")
+          view = UltraSettings::ConfigurationView.new(TestConfiguration.instance)
+          path = link_dir.join("config", "test.yml")
+          expect(view.send(:relative_path, path)).to eq("config/test.yml")
+        end
+      end
+    end
+
+    it "shows the absolute path if the file is outside of the working and configuration directories" do
+      Dir.mktmpdir do |tmpdir|
+        UltraSettings::Configuration.yaml_config_path = Pathname.new(File.realpath(tmpdir))
+        view = UltraSettings::ConfigurationView.new(TestConfiguration.instance)
+        path = Pathname.new("/other/place/test.yml")
+        expect(view.send(:relative_path, path)).to eq("/other/place/test.yml")
+      end
+    end
   end
 
   describe "links to runtime settings" do

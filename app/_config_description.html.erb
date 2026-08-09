@@ -19,8 +19,16 @@
         <span class="ultra-settings-warn">
           <%= warning_icon(13) %>
           <code><%= html_escape(relative_path(configuration.class.configuration_file)) %></code>
-          <%= t('config.file_not_found') %>
+          &bull; <%= t('config.file_not_found') %>
         </span>
+
+        <button type="button"
+                class="ultra-settings-yaml-toggle"
+                onclick="<%= html_escape(toggle_yaml_keys_script) %>"
+                aria-pressed="false">
+          <span class="ultra-settings-yaml-toggle-show"><%= t('config.show_yaml_keys') %></span>
+          <span class="ultra-settings-yaml-toggle-hide"><%= t('config.hide_yaml_keys') %></span>
+        </button>
       <% end %>
     </div>
   <% end %>

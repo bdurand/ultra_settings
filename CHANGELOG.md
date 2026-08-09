@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added a button to the web UI for copying the current value of a setting to the clipboard. The button is disabled for secret settings.
+- Added a button to the web UI for showing and hiding the YAML keys of a configuration. The button is only shown when the YAML file does not exist, and the keys are hidden by default in that case since they are not used by the application.
 
 ### Changed
 
@@ -26,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Static field memoization and configuration subclass tracking are now fully synchronized for Ruby runtimes without a global VM lock (JRuby, TruffleRuby).
 - Web UI asset, template, translation, and YAML configuration files are now always read as UTF-8 so the gem works when the default external encoding is not UTF-8 (e.g. when `LANG` is not set).
 - The web UI no longer raises an error when determining relative configuration file paths if the YAML configuration directory does not exist or is not set.
+- The web UI no longer displays configuration file paths with a leading relative path prefix (e.g. `../app/config/settings.yml`). Paths are now shown relative to the working directory or to the YAML configuration directory, and the absolute path is shown if the file is not inside either one.
 
 ## 2.10.0
 

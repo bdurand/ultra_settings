@@ -201,6 +201,35 @@ RSpec.describe "Web UI", type: :system do
     end
   end
 
+  describe "YAML keys toggle" do
+    it "shows and hides the YAML keys when the YAML file does not exist" do
+      visit "/"
+      select_config("Test::NamespaceConfiguration")
+
+      within find("[data-config-id='section-Test::NamespaceConfiguration']") do
+        yaml_row = ".ultra-settings-source-row[data-source='yaml']"
+        expect(page).to have_css(yaml_row, visible: :hidden)
+        expect(page).not_to have_css(yaml_row)
+
+        find(".ultra-settings-yaml-toggle").click
+        expect(page).to have_css(yaml_row)
+
+        find(".ultra-settings-yaml-toggle").click
+        expect(page).not_to have_css(yaml_row)
+      end
+    end
+
+    it "does not show the toggle button when the YAML file exists" do
+      visit "/"
+      select_config("MyServiceConfiguration")
+
+      within find("#section-MyServiceConfiguration") do
+        expect(page).not_to have_css(".ultra-settings-yaml-toggle")
+        expect(page).to have_css(".ultra-settings-source-row[data-source='yaml']")
+      end
+    end
+  end
+
   describe "showing configuration values" do
     it "displays field values inline on the page" do
       visit "/"

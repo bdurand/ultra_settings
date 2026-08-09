@@ -1,4 +1,4 @@
-<div class="ultra-settings-block">
+<div class="ultra-settings-block<%= " ultra-settings-yaml-hidden" if hide_yaml_keys?(configuration) %>">
   <%= render_partial "config_description", configuration: configuration %>
 
   <div class="ultra-settings-fields">

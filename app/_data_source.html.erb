@@ -2,7 +2,7 @@
 <% source_label = source_chip_label(source) %>
 <% chip_class = source_chip_class(source) %>
 <% source_name = source_key_name(field, source) %>
-<div class="ultra-settings-source-row<%= ' active' if current_source == source %>">
+<div class="ultra-settings-source-row<%= ' active' if current_source == source %>" data-source="<%= html_escape(source) %>">
   <span class="ultra-settings-source-chip <%= chip_class %>"><%= source_label %></span>
 
   <% if source_name %>
@@ -46,7 +46,7 @@
   <% end %>
 
   <% if current_source == source %>
-    <span class="ultra-settings-source-badge ultra-settings-sb-active"><%= t('source.active') %></span>
+    <span class="ultra-settings-source-badge ultra-settings-sb-active">&#9679; <%= t('source.active') %></span>
   <% elsif source_overridden_by(source, current_source) && !source_value.nil? %>
     <span class="ultra-settings-source-badge ultra-settings-sb-overridden"><%= t('source.overridden') %></span>
   <% end %>

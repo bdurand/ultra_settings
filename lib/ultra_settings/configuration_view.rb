@@ -106,22 +106,63 @@ module UltraSettings
       end
     end
 
+    # Shorten a file path for display by making it relative to the working
+    # directory or to the YAML configuration directory. The absolute path is
+    # used if the file is not inside either directory.
+    #
+    # @param path [Pathname] The absolute file path.
+    # @return [String] The path to display.
     def relative_path(path)
-      root_path = Pathname.new(Dir.pwd)
-      config_path = UltraSettings::Configuration.yaml_config_path
-      if config_path
-        begin
-          unless config_path.realpath.to_s.start_with?("#{root_path.realpath}#{File::SEPARATOR}")
-            root_path = config_path
-          end
-        rescue Errno::ENOENT
-          root_path = config_path
+      paths = display_paths(Pathname.new(path).expand_path)
+      display_path_roots.each do |root|
+        paths.each do |file_path|
+          relative = path_inside(file_path, root)
+          return relative if relative
         end
       end
-      path.relative_path_from(root_path)
+      paths.first.to_s
+    end
+
+    # The file path in both its literal and symlink resolved forms so that it can
+    # be matched against a directory that is specified in either form.
+    #
+    # @param path [Pathname] The absolute file path.
+    # @return [Array<Pathname>]
+    def display_paths(path)
+      [path, resolved_path(path.dirname)&.join(path.basename)].compact.uniq
+    end
+
+    # Directories that a displayed path can be made relative to, in order of
+    # preference. Directories are listed in both their literal and symlink
+    # resolved forms since a file path can be in either form.
+    #
+    # @return [Array<Pathname>]
+    def display_path_roots
+      roots = [Pathname.new(Dir.pwd)]
+      config_path = UltraSettings::Configuration.yaml_config_path
+      roots << Pathname.new(config_path) if config_path
+      roots.flat_map { |root| [root.expand_path, resolved_path(root)] }.compact.uniq
+    end
+
+    # @param path [Pathname] The absolute file path.
+    # @param root [Pathname] The absolute directory path.
+    # @return [String, nil] The path relative to the directory or nil if it is not inside it.
+    def path_inside(path, root)
+      relative = path.relative_path_from(root).to_s.delete_prefix("./")
+      return nil if relative == "." || relative.start_with?("..")
+
+      relative
     rescue ArgumentError
       # relative_path_from raises if the paths have no common root (e.g. different drives).
-      path
+      nil
+    end
+
+    # @param path [Pathname] The directory path.
+    # @return [Pathname, nil] The path with symlinks resolved or nil if it does not exist.
+    def resolved_path(path)
+      path.realpath
+    rescue SystemCallError
+      nil
     end
 
     def source_chip_label(source)
@@ -151,6 +192,34 @@ module UltraSettings
       when :yaml then field.yaml_key
       when :default then nil
       end
+    end
+
+    # True if the YAML keys for a configuration are hidden behind a toggle button.
+    # They are hidden by default when the YAML file does not exist since the keys
+    # are not used by the application.
+    #
+    # @param configuration [UltraSettings::Configuration] The configuration instance.
+    # @return [Boolean]
+    def hide_yaml_keys?(configuration)
+      config_class = configuration.class
+      file = config_class.configuration_file
+      file.is_a?(Pathname) && !file.exist? && config_class.fields.any?(&:yaml_key)
+    end
+
+    # Inline script for the button that shows and hides the YAML keys. It is
+    # inlined on the element so that the button also works when the configuration
+    # view is embedded in a host application page that does not include the
+    # bundled JavaScript.
+    #
+    # @return [String] JavaScript source for an onclick attribute.
+    def toggle_yaml_keys_script
+      <<~JAVASCRIPT.gsub(/\s+/, " ").tr('"', "'")
+        var block = this.closest('.ultra-settings-block');
+        if (block) {
+          var hidden = block.classList.toggle('ultra-settings-yaml-hidden');
+          this.setAttribute('aria-pressed', hidden ? 'false' : 'true');
+        }
+      JAVASCRIPT
     end
 
     def open_panel_script

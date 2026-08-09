@@ -416,6 +416,7 @@
 .ultra-settings-config-file {
   display: inline-flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
   font-size: 0.8125rem;
   color: var(--text-tertiary);
@@ -436,6 +437,27 @@
 }
 
 .ultra-settings-config-file .ultra-settings-warn { color: var(--warn-color); font-size: 0.8125rem; }
+
+.ultra-settings-yaml-toggle {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--accent);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.ultra-settings-yaml-toggle:hover { color: var(--text-primary); }
+
+.ultra-settings-yaml-toggle .ultra-settings-yaml-toggle-show { display: none; }
+.ultra-settings-yaml-hidden .ultra-settings-yaml-toggle .ultra-settings-yaml-toggle-show { display: inline; }
+.ultra-settings-yaml-hidden .ultra-settings-yaml-toggle .ultra-settings-yaml-toggle-hide { display: none; }
+
+.ultra-settings-yaml-hidden .ultra-settings-source-row[data-source="yaml"] { display: none; }
 
 /* ══════════════════════════════════════════
    FIELD CARDS
