@@ -23,7 +23,7 @@ jobs:
           - ruby: "ruby"
             appraisal: "without_super_settings"
           - ruby: "3.0"
-          - ruby: "2.5"
+          - ruby: "2.6"
             appraisal: "without_super_settings"
     steps:
       - name: Checkout
