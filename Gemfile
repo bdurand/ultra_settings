@@ -12,6 +12,7 @@ unless ENV["DEPENDABOT"]
   gem "capybara"
   gem "cuprite"
   gem "super_settings", ">= 2.5.0"
+  gem "yard", require: false
 
   gem "rake"
   gem "rspec", "~> 3.11"
@@ -21,6 +22,5 @@ unless ENV["DEPENDABOT"]
     gem "appraisal", require: false
     gem "standard", require: false
     gem "simplecov", require: false
-    gem "yard", require: false
   end
 end

@@ -9,6 +9,7 @@ gem "nokogiri"
 gem "dotenv"
 gem "capybara"
 gem "cuprite"
+gem "yard", require: false
 gem "rake"
 gem "rspec", "~> 3.11"
 
