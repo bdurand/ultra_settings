@@ -655,6 +655,13 @@
 .ultra-settings-copy-btn.copied .ultra-settings-copy-icon { display: none; }
 .ultra-settings-copy-btn.copied .ultra-settings-copy-check { display: inline; }
 
+/* Stands in for the copy button on rows that have no value to copy. */
+.ultra-settings-copy-placeholder {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+}
+
 /* Description */
 .ultra-settings-field-description {
   padding: 0 18px 14px 18px;

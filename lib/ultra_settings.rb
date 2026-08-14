@@ -182,19 +182,27 @@ module UltraSettings
       @runtime_settings
     end
 
-    # Reload the runtime settings cache and then yield to the block. This is used by the
-    # web views so that a setting changed from the UI is displayed on the next page load
-    # rather than whenever the runtime settings engine gets around to refreshing itself.
+    # Reload the runtime settings cache and then yield to the block. The web views call
+    # this when rendering so that a setting changed from the UI is displayed on the next
+    # page load rather than whenever the runtime settings engine gets around to
+    # refreshing itself.
     #
     # The runtime settings object is reloaded if it responds to `load_settings`. The
     # `super_settings` gem does, as does anything that delegates to it.
     #
-    # Calls are reentrant so that rendering a page with many configurations only reloads
-    # once. Errors are not fatal; the page can still show values from the other sources.
+    # Calls are reentrant, so a block that renders several views only reloads once.
+    # Wrap a page that embeds more than one `ConfigurationView` in this method to avoid
+    # reloading the runtime settings once per view.
+    #
+    # Errors are not fatal; the page can still show values from the other sources.
+    #
+    # @example Rendering several configurations with a single reload.
+    #   UltraSettings.with_runtime_settings_reloaded do
+    #     configurations.each { |config| output << UltraSettings::ConfigurationView.new(config).render }
+    #   end
     #
     # @return [Object] The result of the block.
-    # @api private
-    def __with_runtime_settings_reloaded__
+    def with_runtime_settings_reloaded
       return yield if Thread.current[RELOAD_GUARD_KEY]
 
       Thread.current[RELOAD_GUARD_KEY] = true
@@ -212,6 +220,17 @@ module UltraSettings
       ensure
         Thread.current[RELOAD_GUARD_KEY] = nil
       end
+    end
+
+    # Returns true if the application is running in development mode. This is used by the
+    # web UI to decide if templates, stylesheets, and translations can be cached in memory
+    # or if they need to be re-read from disk on every request.
+    #
+    # @return [Boolean]
+    # @api private
+    def __development_mode__?
+      env = ENV["RAILS_ENV"] || ENV["RACK_ENV"] || ENV["APP_ENV"] || "development"
+      env == "development"
     end
 
     # Set the URL for changing runtime settings. If this is set, then a link to the

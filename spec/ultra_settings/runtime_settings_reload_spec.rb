@@ -62,6 +62,20 @@ RSpec.describe "reloading runtime settings in the web views" do
     expect(runtime_settings.load_count).to eq 3
   end
 
+  it "reloads only once for several views rendered inside with_runtime_settings_reloaded" do
+    UltraSettings.with_runtime_settings_reloaded do
+      UltraSettings::ConfigurationView.new(TestConfiguration.instance).render
+      UltraSettings::ConfigurationView.new(Test::NamespaceConfiguration.instance).render
+      UltraSettings::ApplicationView.new.render
+    end
+    expect(runtime_settings.load_count).to eq 1
+  end
+
+  it "does not leak the reentrancy guard out of with_runtime_settings_reloaded" do
+    UltraSettings.with_runtime_settings_reloaded { nil }
+    expect(Thread.current[:ultra_settings_runtime_settings_reloaded]).to be_nil
+  end
+
   it "does not leak the reentrancy guard onto the thread" do
     UltraSettings::ApplicationView.new.render
     expect(Thread.current[:ultra_settings_runtime_settings_reloaded]).to be_nil

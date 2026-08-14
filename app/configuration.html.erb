@@ -68,6 +68,9 @@
                       disabled
                       title="<%= t('field.copy_disabled') %>"
                       aria-label="<%= t('field.copy_disabled') %>"><%= copy_icon %><%= check_icon %></button>
+            <% elsif configuration[field.name].nil? %>
+              <%# There is nothing to copy, but the placeholder keeps the values aligned with the other rows. %>
+              <span class="ultra-settings-copy-placeholder" aria-hidden="true"></span>
             <% else %>
               <button type="button"
                       class="ultra-settings-copy-btn"

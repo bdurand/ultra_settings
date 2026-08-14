@@ -107,8 +107,7 @@ module UltraSettings
       end
 
       def development_mode?
-        env = ENV["RAILS_ENV"] || ENV["RACK_ENV"] || ENV["APP_ENV"] || "development"
-        env == "development"
+        UltraSettings.__development_mode__?
       end
     end
   end

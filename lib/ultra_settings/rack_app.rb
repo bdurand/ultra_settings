@@ -26,9 +26,9 @@ module UltraSettings
     private
 
     def webview
-      if ENV.fetch("RAILS_ENV", ENV.fetch("RACK_ENV", "development")) == "development"
-        @webview = nil
-      end
+      # Don't cache the view in development mode so that changes to the app files
+      # are picked up without having to restart the server.
+      @webview = nil if UltraSettings.__development_mode__?
       @webview ||= WebView.new(color_scheme: @color_scheme)
     end
 

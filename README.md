@@ -449,6 +449,15 @@ You'll also need to include the CSS for the configuration view on your page.
 </head>
 ```
 
+Each view reloads the runtime settings before rendering so that it displays current values. If you embed more than one view on a page, wrap them in `UltraSettings.with_runtime_settings_reloaded` so that the settings are only reloaded once for the whole page instead of once per view.
+
+```erb
+<% UltraSettings.with_runtime_settings_reloaded do %>
+  <%= UltraSettings::ConfigurationView.new(MyServiceConfiguration.instance).render %>
+  <%= UltraSettings::ConfigurationView.new(OtherServiceConfiguration.instance).render %>
+<% end %>
+```
+
 #### Customizing The Web UI
 
 You can specify the color scheme by setting by providing the `color_scheme` option to the `UltraSettings::ApplicationView` constructor. The default color scheme is `:light`. You can also set the scheme to `:dark` or `:system`.

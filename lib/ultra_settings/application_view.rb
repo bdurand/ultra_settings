@@ -36,7 +36,7 @@ module UltraSettings
     # @param table_class [String] @deprecated; no longer used.
     # @return [String] The rendered HTML.
     def render(select_class: nil, table_class: nil)
-      UltraSettings.__with_runtime_settings_reloaded__ do
+      UltraSettings.with_runtime_settings_reloaded do
         # Expose locale as a local for the ERB template without a direct
         # assignment, which would emit an unused variable warning under ruby -w.
         template_binding = binding

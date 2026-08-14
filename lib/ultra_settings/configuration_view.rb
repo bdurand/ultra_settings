@@ -26,12 +26,14 @@ module UltraSettings
     #
     # The runtime settings cache is reloaded before rendering so that values changed
     # from the UI are displayed immediately rather than after the runtime settings
-    # engine next refreshes itself.
+    # engine next refreshes itself. If a page renders more than one view, wrap them all
+    # in `UltraSettings.with_runtime_settings_reloaded` so that the settings are only
+    # reloaded once for the page instead of once per view.
     #
     # @param table_class [String] @deprecated CSS class for the table element (maintained for backwards compatibility).
     # @return [String] The rendered HTML.
     def render(table_class: "")
-      UltraSettings.__with_runtime_settings_reloaded__ do
+      UltraSettings.with_runtime_settings_reloaded do
         # Expose configuration as a local for the ERB template without a direct
         # assignment, which would emit an unused variable warning under ruby -w.
         template_binding = binding

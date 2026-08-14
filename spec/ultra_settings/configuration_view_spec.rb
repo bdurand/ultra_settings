@@ -41,6 +41,15 @@ RSpec.describe UltraSettings::ConfigurationView do
       expect(html).not_to include("secretvalue")
     end
 
+    it "does not render a copy button for fields that have no value", env: {TEST_STRING: nil} do
+      html = UltraSettings::ConfigurationView.new(TestConfiguration.instance).render
+      doc = Nokogiri::HTML5(html)
+      card = doc.at_css('.ultra-settings-field-card[data-field-name="string"]')
+      expect(card.at_css(".ultra-settings-field-value.nil")).not_to be_nil
+      expect(card.at_css(".ultra-settings-copy-btn")).to be_nil
+      expect(card.at_css(".ultra-settings-copy-placeholder")).not_to be_nil
+    end
+
     it "copies values without the quoting used for display", env: {TEST_ARRAY: "a,b", TEST_INT: "42"} do
       view = UltraSettings::ConfigurationView.new(TestConfiguration.instance)
       expect(view.send(:copy_value, "hello world")).to eq("hello world")
