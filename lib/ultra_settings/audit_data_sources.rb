@@ -91,7 +91,7 @@ module UltraSettings
       def default_config_value(config, field)
         yaml_value = config.__value_from_source__(field.name, :yaml)
         default_value = config.__value_from_source__(field.name, :default)
-        yaml_value || default_value
+        yaml_value.nil? ? default_value : yaml_value
       end
     end
   end

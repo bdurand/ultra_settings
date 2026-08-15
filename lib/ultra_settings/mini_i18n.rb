@@ -76,26 +76,30 @@ module UltraSettings
       end
 
       # Load every JSON file from the locales directory, keyed by filename
-      # stem (e.g. "en").
+      # stem (e.g. "en"). The cache is built into a local hash and then
+      # published with a single assignment so that concurrent readers never
+      # see a partially loaded cache.
       def load_all_locales
-        if development_mode?
-          @mutex.synchronize { @cache = {} }
-        end
+        clear_cache! if development_mode?
 
-        return @cache unless @cache.empty?
+        cached = @cache
+        return cached unless cached.empty?
 
         @mutex.synchronize do
-          return @cache unless @cache.empty?
+          cached = @cache
+          return cached unless cached.empty?
 
+          cache = {}
           Dir.glob(File.join(locales_dir, "*.json")).each do |path|
             code = File.basename(path, ".json").downcase
-            @cache[code] = JSON.parse(File.read(path))
+            cache[code] = JSON.parse(File.read(path, encoding: Encoding::UTF_8))
           rescue JSON::ParserError
             # Skip malformed locale files
           end
-        end
 
-        @cache
+          @cache = cache
+          cache
+        end
       end
 
       def locales_dir
@@ -103,7 +107,7 @@ module UltraSettings
       end
 
       def development_mode?
-        ENV.fetch("RACK_ENV", "development") == "development"
+        UltraSettings.__development_mode__?
       end
     end
   end

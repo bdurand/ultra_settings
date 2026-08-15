@@ -53,7 +53,7 @@
   width: 100%;
   padding: 10px 38px 10px 38px;
   background: var(--bg-card);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-input);
   border-radius: 8px;
   color: var(--text-primary);
   font-size: 0.875rem;
@@ -130,7 +130,7 @@
   border-radius: 8px;
   cursor: pointer;
   user-select: none;
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-input);
   background: var(--bg-card);
   color: var(--text-secondary);
   font-size: 0.75rem;
@@ -181,7 +181,7 @@
   width: 12px;
   height: 12px;
   color: inherit;
-  opacity: 0.5;
+  opacity: 0.75;
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
@@ -196,7 +196,7 @@
 }
 
 .ultra-settings-language-menu[open] .ultra-settings-language-trigger-caret {
-  opacity: 0.8;
+  opacity: 1;
   transform: rotate(180deg);
 }
 
@@ -416,6 +416,7 @@
 .ultra-settings-config-file {
   display: inline-flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
   font-size: 0.8125rem;
   color: var(--text-tertiary);
@@ -435,7 +436,52 @@
   border: 1px solid var(--border-light);
 }
 
-.ultra-settings-config-file .ultra-settings-warn { color: #dc2626; font-size: 0.8125rem; }
+.ultra-settings-config-file .ultra-settings-warn { color: var(--warn-color); font-size: 0.8125rem; }
+
+.ultra-settings-yaml-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.ultra-settings-yaml-toggle:hover { color: var(--text-primary); }
+
+/* Switch showing whether the keys are visible. */
+.ultra-settings-yaml-toggle-switch {
+  position: relative;
+  width: 26px;
+  height: 14px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  background: var(--accent);
+  transition: background 0.15s ease;
+}
+
+.ultra-settings-yaml-toggle-switch::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  inset-inline-start: 14px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--btn-primary-text);
+  transition: inset-inline-start 0.15s ease;
+}
+
+.ultra-settings-yaml-hidden .ultra-settings-yaml-toggle-switch { background: var(--border-input); }
+.ultra-settings-yaml-hidden .ultra-settings-yaml-toggle-switch::before { inset-inline-start: 2px; }
+
+.ultra-settings-yaml-hidden .ultra-settings-source-row[data-source="yaml"] { display: none; }
 
 /* ══════════════════════════════════════════
    FIELD CARDS
@@ -535,6 +581,10 @@
   margin-inline-start: auto;
   flex-shrink: 0;
   max-width: 50%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
 }
 
 .ultra-settings-field-value {
@@ -547,6 +597,7 @@
   border-radius: 6px;
   border: 1px solid var(--border-light);
   max-width: 320px;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -563,6 +614,52 @@
 .ultra-settings-field-value.nil {
   color: var(--text-tertiary);
   font-style: italic;
+}
+
+/* Copy value button */
+.ultra-settings-copy-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: color 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+
+.ultra-settings-copy-btn:hover:not(:disabled) {
+  color: var(--accent);
+  background: var(--accent-light);
+  border-color: var(--accent);
+}
+
+.ultra-settings-copy-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ultra-settings-copy-btn .ultra-settings-copy-check { display: none; }
+
+.ultra-settings-copy-btn.copied {
+  color: var(--active-color);
+  border-color: transparent;
+  background: var(--active-bg);
+}
+
+.ultra-settings-copy-btn.copied .ultra-settings-copy-icon { display: none; }
+.ultra-settings-copy-btn.copied .ultra-settings-copy-check { display: inline; }
+
+/* Stands in for the copy button on rows that have no value to copy. */
+.ultra-settings-copy-placeholder {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
 }
 
 /* Description */
@@ -653,14 +750,13 @@
   color: var(--accent);
   text-decoration: none;
   margin-inline-start: 0.5rem;
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
+  transition: color 0.2s ease;
   display: inline-flex;
   align-items: center;
 }
 
 .ultra-settings-edit-link:hover {
-  opacity: 1;
+  color: var(--text-primary);
 }
 
 .ultra-settings-edit-link svg { width: 13px; height: 13px; }
@@ -714,7 +810,7 @@
 .ultra-settings-dp-close {
   width: 32px; height: 32px;
   border-radius: 7px;
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border-input);
   background: transparent;
   cursor: pointer;
   display: flex;
@@ -800,7 +896,7 @@
 .ultra-settings-dialog-close {
   width: 32px; height: 32px;
   border-radius: 7px;
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border-input);
   background: transparent;
   cursor: pointer;
   display: flex;
@@ -855,7 +951,7 @@
 
 .ultra-settings-ss-edit-btn:hover {
   background: var(--accent);
-  color: #fff;
+  color: var(--btn-primary-text, #fff);
 }
 
 .ultra-settings-ss-panel-bg {
@@ -901,12 +997,10 @@
   font-size: 0.75rem;
   color: var(--accent);
   text-decoration: none;
-  transition: opacity 0.15s;
 }
 
 .ultra-settings-ss-external-link:hover {
   text-decoration: underline;
-  opacity: 0.85;
 }
 
 .ultra-settings-ss-loading {
@@ -943,7 +1037,7 @@
   font-family: var(--font-mono);
   color: var(--text-primary);
   background: var(--bg-code);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border-input);
   border-radius: 6px;
   transition: border-color 0.15s;
   box-sizing: border-box;
@@ -964,7 +1058,7 @@ select.ultra-settings-ss-input {
   -webkit-appearance: none;
   appearance: none;
   padding-inline-end: 28px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
+  background-image: var(--select-arrow);
   background-repeat: no-repeat;
   background-position: right 10px center;
 }
@@ -1018,10 +1112,10 @@ input[type="number"].ultra-settings-ss-input::-webkit-outer-spin-button {
 
 .ultra-settings-ss-errors {
   padding: 10px 12px;
-  background: rgba(220,53,69,0.1);
-  border: 1px solid rgba(220,53,69,0.3);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
   border-radius: 6px;
-  color: #dc3545;
+  color: var(--danger-text);
   font-size: 0.8125rem;
   line-height: 1.4;
 }
@@ -1044,7 +1138,7 @@ input[type="number"].ultra-settings-ss-input::-webkit-outer-spin-button {
   font-size: 0.8125rem;
   font-weight: 600;
   border-radius: 6px;
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border-input);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
   font-family: var(--font-ui);
@@ -1096,12 +1190,10 @@ input[type="number"].ultra-settings-ss-input::-webkit-outer-spin-button {
   color: var(--accent);
   text-decoration: none;
   cursor: pointer;
-  transition: opacity 0.15s;
 }
 
 .ultra-settings-ss-history-link:hover {
   text-decoration: underline;
-  opacity: 0.85;
 }
 
 .ultra-settings-ss-history {
@@ -1153,9 +1245,9 @@ input[type="number"].ultra-settings-ss-input::-webkit-outer-spin-button {
 }
 
 .ultra-settings-ss-history-entry-badge.deleted {
-  background: rgba(220,53,69,0.1);
-  color: #dc3545;
-  border: 1px solid rgba(220,53,69,0.3);
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border: 1px solid var(--danger-border);
 }
 
 .ultra-settings-ss-history-entry-badge.created {

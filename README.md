@@ -171,6 +171,8 @@ UltraSettings.runtime_settings = RedisRuntimeSettings.new
 
 The runtime settings implementation may also define an `array` method that takes a single parameter to return an array value. If this method is not implemented, then array values must be returned as single line CSV strings.
 
+The runtime settings implementation may also define a `load_settings` method. If it does, the web UI will call it before rendering so that values changed elsewhere are displayed immediately instead of whenever the implementation's own cache next refreshes. It should reload synchronously and return once the values are current. Errors raised from it are logged to stderr and do not prevent the page from rendering.
+
 > [!TIP]
 > If your runtime settings implementation does not securely store values, you should set `UltraSettings.runtime_settings_secure` to `false`. This will disable runtime settings on fields marked as secret to prevent leaking sensitive information.
 
@@ -391,6 +393,8 @@ end
 
 UltraSettings provides a web UI via a mountable Rack application. You can use this to view the settings values and documentation. The UI will not display the value of any setting marked as secret.
 
+Each setting has a button for copying its current value to the clipboard. The copied text is the raw value rather than the quoted form shown on the page (arrays are copied as one entry per line). The button is disabled for secret settings since their values are never sent to the browser.
+
 ![Web UI](assets/web_ui.png)
 
 It is strongly recommended to secure the web UI with your application's authorization framework so that it is only visible to internal admin users.
@@ -445,6 +449,15 @@ You'll also need to include the CSS for the configuration view on your page.
 </head>
 ```
 
+Each view reloads the runtime settings before rendering so that it displays current values. If you embed more than one view on a page, wrap them in `UltraSettings.with_runtime_settings_reloaded` so that the settings are only reloaded once for the whole page instead of once per view.
+
+```erb
+<% UltraSettings.with_runtime_settings_reloaded do %>
+  <%= UltraSettings::ConfigurationView.new(MyServiceConfiguration.instance).render %>
+  <%= UltraSettings::ConfigurationView.new(OtherServiceConfiguration.instance).render %>
+<% end %>
+```
+
 #### Customizing The Web UI
 
 You can specify the color scheme by setting by providing the `color_scheme` option to the `UltraSettings::ApplicationView` constructor. The default color scheme is `:light`. You can also set the scheme to `:dark` or `:system`.
@@ -481,6 +494,11 @@ All authorization is handled by the SuperSettings API — the same permissions t
 
 > [!IMPORTANT]
 > You will need to have the SuperSettings API mounted and properly locked down with authentication. If the API is not accessible, then the edit buttons will not be shown. Check the browser console for any errors if you expect the buttons to be shown but they are not appearing.
+
+`SuperSettings` responds to `load_settings`, so the web UI reloads the SuperSettings cache before each render and a setting saved from the edit panel is displayed as soon as the page reloads.
+
+> [!NOTE]
+> In a Rails application, `SuperSettings::Context::RackMiddleware` pins each setting's value for the remainder of a request once it has been read. This does not affect the standalone Rack app since the reload happens before any value is read. However, if you embed `UltraSettings::ApplicationView` in a page that already read a runtime setting earlier in the same request, that particular setting will still render with its pre-reload value.
 
 ##### Embedding with Edit Support
 

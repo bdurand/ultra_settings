@@ -26,9 +26,9 @@ module UltraSettings
     private
 
     def webview
-      if ENV.fetch("RAILS_ENV", ENV.fetch("RACK_ENV", "development")) == "development"
-        @webview = nil
-      end
+      # Don't cache the view in development mode so that changes to the app files
+      # are picked up without having to restart the server.
+      @webview = nil if UltraSettings.__development_mode__?
       @webview ||= WebView.new(color_scheme: @color_scheme)
     end
 
@@ -62,7 +62,7 @@ module UltraSettings
         parts = entry.strip.split(";")
         tag = parts[0].to_s.strip.downcase.tr("_", "-")
         q = 1.0
-        parts[1..-1].each do |p|
+        parts[1..].each do |p|
           if p.strip.start_with?("q=")
             q = p.strip.sub("q=", "").to_f
           end

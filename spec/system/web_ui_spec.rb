@@ -201,6 +201,38 @@ RSpec.describe "Web UI", type: :system do
     end
   end
 
+  describe "YAML keys toggle" do
+    it "shows and hides the YAML keys when the YAML file does not exist" do
+      visit "/"
+      select_config("Test::NamespaceConfiguration")
+
+      within find("[data-config-id='section-Test::NamespaceConfiguration']") do
+        yaml_row = ".ultra-settings-source-row[data-source='yaml']"
+        expect(page).to have_css(yaml_row, visible: :hidden)
+        expect(page).not_to have_css(yaml_row)
+        expect(page).to have_css(".ultra-settings-yaml-toggle[aria-checked='false']")
+
+        find(".ultra-settings-yaml-toggle").click
+        expect(page).to have_css(yaml_row)
+        expect(page).to have_css(".ultra-settings-yaml-toggle[aria-checked='true']")
+
+        find(".ultra-settings-yaml-toggle").click
+        expect(page).not_to have_css(yaml_row)
+        expect(page).to have_css(".ultra-settings-yaml-toggle[aria-checked='false']")
+      end
+    end
+
+    it "does not show the toggle button when the YAML file exists" do
+      visit "/"
+      select_config("MyServiceConfiguration")
+
+      within find("#section-MyServiceConfiguration") do
+        expect(page).not_to have_css(".ultra-settings-yaml-toggle")
+        expect(page).to have_css(".ultra-settings-source-row[data-source='yaml']")
+      end
+    end
+  end
+
   describe "showing configuration values" do
     it "displays field values inline on the page" do
       visit "/"
@@ -226,6 +258,44 @@ RSpec.describe "Web UI", type: :system do
         timeout_card = find(".ultra-settings-field-card[data-field-name='timeout']")
         within timeout_card do
           expect(page).to have_css(".ultra-settings-field-value", text: "5.0")
+        end
+      end
+    end
+
+    it "copies a field value to the clipboard" do
+      visit "/"
+      select_config("MyServiceConfiguration")
+
+      within find("#section-MyServiceConfiguration") do
+        port_card = find(".ultra-settings-field-card[data-field-name='port']")
+        within port_card do
+          copy_button = find(".ultra-settings-copy-btn")
+          # The raw value is copied rather than the quoted value shown in the UI.
+          expect(copy_button["data-copy-value"]).to eq("80")
+
+          copy_button.click
+          # The button confirms the copy by swapping in a check mark.
+          expect(page).to have_css(".ultra-settings-copy-btn.copied")
+        end
+      end
+
+      # The detail panel should not have been opened by the copy button.
+      expect(page).not_to have_css("#ultra-settings-detail-panel.open")
+    end
+
+    it "disables the copy button for secret fields", env: {MY_SERVICE_TOKEN: "topsecret"} do
+      visit "/"
+      select_config("MyServiceConfiguration")
+
+      within find("#section-MyServiceConfiguration") do
+        token_card = find(".ultra-settings-field-card[data-field-name='auth_token']")
+        within token_card do
+          expect(find(".ultra-settings-copy-btn")).to be_disabled
+        end
+
+        port_card = find(".ultra-settings-field-card[data-field-name='port']")
+        within port_card do
+          expect(find(".ultra-settings-copy-btn")).not_to be_disabled
         end
       end
     end
@@ -290,6 +360,35 @@ RSpec.describe "Web UI", type: :system do
           expect(page).to have_css(".ultra-settings-source-row", minimum: 2)
           # Default should be marked active since no other source is set
           expect(page).to have_css(".ultra-settings-sb-active", text: /Active/)
+        end
+      end
+    end
+  end
+
+  describe "reloading runtime settings" do
+    # The SuperSettings cache only refreshes itself every few seconds, so without an
+    # explicit reload on render a value changed since the last page view would still
+    # display as its old value. SuperSettings is written to directly here rather than
+    # through SuperSettings.set, which pushes the new value straight into the cache
+    # and would hide a missing reload.
+    it "displays a runtime setting changed since the page was last rendered" do
+      SuperSettings::Setting.create!(key: "my_service.timeout", value: 2.5, value_type: "float")
+
+      visit "/"
+      select_config("MyServiceConfiguration")
+      within "#section-MyServiceConfiguration" do
+        within ".ultra-settings-field-card[data-field-name='timeout']" do
+          expect(page).to have_css(".ultra-settings-field-value", text: "2.5")
+        end
+      end
+
+      SuperSettings::Setting.find_by_key("my_service.timeout").update!(value: 7.5)
+
+      visit "/"
+      select_config("MyServiceConfiguration")
+      within "#section-MyServiceConfiguration" do
+        within ".ultra-settings-field-card[data-field-name='timeout']" do
+          expect(page).to have_css(".ultra-settings-field-value", text: "7.5")
         end
       end
     end

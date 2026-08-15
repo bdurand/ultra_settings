@@ -60,8 +60,8 @@ module UltraSettings
       # @param value [Object]
       # @return [Boolean]
       def boolean(value)
-        return nil if blank?(value)
         return false if value == false
+        return nil if blank?(value)
 
         !FALSE_VALUES.include?(value.to_s.downcase)
       end

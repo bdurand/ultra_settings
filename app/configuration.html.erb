@@ -1,4 +1,4 @@
-<div class="ultra-settings-block">
+<div class="ultra-settings-block<%= " ultra-settings-yaml-hidden" if hide_yaml_keys?(configuration) %>">
   <%= render_partial "config_description", configuration: configuration %>
 
   <div class="ultra-settings-fields">
@@ -60,6 +60,24 @@
                     title="<%= t('field.click_to_expand') %>"
                     tabindex="0"
                     role="button"><%= html_escape(display_value(configuration[field.name])) %></code>
+            <% end %>
+
+            <% if field.secret? %>
+              <button type="button"
+                      class="ultra-settings-copy-btn"
+                      disabled
+                      title="<%= t('field.copy_disabled') %>"
+                      aria-label="<%= t('field.copy_disabled') %>"><%= copy_icon %><%= check_icon %></button>
+            <% elsif configuration[field.name].nil? %>
+              <%# There is nothing to copy, but the placeholder keeps the values aligned with the other rows. %>
+              <span class="ultra-settings-copy-placeholder" aria-hidden="true"></span>
+            <% else %>
+              <button type="button"
+                      class="ultra-settings-copy-btn"
+                      onclick="<%= html_escape(copy_value_script) %>"
+                      data-copy-value="<%= html_escape(copy_value(configuration[field.name])) %>"
+                      title="<%= t('field.copy') %>"
+                      aria-label="<%= t('field.copy') %>"><%= copy_icon %><%= check_icon %></button>
             <% end %>
           </div>
         </div>

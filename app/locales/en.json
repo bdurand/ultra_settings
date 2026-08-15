@@ -20,12 +20,14 @@
   "field.nil": "nil",
   "field.click_to_expand": "Click to expand",
   "field.not_set": "not set",
+  "field.copy": "Copy value",
+  "field.copy_disabled": "Secret values cannot be copied",
 
   "source.env": "ENV",
   "source.setting": "SETTING",
   "source.yaml": "YAML",
   "source.default": "DEFAULT",
-  "source.active": "● Active",
+  "source.active": "Active",
   "source.overridden": "Overridden",
 
   "detail.field_detail": "Field detail",
@@ -34,7 +36,8 @@
   "detail.secret_badge": "SECRET",
   "detail.secret_value": "•••••••• (secret)",
 
-  "config.file_not_found": "(not found)",
+  "config.file_not_found": "file does not exist",
+  "config.show_yaml_keys": "show keys",
   "config.edit_tooltip": "Edit ${name}",
 
   "edit.title": "Edit Runtime Setting",

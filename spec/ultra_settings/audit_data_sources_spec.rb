@@ -225,4 +225,26 @@ RSpec.describe UltraSettings::AuditDataSources do
       end
     end
   end
+
+  describe ".default_config_value" do
+    it "does not treat a false YAML value as missing" do
+      config = MyServiceConfiguration.instance
+      field = MyServiceConfiguration.fields.find { |f| f.name == "port" }
+
+      allow(config).to receive(:__value_from_source__).with(field.name, :yaml).and_return(false)
+      allow(config).to receive(:__value_from_source__).with(field.name, :default).and_return(true)
+
+      expect(described_class.send(:default_config_value, config, field)).to be false
+    end
+
+    it "falls back to the default value when there is no YAML value" do
+      config = MyServiceConfiguration.instance
+      field = MyServiceConfiguration.fields.find { |f| f.name == "port" }
+
+      allow(config).to receive(:__value_from_source__).with(field.name, :yaml).and_return(nil)
+      allow(config).to receive(:__value_from_source__).with(field.name, :default).and_return(80)
+
+      expect(described_class.send(:default_config_value, config, field)).to eq 80
+    end
+  end
 end

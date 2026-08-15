@@ -24,13 +24,24 @@ module UltraSettings
 
     # Render the HTML for the configuration view.
     #
+    # The runtime settings cache is reloaded before rendering so that values changed
+    # from the UI are displayed immediately rather than after the runtime settings
+    # engine next refreshes itself. If a page renders more than one view, wrap them all
+    # in `UltraSettings.with_runtime_settings_reloaded` so that the settings are only
+    # reloaded once for the page instead of once per view.
+    #
     # @param table_class [String] @deprecated CSS class for the table element (maintained for backwards compatibility).
     # @return [String] The rendered HTML.
     def render(table_class: "")
-      configuration = @configuration # used by ERB template via binding
-      html = ViewHelper.erb_template("configuration.html.erb").result(binding)
-      html = html.html_safe if html.respond_to?(:html_safe)
-      html
+      UltraSettings.with_runtime_settings_reloaded do
+        # Expose configuration as a local for the ERB template without a direct
+        # assignment, which would emit an unused variable warning under ruby -w.
+        template_binding = binding
+        template_binding.local_variable_set(:configuration, @configuration)
+        html = ViewHelper.erb_template("configuration.html.erb").result(template_binding)
+        html = html.html_safe if html.respond_to?(:html_safe)
+        html
+      end
     end
 
     # Convert the view to a string by rendering it.
@@ -70,6 +81,25 @@ module UltraSettings
       end
     end
 
+    # The text placed on the clipboard by the copy button. This is the raw value
+    # rather than the inspected value shown in the UI so that, for example, copying
+    # a string setting does not include the surrounding quotes.
+    #
+    # @param value [Object] The setting value.
+    # @return [String] The text to copy.
+    def copy_value(value)
+      case value
+      when nil
+        ""
+      when Time
+        value.iso8601
+      when Array
+        value.join("\n")
+      else
+        value.to_s
+      end
+    end
+
     def secret_value(value)
       if value.nil?
         t("field.nil")
@@ -78,13 +108,63 @@ module UltraSettings
       end
     end
 
+    # Shorten a file path for display by making it relative to the working
+    # directory or to the YAML configuration directory. The absolute path is
+    # used if the file is not inside either directory.
+    #
+    # @param path [Pathname] The absolute file path.
+    # @return [String] The path to display.
     def relative_path(path)
-      root_path = Pathname.new(Dir.pwd)
-      config_path = UltraSettings::Configuration.yaml_config_path
-      unless config_path.realpath.to_s.start_with?("#{root_path.realpath}#{File::SEPARATOR}")
-        root_path = config_path
+      paths = display_paths(Pathname.new(path).expand_path)
+      display_path_roots.each do |root|
+        paths.each do |file_path|
+          relative = path_inside(file_path, root)
+          return relative if relative
+        end
       end
-      path.relative_path_from(root_path)
+      paths.first.to_s
+    end
+
+    # The file path in both its literal and symlink resolved forms so that it can
+    # be matched against a directory that is specified in either form.
+    #
+    # @param path [Pathname] The absolute file path.
+    # @return [Array<Pathname>]
+    def display_paths(path)
+      [path, resolved_path(path.dirname)&.join(path.basename)].compact.uniq
+    end
+
+    # Directories that a displayed path can be made relative to, in order of
+    # preference. Directories are listed in both their literal and symlink
+    # resolved forms since a file path can be in either form.
+    #
+    # @return [Array<Pathname>]
+    def display_path_roots
+      roots = [Pathname.new(Dir.pwd)]
+      config_path = UltraSettings::Configuration.yaml_config_path
+      roots << Pathname.new(config_path) if config_path
+      roots.flat_map { |root| [root.expand_path, resolved_path(root)] }.compact.uniq
+    end
+
+    # @param path [Pathname] The absolute file path.
+    # @param root [Pathname] The absolute directory path.
+    # @return [String, nil] The path relative to the directory or nil if it is not inside it.
+    def path_inside(path, root)
+      relative = path.relative_path_from(root).to_s.delete_prefix("./")
+      return nil if relative == "." || relative.start_with?("..")
+
+      relative
+    rescue ArgumentError
+      # relative_path_from raises if the paths have no common root (e.g. different drives).
+      nil
+    end
+
+    # @param path [Pathname] The directory path.
+    # @return [Pathname, nil] The path with symlinks resolved or nil if it does not exist.
+    def resolved_path(path)
+      path.realpath
+    rescue SystemCallError
+      nil
     end
 
     def source_chip_label(source)
@@ -116,6 +196,34 @@ module UltraSettings
       end
     end
 
+    # True if the YAML keys for a configuration are hidden behind a toggle button.
+    # They are hidden by default when the YAML file does not exist since the keys
+    # are not used by the application.
+    #
+    # @param configuration [UltraSettings::Configuration] The configuration instance.
+    # @return [Boolean]
+    def hide_yaml_keys?(configuration)
+      config_class = configuration.class
+      file = config_class.configuration_file
+      file.is_a?(Pathname) && !file.exist? && config_class.fields.any?(&:yaml_key)
+    end
+
+    # Inline script for the button that shows and hides the YAML keys. It is
+    # inlined on the element so that the button also works when the configuration
+    # view is embedded in a host application page that does not include the
+    # bundled JavaScript.
+    #
+    # @return [String] JavaScript source for an onclick attribute.
+    def toggle_yaml_keys_script
+      <<~JAVASCRIPT.gsub(/\s+/, " ").tr('"', "'")
+        var block = this.closest('.ultra-settings-block');
+        if (block) {
+          var hidden = block.classList.toggle('ultra-settings-yaml-hidden');
+          this.setAttribute('aria-checked', hidden ? 'false' : 'true');
+        }
+      JAVASCRIPT
+    end
+
     def open_panel_script
       <<~JAVASCRIPT.gsub(/\s+/, " ").tr('"', "'")
         var el = this;
@@ -142,6 +250,38 @@ module UltraSettings
               dialog.showModal();
             }
           }
+        }
+      JAVASCRIPT
+    end
+
+    # Inline script for the copy button. It is inlined on the element so that the
+    # button also works when the configuration view is embedded in a host
+    # application page that does not include the bundled JavaScript.
+    #
+    # @return [String] JavaScript source for an onclick attribute.
+    def copy_value_script
+      <<~JAVASCRIPT.gsub(/\s+/, " ").tr('"', "'")
+        var btn = this;
+        var text = btn.dataset.copyValue || '';
+        var flash = function() {
+          btn.classList.add('copied');
+          window.setTimeout(function() { btn.classList.remove('copied'); }, 1500);
+        };
+        var fallback = function() {
+          var input = document.createElement('textarea');
+          input.value = text;
+          input.setAttribute('readonly', '');
+          input.style.position = 'fixed';
+          input.style.opacity = '0';
+          document.body.appendChild(input);
+          input.select();
+          try { if (document.execCommand('copy')) { flash(); } } catch (e) {}
+          document.body.removeChild(input);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(flash, fallback);
+        } else {
+          fallback();
         }
       JAVASCRIPT
     end
@@ -192,6 +332,23 @@ module UltraSettings
         <svg width="#{size}" height="#{size}" fill="currentColor" viewBox="0 0 16 16">
           <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
           <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+        </svg>
+      HTML
+    end
+
+    def copy_icon(size = 13)
+      <<~HTML
+        <svg class="ultra-settings-copy-icon" width="#{size}" height="#{size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+      HTML
+    end
+
+    def check_icon(size = 13)
+      <<~HTML
+        <svg class="ultra-settings-copy-check" width="#{size}" height="#{size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
         </svg>
       HTML
     end

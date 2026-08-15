@@ -13,17 +13,19 @@
     /* Borders */
     --border-light: #e2e5ea;
     --border-card: #dfe2e8;
+    /* Interactive control borders — 3:1 against every surface (WCAG 1.4.11) */
+    --border-input: #7e8492;
 
     /* Text */
     --text-primary: #111827;
     --text-secondary: #4b5563;
-    --text-tertiary: #9ca3af;
+    --text-tertiary: #646b7a;
 
     /* Accent — teal */
-    --accent: #0d9488;
-    --accent-light: rgba(13, 148, 136, 0.06);
-    --accent-lighter: rgba(13, 148, 136, 0.03);
-    --accent-glow: rgba(13, 148, 136, 0.12);
+    --accent: #0f766e;
+    --accent-light: rgba(15, 118, 110, 0.06);
+    --accent-lighter: rgba(15, 118, 110, 0.03);
+    --accent-glow: rgba(15, 118, 110, 0.12);
     --btn-primary-text: #ffffff;
     --btn-secondary-text: #4b5563;
     --btn-secondary-hover-text: #111827;
@@ -32,24 +34,28 @@
     --src-env: #2563eb;
     --src-env-bg: #eff6ff;
     --src-env-border: #bfdbfe;
-    --src-setting: #0d9488;
+    --src-setting: #0f766e;
     --src-setting-bg: #f0fdfa;
     --src-setting-border: #99f6e4;
     --src-yaml: #7c3aed;
     --src-yaml-bg: #f5f3ff;
     --src-yaml-border: #ddd6fe;
-    --src-default: #6b7280;
+    --src-default: #5f6673;
     --src-default-bg: #f3f4f6;
     --src-default-border: #d1d5db;
 
     /* Status */
-    --active-color: #059669;
-    --active-bg: rgba(5, 150, 105, 0.05);
+    --active-color: #047857;
+    --active-bg: rgba(4, 120, 87, 0.05);
     --overridden-color: #6b7280;
+    --warn-color: #8a6508;
+    --danger-text: #b3261e;
+    --danger-bg: rgba(179, 38, 30, 0.10);
+    --danger-border: rgba(179, 38, 30, 0.35);
 
     /* Badges */
     --badge-secret-bg: #fef2f2;
-    --badge-secret-text: #dc2626;
+    --badge-secret-text: #b91c1c;
     --badge-secret-border: #fecaca;
     --badge-static-bg: #f0f2f5;
     --badge-static-text: #4b5563;
@@ -71,6 +77,9 @@
 
     /* Source row divider */
     --border-source-row: rgba(0,0,0,0.025);
+
+    /* Select dropdown caret (must be 3:1 against --bg-code) */
+    --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237e8492'/%3E%3C/svg%3E");
   }
 <% end %>
 
@@ -94,11 +103,13 @@
     /* Borders */
     --border-light: #2a2d3a;
     --border-card: #252836;
+    /* Interactive control borders — 3:1 against every surface (WCAG 1.4.11) */
+    --border-input: #666c86;
 
     /* Text */
     --text-primary: #e4e6f0;
     --text-secondary: #9ba1b5;
-    --text-tertiary: #5c6178;
+    --text-tertiary: #8f95ad;
 
     /* Accent — teal */
     --accent: #14b8a6;
@@ -126,7 +137,11 @@
     /* Status */
     --active-color: #34d399;
     --active-bg: rgba(52, 211, 153, 0.08);
-    --overridden-color: #6b7280;
+    --overridden-color: #8f95ad;
+    --warn-color: #d6ba1d;
+    --danger-text: #f87171;
+    --danger-bg: rgba(248, 113, 113, 0.12);
+    --danger-border: rgba(248, 113, 113, 0.30);
 
     /* Badges */
     --badge-secret-bg: rgba(220, 38, 38, 0.12);
@@ -152,6 +167,9 @@
 
     /* Source row divider */
     --border-source-row: rgba(255,255,255,0.04);
+
+    /* Select dropdown caret (must be 3:1 against --bg-code) */
+    --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238f95ad'/%3E%3C/svg%3E");
   }
 <% end %>
 <% if color_scheme == :system || dark_mode_selector %>

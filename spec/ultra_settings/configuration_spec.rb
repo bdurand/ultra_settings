@@ -279,6 +279,27 @@ RSpec.describe UltraSettings::Configuration do
       end
       expect(configuration.static).to eq static_value
     end
+
+    it "does not retain the thread's override entry after the block exits" do
+      configuration.override!(foo: "new foo") do
+        configuration.foo
+      end
+
+      overrides = configuration.instance_variable_get(:@ultra_settings_override_values)
+      expect(overrides).not_to have_key(Thread.current.object_id)
+    end
+
+    it "restores the outer override when nested overrides exit" do
+      configuration.override!(foo: "outer foo") do
+        configuration.override!(foo: "inner foo") do
+          expect(configuration.foo).to eq "inner foo"
+        end
+        expect(configuration.foo).to eq "outer foo"
+      end
+
+      overrides = configuration.instance_variable_get(:@ultra_settings_override_values)
+      expect(overrides).not_to have_key(Thread.current.object_id)
+    end
   end
 
   describe "with hierarchy disabled" do

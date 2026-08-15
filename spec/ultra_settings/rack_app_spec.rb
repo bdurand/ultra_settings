@@ -65,4 +65,20 @@ RSpec.describe UltraSettings::RackApp do
       expect(body).to include('lang="en"')
     end
   end
+
+  describe "caching the view" do
+    it "reuses the view outside of development mode" do
+      ClimateControl.modify(RAILS_ENV: nil, RACK_ENV: nil, APP_ENV: "production") do
+        view = rack_app.send(:webview)
+        expect(rack_app.send(:webview)).to equal(view)
+      end
+    end
+
+    it "builds a new view in development mode so app file changes are picked up" do
+      ClimateControl.modify(RAILS_ENV: nil, RACK_ENV: nil, APP_ENV: nil) do
+        view = rack_app.send(:webview)
+        expect(rack_app.send(:webview)).not_to equal(view)
+      end
+    end
+  end
 end

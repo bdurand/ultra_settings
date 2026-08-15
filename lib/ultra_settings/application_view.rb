@@ -28,14 +28,23 @@ module UltraSettings
 
     # Render the HTML for the configuration settings UI.
     #
+    # The runtime settings cache is reloaded before rendering so that values changed
+    # from the UI are displayed immediately rather than after the runtime settings
+    # engine next refreshes itself.
+    #
     # @param select_class [String] @deprecated; no longer used.
     # @param table_class [String] @deprecated; no longer used.
     # @return [String] The rendered HTML.
     def render(select_class: nil, table_class: nil)
-      locale = @locale # used by ERB template via binding
-      html = ViewHelper.erb_template("index.html.erb").result(binding)
-      html = html.html_safe if html.respond_to?(:html_safe)
-      html
+      UltraSettings.with_runtime_settings_reloaded do
+        # Expose locale as a local for the ERB template without a direct
+        # assignment, which would emit an unused variable warning under ruby -w.
+        template_binding = binding
+        template_binding.local_variable_set(:locale, @locale)
+        html = ViewHelper.erb_template("index.html.erb").result(template_binding)
+        html = html.html_safe if html.respond_to?(:html_safe)
+        html
+      end
     end
 
     # Generate an HTML style tag with the CSS for the view.
